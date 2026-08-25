@@ -10,7 +10,7 @@ export const brand = {
 
 export const nav = [
   { href: "/sersaumur", label: "Sérsaumur" },
-  { href: "/verslun", label: "Verslun" },
+  { href: "/verslun", label: "Vefverslun" },
   { href: "/um-okkur", label: "Um okkur" },
   { href: "/hafa-samband", label: "Hafa samband" },
 ] as const;

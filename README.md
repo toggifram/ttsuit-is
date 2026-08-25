@@ -21,7 +21,7 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 ## Litir og merki
 
-- Haus og fótur: `#0C2C20` (dökk grænt úr merkinu)
+- Haus og fótur: `#023030` (dökk teal-grænt úr merkinu)
 - Yfirborð: hvítt, með mjúku cream í köflum
 - Logo: *Tjé Tjé* í skriftarletursstíl
 

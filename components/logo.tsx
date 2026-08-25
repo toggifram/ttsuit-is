@@ -1,9 +1,11 @@
+import Image from "next/image";
+
 import { cn } from "@/lib/utils";
 
 const sizes = {
-  sm: "text-[1.85rem] md:text-3xl",
-  md: "text-[2.15rem] md:text-[2.45rem]",
-  lg: "text-5xl md:text-6xl",
+  sm: { className: "h-10 w-auto md:h-11", width: 160, height: 70 },
+  md: { className: "h-12 w-auto md:h-14", width: 200, height: 88 },
+  lg: { className: "h-16 w-auto md:h-[4.5rem]", width: 260, height: 114 },
 } as const;
 
 export function Logo({
@@ -13,15 +15,15 @@ export function Logo({
   className?: string;
   size?: keyof typeof sizes;
 }) {
+  const s = sizes[size];
   return (
-    <span
-      className={cn(
-        "font-script inline-block px-1 leading-none tracking-tight text-white",
-        sizes[size],
-        className
-      )}
-    >
-      Tjé Tjé
-    </span>
+    <Image
+      src="/brand/logo.png"
+      alt="Tjé Tjé"
+      width={s.width}
+      height={s.height}
+      className={cn("object-contain", s.className, className)}
+      priority
+    />
   );
 }

@@ -7,61 +7,24 @@ import { categories, processSteps, testimonials } from "@/lib/site";
 export default function HomePage() {
   return (
     <>
-      <section className="relative min-h-[78vh] overflow-hidden bg-forest md:min-h-[88vh]">
-        <Image
-          src="/images/suit.jpg"
-          alt="Maður í sérsaumuðum jakkafötum"
-          fill
-          priority
-          className="object-cover object-[center_20%]"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest/80 via-forest/15 to-forest/25" />
-        <div className="relative mx-auto flex min-h-[78vh] max-w-7xl flex-col justify-end px-5 pb-14 md:min-h-[88vh] md:px-8 md:pb-20">
-          <p className="text-[11px] tracking-[0.32em] text-white/80 uppercase">
-            Sérsaumur · Tilbúin föt
-          </p>
-          <h1 className="mt-3 max-w-2xl font-serif text-5xl leading-[0.95] font-medium text-white md:text-7xl">
-            Sérsaumur fyrir þig
-          </h1>
-          <p className="mt-4 max-w-md text-base text-white/85 md:text-lg">
-            Stíllinn er eilífur. Við saumum jakkafötin að þér — og höfum tilbúinn
-            fatnað þegar þú vilt hann strax.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/hafa-samband#bokun"
-              className="inline-flex h-12 items-center bg-white px-6 text-[11px] tracking-[0.18em] text-forest uppercase transition-colors hover:bg-cream"
-            >
-              Bóka mælingu
-            </Link>
-            <Link
-              href="/verslun"
-              className="inline-flex h-12 items-center border border-white/50 px-6 text-[11px] tracking-[0.18em] text-white uppercase transition-colors hover:bg-white hover:text-forest"
-            >
-              Skoða verslun
-            </Link>
-          </div>
+      <section className="bg-forest px-3 pb-4 pt-1 md:px-6 md:pb-8">
+        <h1 className="sr-only">Tjé Tjé — sérsaumur og vefverslun</h1>
+        <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-2 md:gap-5">
+          <HeroTile
+            href="/sersaumur"
+            image="/images/measure.jpg"
+            alt="Maður í sérsaumuðum jakkafötum"
+            title="Sérsaumur"
+            priority
+          />
+          <HeroTile
+            href="/verslun"
+            image="/images/blazer.jpg"
+            alt="Maður í jakka úr vefverslun"
+            title="Vefverslun"
+            priority
+          />
         </div>
-      </section>
-
-      <section className="grid md:grid-cols-2">
-        <PathCard
-          href="/sersaumur"
-          image="/images/measure.jpg"
-          alt="Maður sem lagar jakkaföt"
-          kicker="Made to measure"
-          title="Sérsaumur"
-          text="Mæling, efnisval og saumur eftir líkama þínum. 4–6 vikur frá mælingu."
-        />
-        <PathCard
-          href="/verslun"
-          image="/images/blazer.jpg"
-          alt="Maður í jakka"
-          kicker="Ready to wear"
-          title="Tilbúin föt"
-          text="Jakkaföt, jakkar, skyrtur og fylgihlutir. Vefverslunin tengist Shopify á næstunni."
-        />
       </section>
 
       <section className="mx-auto max-w-7xl px-5 py-20 md:px-8 md:py-28">
@@ -223,40 +186,35 @@ export default function HomePage() {
   );
 }
 
-function PathCard({
+function HeroTile({
   href,
   image,
   alt,
-  kicker,
   title,
-  text,
+  priority = false,
 }: {
   href: string;
   image: string;
   alt: string;
-  kicker: string;
   title: string;
-  text: string;
+  priority?: boolean;
 }) {
   return (
-    <Link href={href} className="group relative block min-h-[420px] overflow-hidden md:min-h-[560px]">
+    <Link
+      href={href}
+      className="group relative block aspect-[4/5] overflow-hidden border-[3px] border-white md:aspect-auto md:min-h-[78vh]"
+    >
       <Image
         src={image}
         alt={alt}
         fill
+        priority={priority}
         className="object-cover transition-transform duration-700 group-hover:scale-105"
         sizes="(min-width:768px) 50vw, 100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-forest/80 via-forest/20 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 p-8 md:p-12">
-        <p className="text-[11px] tracking-[0.24em] text-white/70 uppercase">
-          {kicker}
-        </p>
-        <h2 className="mt-2 font-serif text-4xl text-white md:text-5xl">{title}</h2>
-        <p className="mt-3 max-w-sm text-sm text-white/80">{text}</p>
-        <span className="mt-6 inline-block text-[11px] tracking-[0.18em] text-white uppercase underline-offset-4 group-hover:underline">
-          Skoða
-        </span>
+      <div className="absolute inset-0 bg-gradient-to-t from-forest/70 via-forest/10 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 p-6 text-center md:p-10">
+        <h2 className="font-serif text-4xl text-white md:text-5xl">{title}</h2>
       </div>
     </Link>
   );

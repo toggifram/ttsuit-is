@@ -22,9 +22,13 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 bg-forest text-white">
-      <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between gap-4 px-5 md:h-24 md:px-8">
-        <nav className="hidden flex-1 items-center gap-8 md:flex">
-          {nav.slice(0, 2).map((item) => (
+      <div className="mx-auto flex h-[4.25rem] max-w-7xl items-center gap-6 px-4 md:h-[5.25rem] md:gap-10 md:px-8">
+        <Link href="/" className="shrink-0" aria-label={brand.name}>
+          <Logo size="md" />
+        </Link>
+
+        <nav className="hidden flex-1 items-center gap-5 md:flex lg:gap-8">
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -38,23 +42,7 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <Link href="/" className="flex shrink-0 items-center" aria-label={brand.name}>
-          <Logo size="md" />
-        </Link>
-
-        <div className="hidden flex-1 items-center justify-end gap-8 md:flex">
-          {nav.slice(2).map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "text-[11px] font-medium tracking-[0.22em] uppercase text-white/80 transition-colors hover:text-white",
-                pathname === item.href && "text-white"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
+        <div className="ml-auto hidden items-center md:flex">
           <Button
             nativeButton={false}
             render={<Link href="/hafa-samband#bokun" />}
@@ -64,7 +52,7 @@ export function SiteHeader() {
           </Button>
         </div>
 
-        <div className="flex flex-1 items-center justify-end md:hidden">
+        <div className="ml-auto md:hidden">
           <Sheet>
             <SheetTrigger
               render={
