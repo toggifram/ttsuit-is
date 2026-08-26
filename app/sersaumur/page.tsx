@@ -1,73 +1,201 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 
-import { packages, prices, processSteps } from "@/lib/site";
+import { InquiryForm } from "@/components/inquiry-form";
+import { ScrollToHash } from "@/components/scroll-to-hash";
+import {
+  brand,
+  fabrics,
+  faqs,
+  packages,
+  prices,
+  processSteps,
+} from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Sérsaumur",
   description:
-    "Sérsaumuð jakkaföt, jakkar og skyrtur eftir þínum mælingum. Ferlið tekur 4–6 vikur.",
+    "Sérsaumuð jakkaföt, jakkar og skyrtur eftir þínum mælingum. Ferlið, efnin, verðskrá og bókun — 4–6 vikur.",
 };
+
+const sectionClass = "scroll-mt-36";
 
 export default function SersaumurPage() {
   return (
     <>
-      <section className="relative min-h-[52vh] overflow-hidden bg-white">
-        <Image
-          src="/images/studio/grey-polo.jpg"
-          alt="Sérsaumur hjá Tjé Tjé"
-          fill
-          priority
-          className="object-contain object-top p-8"
-          sizes="100vw"
-        />
-        <div className="relative mx-auto flex min-h-[52vh] max-w-[1440px] flex-col justify-end px-5 pb-12 md:px-10 md:pb-16">
-          <p className="text-sm text-ink/45">Custom made</p>
-          <h1 className="mt-2 text-4xl font-medium tracking-tight text-forest md:text-6xl">
-            Sérsaumur er málið
+      <ScrollToHash />
+      <section className="grid bg-white md:grid-cols-2">
+        <div className="flex flex-col justify-center px-6 py-16 md:min-h-[calc(100dvh-7rem)] md:px-14 lg:px-20">
+          <p className="text-[11px] font-semibold tracking-[0.22em] text-forest/55 uppercase">
+            Custom made · 4–6 vikur
+          </p>
+          <h1 className="mt-4 font-serif text-5xl leading-[0.95] text-forest italic md:text-6xl lg:text-7xl">
+            Saumað eftir þér.
           </h1>
-        </div>
-      </section>
-
-      <section className="mx-auto grid max-w-7xl gap-12 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
-        <div>
-          <h2 className="font-serif text-4xl">Saumað eftir þér. Ekki hillunni.</h2>
-          <p className="mt-6 text-base leading-relaxed text-ink/70">
-            Sérsaumur þýðir að engin jakkaföt eru eins. Fatnaðurinn er saumaður
-            eftir líkamsbyggingu kaupanda — og þú ræður ferðinni hvað varðar
-            efni, útlit og snið.
+          <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink/70">
+            Jakkaföt, jakkar og skyrtur eftir líkama þínum — ekki hillunni. Þú
+            velur efni, snið og smáatriði. Við tökum mælinguna og saumum.
           </p>
-          <p className="mt-4 text-base leading-relaxed text-ink/70">
-            Kjarninn er nákvæm mæling. Brjóst, mitti og axlir eru ekki bara
-            tölur: við tökum tillit til líkamsstöðu og hvernig þú vilt að
-            fötin sitji. Síðan velur þú snið, vasagerð, hnappa, fóður og jafnvel
-            saumfar með nafni undir kraga.
-          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href="#boka-tima"
+              className="inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
+            >
+              Bóka tíma
+            </a>
+            <a
+              href="#ferlid"
+              className="inline-flex h-12 items-center border border-forest/20 px-7 text-sm text-forest transition-colors hover:border-forest hover:bg-forest hover:text-white"
+            >
+              Sjá ferlið
+            </a>
+          </div>
         </div>
-        <div className="relative min-h-[320px] bg-white">
+        <div className="relative min-h-[420px] bg-white md:min-h-[calc(100dvh-7rem)]">
           <Image
-            src="/images/studio/navy-logo.jpg"
-            alt="TJ merki"
+            src="/images/studio/suit-bag.png"
+            alt="Sérsaumuð jakkaföt og fatapoki Tjé Tjé"
             fill
-            className="object-contain p-6"
+            priority
+            className="object-contain object-center p-8 md:p-12"
             sizes="(min-width:768px) 50vw, 100vw"
           />
         </div>
       </section>
 
-      <section className="bg-cream">
-        <div className="mx-auto max-w-7xl px-5 py-16 md:px-8 md:py-24">
-          <h2 className="font-serif text-4xl">Hvernig er ferlið?</h2>
-          <div className="mt-12 grid gap-8 md:grid-cols-5">
+      <section
+        id="ferlid"
+        aria-labelledby="ferlid-heading"
+        className={`${sectionClass} bg-cream`}
+      >
+        <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-16 md:grid-cols-12 md:px-8 md:py-24">
+          <div className="md:col-span-4">
+            <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
+              Ferlið
+            </p>
+            <h2
+              id="ferlid-heading"
+              className="mt-3 font-serif text-4xl text-forest md:text-5xl"
+            >
+              Fimm skref. Ekkert flókið.
+            </h2>
+            <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-ink/70">
+              Frá fyrstu línu til fata sem sitja eins og þau eiga að sitja.
+              Við förum hægt yfir valin — og hreint út ef eitthvað hentar þér
+              illa.
+            </p>
+          </div>
+          <ol className="md:col-span-8">
             {processSteps.map((step) => (
-              <div key={step.n}>
-                <p className="text-[11px] tracking-[0.2em] text-forest/50">
-                  {step.n}
+              <li
+                key={step.n}
+                className="grid gap-4 border-t border-forest/10 py-8 first:border-t-0 first:pt-0 md:grid-cols-[4.5rem_1fr] md:gap-8"
+              >
+                <p className="font-serif text-3xl text-forest/35">{step.n}</p>
+                <div>
+                  <h3 className="font-serif text-2xl text-forest">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-ink/70">
+                    {step.text}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section
+        id="efnin"
+        aria-labelledby="efnin-heading"
+        className={`${sectionClass} bg-white`}
+      >
+        <div className="mx-auto max-w-[1440px] px-5 py-16 md:px-8 md:py-24">
+          <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
+            Efnin
+          </p>
+          <h2
+            id="efnin-heading"
+            className="mt-3 max-w-2xl font-serif text-4xl text-forest md:text-5xl"
+          >
+            Þú snertir dúkinn áður en við klippum.
+          </h2>
+          <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-ink/70">
+            Við verslum meðal annars frá Ítalíu, Bretlandi, Þýskalandi og
+            Tyrklandi. Hundruð efnis — ull, hör, flannel, tweed og skyrtuefni.
+            Þú velur. Ef þú spyrð hvað mér finnst, svara ég eins og mér finnst.
+          </p>
+          <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {fabrics.map((fabric) => (
+              <article key={fabric.name} className="bg-cream">
+                <div className="relative aspect-[4/5] overflow-hidden bg-[#ebe6dc]">
+                  <img
+                    src={fabric.image}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                </div>
+                <div className="px-5 py-6">
+                  <p className="text-[11px] tracking-[0.16em] text-forest/50 uppercase">
+                    {fabric.note}
+                  </p>
+                  <h3 className="mt-2 font-serif text-2xl text-forest">
+                    {fabric.name}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-ink/65">
+                    {fabric.text}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="verdskra"
+        aria-labelledby="verdskra-heading"
+        className={`${sectionClass} bg-cream`}
+      >
+        <div className="mx-auto max-w-[1440px] px-5 py-16 md:px-8 md:py-24">
+          <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
+            Verðskrá
+          </p>
+          <h2
+            id="verdskra-heading"
+            className="mt-3 max-w-3xl font-serif text-4xl text-forest md:text-5xl"
+          >
+            Fötin eru kannski ekki ókeypis. Verðin gætu samt komið þér á óvart.
+          </h2>
+          <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-ink/70">
+            Verð flokkast eftir efnisvali og framleiðanda. Við förum betur
+            yfir þetta þegar þú mætir í mælingu — án pressu.
+          </p>
+          <div className="mt-12 grid gap-px bg-forest/10 sm:grid-cols-2 lg:grid-cols-5">
+            {prices.map((item) => (
+              <div key={item.name} className="bg-white p-6 md:p-8">
+                <h3 className="font-serif text-2xl text-forest">{item.name}</h3>
+                <p className="mt-2 text-sm text-forest/80">Frá {item.from}</p>
+                <p className="mt-3 text-sm leading-relaxed text-ink/60">
+                  {item.note}
                 </p>
-                <h3 className="mt-2 font-serif text-2xl">{step.title}</h3>
+              </div>
+            ))}
+          </div>
+
+          <h3 className="mt-16 font-serif text-3xl text-forest">Pakkar</h3>
+          <p className="mt-3 max-w-xl text-sm text-ink/65">
+            Sett sem flestir byrja á. Þú getur alltaf bætt við skyrtu, vesti
+            eða fylgihlutum.
+          </p>
+          <div className="mt-8 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+            {packages.map((item) => (
+              <div key={item.name} className="bg-white px-6 py-8">
+                <h4 className="font-serif text-2xl text-forest">{item.name}</h4>
+                <p className="mt-2 text-sm text-forest/80">Frá {item.from}</p>
                 <p className="mt-3 text-sm leading-relaxed text-ink/65">
-                  {step.text}
+                  {item.items}
                 </p>
               </div>
             ))}
@@ -75,44 +203,83 @@ export default function SersaumurPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-16 md:px-8 md:py-24">
-        <p className="text-[11px] tracking-[0.28em] text-forest/60 uppercase">
-          Verðskrá
-        </p>
-        <h2 className="mt-2 font-serif text-4xl">
-          Fötin eru kannski ekki ókeypis. Verðin gætu samt komið þér á óvart.
-        </h2>
-        <p className="mt-4 max-w-2xl text-ink/70">
-          Verð flokkast eftir efnisvali og framleiðanda. Við förum betur yfir
-          þetta þegar þú mætir í mælingu.
-        </p>
-        <div className="mt-12 grid gap-px bg-forest/10 sm:grid-cols-2 lg:grid-cols-5">
-          {prices.map((item) => (
-            <div key={item.name} className="bg-white p-6">
-              <h3 className="font-serif text-2xl">{item.name}</h3>
-              <p className="mt-2 text-sm text-forest">Frá {item.from}</p>
-              <p className="mt-3 text-sm text-ink/60">{item.note}</p>
-            </div>
-          ))}
+      <section
+        id="boka-tima"
+        aria-labelledby="boka-heading"
+        className={`${sectionClass} bg-white`}
+      >
+        <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-16 md:grid-cols-12 md:px-8 md:py-24">
+          <div className="md:col-span-5">
+            <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
+              Bóka tíma
+            </p>
+            <h2
+              id="boka-heading"
+              className="mt-3 font-serif text-4xl text-forest md:text-5xl"
+            >
+              Við finnum tíma sem hentar.
+            </h2>
+            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ink/70">
+              Virkir dagar, helgi eða eftir vinnu. Þú sendir línu og við höfum
+              samband innan 48 klukkustunda. Frá mælingu eru það venjulega 4–6
+              vikur.
+            </p>
+            <p className="mt-6 text-sm text-ink/55">
+              Eða skrifaðu beint á{" "}
+              <a
+                href={`mailto:${brand.email}`}
+                className="text-forest underline-offset-4 hover:underline"
+              >
+                {brand.email}
+              </a>
+              .
+            </p>
+          </div>
+          <div className="bg-cream p-6 md:col-span-7 md:p-10">
+            <InquiryForm kind="booking" />
+          </div>
         </div>
+      </section>
 
-        <h3 className="mt-16 font-serif text-3xl">Pakkar</h3>
-        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {packages.map((item) => (
-            <div key={item.name} className="border border-forest/10 p-6">
-              <h4 className="font-serif text-2xl">{item.name}</h4>
-              <p className="mt-2 text-sm text-forest">Frá {item.from}</p>
-              <p className="mt-3 text-sm text-ink/65">{item.items}</p>
-            </div>
-          ))}
+      <section
+        id="spurningar"
+        aria-labelledby="spurningar-heading"
+        className={`${sectionClass} bg-cream`}
+      >
+        <div className="mx-auto max-w-3xl px-5 py-16 md:px-8 md:py-24">
+          <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
+            Algengar spurningar
+          </p>
+          <h2
+            id="spurningar-heading"
+            className="mt-3 font-serif text-4xl text-forest md:text-5xl"
+          >
+            Það sem flestir spyrja.
+          </h2>
+          <div className="mt-10">
+            {faqs.map((item) => (
+              <details
+                key={item.q}
+                className="group border-t border-forest/10 py-5 last:border-b"
+              >
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-6 marker:content-none [&::-webkit-details-marker]:hidden">
+                  <span className="font-serif text-xl text-forest md:text-2xl">
+                    {item.q}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="mt-1 shrink-0 text-lg leading-none text-forest/40 transition group-open:rotate-45"
+                  >
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 max-w-xl pr-10 text-[15px] leading-relaxed text-ink/70">
+                  {item.a}
+                </p>
+              </details>
+            ))}
+          </div>
         </div>
-
-        <Link
-          href="/hafa-samband#bokun"
-          className="mt-12 inline-flex h-12 items-center bg-forest px-6 text-[11px] tracking-[0.18em] text-white uppercase hover:bg-forest-mid"
-        >
-          Bóka mælingu
-        </Link>
       </section>
     </>
   );

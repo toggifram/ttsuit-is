@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Search, ShoppingBag } from "lucide-react";
@@ -14,7 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { brand, nav, navLeft, navRight } from "@/lib/site";
+import { brand, nav, navLeft, navRight, sersaumurMenu } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const promoCopy =
@@ -47,6 +48,38 @@ function PromoTicker() {
           ))}
         </span>
       </Link>
+    </div>
+  );
+}
+
+function SersaumurNav({ pathname }: { pathname: string }) {
+  const active =
+    pathname === "/sersaumur" || pathname.startsWith("/sersaumur/");
+
+  return (
+    <div className="group relative">
+      <Link
+        href="/sersaumur"
+        className={cn(
+          "text-[13px] text-white/80 transition-colors hover:text-white",
+          active && "text-white"
+        )}
+      >
+        Sérsaumur
+      </Link>
+      <div className="invisible absolute top-full left-0 z-50 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+        <div className="min-w-[12.5rem] bg-forest py-2 shadow-[0_8px_24px_rgba(0,0,0,0.25)]">
+          {sersaumurMenu.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="block px-4 py-2 text-[13px] text-white/80 hover:text-white"
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -86,14 +119,18 @@ export function SiteHeader() {
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="flex items-center">
             <nav className="pointer-events-auto hidden items-center gap-7 pr-8 lg:flex">
-              {navLeft.map((item) => (
-                <NavLink
-                  key={item.label}
-                  href={item.href}
-                  label={item.label}
-                  pathname={pathname}
-                />
-              ))}
+              {navLeft.map((item) =>
+                item.href === "/sersaumur" ? (
+                  <SersaumurNav key={item.label} pathname={pathname} />
+                ) : (
+                  <NavLink
+                    key={item.label}
+                    href={item.href}
+                    label={item.label}
+                    pathname={pathname}
+                  />
+                )
+              )}
             </nav>
             <Link
               href="/"
@@ -164,17 +201,33 @@ export function SiteHeader() {
                 </SheetHeader>
                 <nav className="flex flex-col gap-1 px-4">
                   {nav.map((item) => (
-                    <SheetClose
-                      key={item.label}
-                      render={
-                        <Link
-                          href={item.href}
-                          className="py-3 text-base text-white/85"
-                        />
-                      }
-                    >
-                      {item.label}
-                    </SheetClose>
+                    <Fragment key={item.label}>
+                      <SheetClose
+                        render={
+                          <Link
+                            href={item.href}
+                            className="py-3 text-base text-white/85"
+                          />
+                        }
+                      >
+                        {item.label}
+                      </SheetClose>
+                      {item.href === "/sersaumur"
+                        ? sersaumurMenu.map((sub) => (
+                            <SheetClose
+                              key={sub.href}
+                              render={
+                                <a
+                                  href={sub.href}
+                                  className="py-2 pl-3 text-sm text-white/55"
+                                />
+                              }
+                            >
+                              {sub.label}
+                            </SheetClose>
+                          ))
+                        : null}
+                    </Fragment>
                   ))}
                 </nav>
               </SheetContent>

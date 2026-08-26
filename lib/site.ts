@@ -14,6 +14,14 @@ export const navLeft = [
   { href: "/verslun", label: "Vefverslun" },
 ] as const;
 
+export const sersaumurMenu = [
+  { href: "/sersaumur#ferlid", label: "Ferlið" },
+  { href: "/sersaumur#efnin", label: "Efnin" },
+  { href: "/sersaumur#verdskra", label: "Verðskrá" },
+  { href: "/sersaumur#boka-tima", label: "Bóka tíma" },
+  { href: "/sersaumur#spurningar", label: "Algengar spurningar" },
+] as const;
+
 export const navRight = [
   { href: "/hafa-samband", label: "Hafa samband" },
   { href: "/um-okkur", label: "Um okkur" },
@@ -32,7 +40,7 @@ export const footerNav = [
   { href: "/verslun", label: "Vefverslun" },
   { href: "/um-okkur", label: "Um okkur" },
   { href: "/hafa-samband", label: "Hafa samband" },
-  { href: "/hafa-samband#bokun", label: "Bóka mælingu" },
+  { href: "/sersaumur#boka-tima", label: "Bóka mælingu" },
 ] as const;
 
 export const processSteps = [
@@ -126,6 +134,64 @@ export const giftCards = [
   { name: "Gjafabréf", price: "8.065 kr." },
   { name: "Gjafabréf", price: "40.323 kr." },
   { name: "Gjafabréf", price: "80.645 kr." },
+];
+
+export const fabrics = [
+  {
+    name: "Ull",
+    note: "Ítalía, England og Skotland",
+    text: "Klassíkin. Heldur formi, andar og eldist fallega — frá léttum Super 120s til þykkari vetrarullar.",
+    image: "/images/studio/navy-detail.jpg",
+  },
+  {
+    name: "Hör",
+    note: "Sumar og hlýtt veður",
+    text: "Létt, hrukkuð á réttan hátt og köld á húðinni. Fyrir þá sem vilja jakkaföt sem anda í júní.",
+    image: "/images/studio/charcoal-back.jpg",
+  },
+  {
+    name: "Flannel og tweed",
+    note: "Haust og vetur",
+    text: "Mýkri áferð, meiri karakter. Gott þegar þú vilt að fötin séu áberandi án þess að vera hátíðleg.",
+    image: "/images/studio/brown-back.jpg",
+  },
+  {
+    name: "Skyrtuefni",
+    note: "Bómull, lín og blöndur",
+    text: "Hundruð lita og mynstra. Þú velur kraga, manséttur og hvort nafnið þitt fari undir kragann.",
+    image: "/images/studio/navy-logo.jpg",
+  },
+] as const;
+
+export const faqs = [
+  {
+    q: "Hversu langan tíma tekur sérsaumur?",
+    a: "Frá mælingu eru það venjulega 4–6 vikur þar til fötin koma heim. Brúðkaup og aðrir fastir dagar: sendu línu snemma og við finnum leið.",
+  },
+  {
+    q: "Þarf ég að koma í mælingu?",
+    a: "Já. Kjarninn er nákvæm mæling — brjóst, mitti, axlir og hvernig þú stendur. Við ræðum líka hvernig þú vilt að fötin sitji: þétt að, klassískt eða með meira rými.",
+  },
+  {
+    q: "Get ég valið allt sjálfur?",
+    a: "Já. Efni, snið, vasagerð, hnappa, fóður og saumfar. Ef þú spyrð hvað mér finnst, svara ég hreint út — en lokaorðið er þitt.",
+  },
+  {
+    q: "Hvað kostar þetta?",
+    a: "Jakki frá 59.990 kr., buxur frá 38.990 kr. og heilt sett frá 89.990 kr. Verð flokkast eftir efnisvali. Við förum yfir þetta í mælingu, án pressu.",
+  },
+  {
+    q: "Gildir 15% afslátturinn á sérsaum?",
+    a: "Nei. Afsláttur póstlistans gildir á gjafabréf og tilbúinn fatnað, ekki á sérsaum.",
+  },
+  {
+    q: "Hvað ef fötin passa ekki alveg?",
+    a: "Þú mátar þegar þau koma. Ef eitthvað þarf að hnika til er besta saumastofa bæjarins með okkur í liði. Markmiðið er að þú farir sáttur út.",
+  },
+  {
+    q: "Hvar og hvenær er mæling?",
+    a: "Við finnum tíma sem hentar — virka daga, um helgi eða þegar þú ert laus. Þú sendir línu og við höfum samband innan 48 klukkustunda.",
+  },
 ];
 
 export const testimonials = [
