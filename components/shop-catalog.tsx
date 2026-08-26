@@ -43,7 +43,7 @@ export function ShopCatalog({
       </div>
 
       {products.length ? (
-        <div className="grid grid-cols-2 gap-px bg-[#eeeae4] md:grid-cols-3">
+        <div className="grid grid-cols-2 gap-px bg-[#ece8e2] md:grid-cols-3">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
