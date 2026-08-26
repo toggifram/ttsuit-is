@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 };
 
 const coming = [
-  { title: "Jakkaföt", image: "/images/hero.jpg" },
-  { title: "Jakkar", image: "/images/blazer.jpg" },
-  { title: "Skyrtur", image: "/images/shirts.jpg" },
-  { title: "Fylgihlutir", image: "/images/coat.jpg" },
+  { title: "Peysur", image: "/images/studio/brown-zip.jpg" },
+  { title: "Cardigan", image: "/images/studio/navy-shawl.jpg" },
+  { title: "Polo", image: "/images/studio/black-polo.jpg" },
+  { title: "Prjón", image: "/images/studio/taupe-cardigan.jpg" },
 ];
 
 export default function VerslunPage() {
@@ -34,20 +34,17 @@ export default function VerslunPage() {
 
       <section className="grid sm:grid-cols-2 lg:grid-cols-4">
         {coming.map((item) => (
-          <div key={item.title} className="relative aspect-[3/4] overflow-hidden bg-cream">
+          <div key={item.title} className="relative aspect-[3/4] overflow-hidden bg-white">
             <Image
               src={item.image}
               alt={item.title}
               fill
-              className="object-cover"
+              className="object-contain p-4"
               sizes="(min-width:1024px) 25vw, 50vw"
             />
-            <div className="absolute inset-0 bg-forest/35" />
             <div className="absolute inset-x-0 bottom-0 p-6">
-              <h2 className="font-serif text-3xl text-white">{item.title}</h2>
-              <p className="mt-1 text-[11px] tracking-[0.16em] text-white/75 uppercase">
-                Kemur bráðum
-              </p>
+              <h2 className="text-2xl font-medium text-forest">{item.title}</h2>
+              <p className="mt-1 text-sm text-ink/45">Kemur bráðum</p>
             </div>
           </div>
         ))}

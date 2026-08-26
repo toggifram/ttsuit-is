@@ -54,28 +54,28 @@ export const processSteps = [
 
 export const categories = [
   {
-    href: "/sersaumur",
-    title: "Jakkaföt",
-    image: "/images/hero.jpg",
-    alt: "Þriggja hluta jakkaföt",
-  },
-  {
-    href: "/sersaumur",
-    title: "Jakkar",
-    image: "/images/blazer.jpg",
-    alt: "Sérsaumaður jakki",
+    href: "/verslun",
+    title: "Peysur",
+    image: "/images/studio/brown-zip.jpg",
+    alt: "Prjónapeysa",
   },
   {
     href: "/verslun",
-    title: "Skyrtur",
-    image: "/images/shirts.jpg",
-    alt: "Skyrtur tilbúnar og sérsaumaðar",
+    title: "Cardigan",
+    image: "/images/studio/navy-shawl.jpg",
+    alt: "Cardigan",
   },
   {
     href: "/verslun",
-    title: "Fylgihlutir",
-    image: "/images/coat.jpg",
-    alt: "Fylgihlutir og smáatriði",
+    title: "Polo",
+    image: "/images/studio/black-polo.jpg",
+    alt: "Prjóna-polo",
+  },
+  {
+    href: "/verslun",
+    title: "Prjón",
+    image: "/images/studio/taupe-cardigan.jpg",
+    alt: "Zip cardigan",
   },
 ];
 

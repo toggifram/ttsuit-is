@@ -38,12 +38,12 @@ export default function AboutPage() {
       </section>
 
       <section className="grid md:grid-cols-2">
-        <div className="relative min-h-[420px] md:min-h-[720px]">
+        <div className="relative min-h-[420px] bg-white md:min-h-[720px]">
           <Image
-            src="/images/blazer.jpg"
-            alt="Herrafatnaður Tjé Tjé"
+            src="/images/studio/group.jpg"
+            alt="Tjé Tjé"
             fill
-            className="object-cover"
+            className="object-contain p-8"
             sizes="(min-width:768px) 50vw, 100vw"
           />
         </div>

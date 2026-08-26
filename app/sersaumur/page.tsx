@@ -13,21 +13,18 @@ export const metadata: Metadata = {
 export default function SersaumurPage() {
   return (
     <>
-      <section className="relative min-h-[52vh] overflow-hidden bg-forest">
+      <section className="relative min-h-[52vh] overflow-hidden bg-white">
         <Image
-          src="/images/measure.jpg"
-          alt="Maður í jakkafötum"
+          src="/images/studio/grey-polo.jpg"
+          alt="Sérsaumur hjá Tjé Tjé"
           fill
           priority
-          className="object-cover object-top"
+          className="object-contain object-top p-8"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-black/40" />
         <div className="relative mx-auto flex min-h-[52vh] max-w-[1440px] flex-col justify-end px-5 pb-12 md:px-10 md:pb-16">
-          <p className="text-sm text-white/75">
-            Custom made
-          </p>
-          <h1 className="mt-2 text-4xl font-medium tracking-tight text-white md:text-6xl">
+          <p className="text-sm text-ink/45">Custom made</p>
+          <h1 className="mt-2 text-4xl font-medium tracking-tight text-forest md:text-6xl">
             Sérsaumur er málið
           </h1>
         </div>
@@ -48,12 +45,12 @@ export default function SersaumurPage() {
             saumfar með nafni undir kraga.
           </p>
         </div>
-        <div className="relative min-h-[320px] bg-cream">
+        <div className="relative min-h-[320px] bg-white">
           <Image
-            src="/images/hero.jpg"
-            alt="Nákvæmni í saumaskap"
+            src="/images/studio/navy-logo.jpg"
+            alt="TJ merki"
             fill
-            className="object-cover"
+            className="object-contain p-6"
             sizes="(min-width:768px) 50vw, 100vw"
           />
         </div>
