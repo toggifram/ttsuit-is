@@ -31,8 +31,12 @@ export function SiteHeader() {
         </Link>
       </div>
       <div className="border-b border-black/8">
-        <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-8 px-4 md:h-16 md:px-6">
-          <Link href="/" className="shrink-0" aria-label={brand.name}>
+        <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-8 px-4 md:h-[4.5rem] md:px-6">
+          <Link
+            href="/"
+            className="flex h-12 w-[116px] shrink-0 items-center md:h-14 md:w-[135px]"
+            aria-label={brand.name}
+          >
             <Logo size="md" variant="dark" />
           </Link>
 
