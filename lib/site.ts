@@ -25,6 +25,8 @@ export const socialLinks = [
   { href: "https://www.tiktok.com/@ttsuitisland", label: "TikTok" },
 ] as const;
 
+export const nav = [...navLeft, ...navRight];
+
 export const footerNav = [
   { href: "/sersaumur", label: "Sérsaumur" },
   { href: "/verslun", label: "Vefverslun" },
