@@ -45,16 +45,6 @@ export default async function HomePage() {
 
       <ProductRail products={products} />
 
-      <Look
-        href="/verslun"
-        image="/images/studio/group.jpg"
-        alt="Þrír í Tjé Tjé prjónafatnaði"
-        kicker="Tjé Tjé"
-        title="Prjónafatnaður"
-        text="Nýja línan — peysur, polo og cardigan saumaðir með TT merkinu."
-        cta="Skoða línuna"
-      />
-
       <section className="grid md:grid-cols-2">
         <Look
           href="/verslun"
