@@ -28,7 +28,11 @@ export function Logo({
       alt="Tjé Tjé"
       width={s.width}
       height={s.height}
-      className={cn("block max-w-none object-contain object-left", s.className, className)}
+      className={cn(
+        "block max-w-none border-0 bg-transparent outline-none object-contain object-left",
+        s.className,
+        className
+      )}
     />
   );
 }

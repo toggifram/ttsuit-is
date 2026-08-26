@@ -34,7 +34,7 @@ export function SiteHeader() {
         <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-8 px-4 md:h-[4.5rem] md:px-6">
           <Link
             href="/"
-            className="flex h-12 w-[113px] shrink-0 items-center md:h-14 md:w-[132px]"
+            className="flex shrink-0 items-center"
             aria-label={brand.name}
           >
             <Logo size="md" variant="light" />
