@@ -6,23 +6,24 @@ import { testimonials } from "@/lib/site";
 export default function HomePage() {
   return (
     <>
-      <section className="grid bg-white md:grid-cols-2 md:divide-x md:divide-black/8">
+      <h1 className="sr-only">Tjé Tjé — sérsaumur og vefverslun</h1>
+      <section className="grid bg-white md:grid-cols-2">
         <HeroFrame
-          href="/sersaumur"
+          href="/hafa-samband#bokun"
           image="/images/studio/grey-polo.jpg"
           alt="Sérsaumur hjá Tjé Tjé"
-          kicker="Custom made"
           title="Sérsaumur"
           text="Mæling, efni og snið eftir þér. 4–6 vikur."
+          cta="Bóka sérsaum"
           priority
         />
         <HeroFrame
           href="/verslun"
           image="/images/studio/brown-zip.jpg"
           alt="Vefverslun Tjé Tjé"
-          kicker="Ready to wear"
           title="Vefverslun"
-          text="Tilbúinn fatnaður. Shopify tengist hér á næstunni."
+          text="Tilbúinn fatnaður — greiðsla fer í gegnum Shopify."
+          cta="Skoða vefverslun"
           priority
         />
       </section>
@@ -164,42 +165,43 @@ function HeroFrame({
   href,
   image,
   alt,
-  kicker,
   title,
   text,
+  cta,
   priority = false,
 }: {
   href: string;
   image: string;
   alt: string;
-  kicker: string;
   title: string;
   text: string;
+  cta: string;
   priority?: boolean;
 }) {
   return (
-    <Link
-      href={href}
-      className="group flex min-h-[78vh] flex-col bg-white md:min-h-[88vh]"
-    >
-      <div className="relative min-h-0 flex-1">
-        <Image
-          src={image}
-          alt={alt}
-          fill
-          priority={priority}
-          className="object-contain object-center p-6 transition-transform duration-700 group-hover:scale-[1.02] md:p-10"
-          sizes="(min-width:768px) 50vw, 100vw"
-        />
-      </div>
-      <div className="px-6 pb-10 text-center md:px-10 md:pb-12">
-        <p className="text-sm text-ink/45">{kicker}</p>
-        <h2 className="mt-1 text-4xl font-medium tracking-tight text-forest md:text-5xl">
+    <div className="relative min-h-[85vh] overflow-hidden bg-white md:min-h-[calc(100dvh-6.75rem)]">
+      <Image
+        src={image}
+        alt={alt}
+        fill
+        priority={priority}
+        className="object-cover object-[center_15%]"
+        sizes="(min-width:768px) 50vw, 100vw"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 px-6 pb-10 md:px-12 md:pb-14">
+        <h2 className="text-4xl font-medium tracking-tight text-forest md:text-5xl">
           {title}
         </h2>
-        <p className="mx-auto mt-2 max-w-sm text-sm text-ink/60">{text}</p>
+        <p className="mt-2 max-w-sm text-sm text-ink/70">{text}</p>
+        <Link
+          href={href}
+          className="mt-6 inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
+        >
+          {cta}
+        </Link>
       </div>
-    </Link>
+    </div>
   );
 }
 
