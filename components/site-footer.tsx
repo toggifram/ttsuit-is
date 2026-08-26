@@ -10,10 +10,8 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-14 md:grid-cols-12 md:px-8 md:py-16">
         <div className="md:col-span-6">
           <Logo size="lg" variant="light" />
-          <p className="mt-8 text-sm text-white/80">
-            Skráðu netfangið þitt á póstlistann
-          </p>
-          <div className="mt-5">
+          <p className="mt-6 text-sm text-white/80">Póstlisti</p>
+          <div className="mt-3">
             <NewsletterForm variant="dark" />
           </div>
         </div>

@@ -14,7 +14,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { brand, nav, navLeft, navRight } from "@/lib/site";
+import { brand, nav, navLeft, navRight, socialLinks } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 function NavLink({
@@ -89,6 +89,29 @@ export function SiteHeader() {
                     pathname={pathname}
                   />
                 ))}
+                <div className="group relative">
+                  <button
+                    type="button"
+                    className="text-[13px] text-white/80 transition-colors group-hover:text-white"
+                  >
+                    Fylgdu okkur
+                  </button>
+                  <div className="invisible absolute left-0 top-full z-50 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                    <div className="min-w-[9.5rem] bg-forest py-2 shadow-[0_8px_24px_rgba(0,0,0,0.25)]">
+                      {socialLinks.map((item) => (
+                        <a
+                          key={item.label}
+                          href={item.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="block px-4 py-2 text-[13px] text-white/80 hover:text-white"
+                        >
+                          {item.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </nav>
             </div>
           </div>
@@ -147,6 +170,24 @@ export function SiteHeader() {
                         render={
                           <Link
                             href={item.href}
+                            className="py-3 text-base text-white/85"
+                          />
+                        }
+                      >
+                        {item.label}
+                      </SheetClose>
+                    ))}
+                    <p className="mt-6 text-[11px] tracking-[0.18em] text-white/45 uppercase">
+                      Fylgdu okkur
+                    </p>
+                    {socialLinks.map((item) => (
+                      <SheetClose
+                        key={item.label}
+                        render={
+                          <a
+                            href={item.href}
+                            target="_blank"
+                            rel="noreferrer"
                             className="py-3 text-base text-white/85"
                           />
                         }

@@ -5,6 +5,7 @@ export const brand = {
   email: "ttsuit@ttsuit.is",
   instagram: "https://www.instagram.com/ttsuitisland/",
   facebook: "https://www.facebook.com/ttsuitisland",
+  tiktok: "https://www.tiktok.com/@ttsuitisland",
   domain: "ttsuit.is",
 };
 
@@ -18,7 +19,11 @@ export const navRight = [
   { href: "/um-okkur", label: "Um okkur" },
 ] as const;
 
-export const nav = [...navLeft, ...navRight];
+export const socialLinks = [
+  { href: "https://www.facebook.com/ttsuitisland", label: "Facebook" },
+  { href: "https://www.instagram.com/ttsuitisland/", label: "Instagram" },
+  { href: "https://www.tiktok.com/@ttsuitisland", label: "TikTok" },
+] as const;
 
 export const footerNav = [
   { href: "/sersaumur", label: "Sérsaumur" },

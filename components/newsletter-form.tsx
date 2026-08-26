@@ -37,7 +37,7 @@ export function NewsletterForm({
     <form
       onSubmit={onSubmit}
       className={cn(
-        "flex w-full max-w-md",
+        "flex w-full max-w-[13.5rem]",
         dark ? "border border-white" : "border border-forest/25"
       )}
     >
@@ -49,7 +49,7 @@ export function NewsletterForm({
         placeholder="Netfang"
         aria-label="Netfang"
         className={cn(
-          "h-12 min-w-0 flex-1 bg-transparent px-4 text-sm outline-none",
+          "h-10 min-w-0 flex-1 bg-transparent px-3 text-[13px] outline-none",
           dark
             ? "text-white placeholder:text-white/45"
             : "text-ink placeholder:text-ink/40"
@@ -58,7 +58,7 @@ export function NewsletterForm({
       <button
         type="submit"
         className={cn(
-          "shrink-0 border-l px-5 text-[11px] font-semibold tracking-[0.14em] uppercase",
+          "shrink-0 border-l px-3 text-[10px] font-semibold tracking-[0.14em] uppercase",
           dark
             ? "border-white text-white hover:bg-white hover:text-forest"
             : "border-forest/25 text-forest hover:bg-forest hover:text-white"
