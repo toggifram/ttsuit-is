@@ -124,7 +124,7 @@ function HeroFrame({
         }
         sizes="(min-width:768px) 50vw, 100vw"
       />
-      <div className="absolute inset-0 flex items-center justify-center px-6">
+      <div className="absolute inset-0 z-20 flex items-center justify-center px-6">
         <Link
           href={href}
           className="inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
