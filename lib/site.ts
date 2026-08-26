@@ -8,17 +8,13 @@ export const brand = {
   domain: "ttsuit.is",
 };
 
-export const navLeft = [
+export const nav = [
   { href: "/sersaumur", label: "Sérsaumur" },
-  { href: "/verslun", label: "Vefverslun" },
+  { href: "/sersaumur", label: "Jakkaföt" },
+  { href: "/sersaumur", label: "Jakkar" },
+  { href: "/verslun", label: "Skyrtur" },
+  { href: "/verslun", label: "Fylgihlutir" },
 ] as const;
-
-export const navRight = [
-  { href: "/hafa-samband", label: "Hafa samband" },
-  { href: "/um-okkur", label: "Um okkur" },
-] as const;
-
-export const nav = [...navLeft, ...navRight];
 
 export const footerNav = [
   { href: "/sersaumur", label: "Sérsaumur" },
