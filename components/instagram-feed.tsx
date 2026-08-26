@@ -1,5 +1,3 @@
-import { Instagram } from "lucide-react";
-
 import { brand } from "@/lib/site";
 
 const posts = [
@@ -22,9 +20,9 @@ export function InstagramFeed() {
           href={brand.instagram}
           target="_blank"
           rel="noreferrer"
-          className="mt-3 inline-flex items-center gap-2 font-serif text-3xl text-forest transition-colors hover:text-forest-mid md:text-4xl"
+          className="mt-3 inline-flex items-center gap-2.5 font-serif text-3xl text-forest transition-colors hover:text-forest-mid md:text-4xl"
         >
-          <Instagram className="size-6" strokeWidth={1.25} />
+          <InstagramMark className="size-6" />
           @ttsuitisland
         </a>
         <p className="mx-auto mt-3 max-w-md text-sm text-ink/55">
@@ -47,12 +45,29 @@ export function InstagramFeed() {
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
             />
             <span className="absolute inset-0 flex items-center justify-center bg-forest/0 text-white opacity-0 transition-all duration-300 group-hover:bg-forest/35 group-hover:opacity-100">
-              <Instagram className="size-6" strokeWidth={1.25} />
+              <InstagramMark className="size-6" />
               <span className="sr-only">Opna Instagram</span>
             </span>
           </a>
         ))}
       </div>
     </section>
+  );
+}
+
+function InstagramMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      className={className}
+      aria-hidden
+    >
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
   );
 }
