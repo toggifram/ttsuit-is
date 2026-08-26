@@ -11,13 +11,73 @@ export type ProductCategory =
   | "gjafabref";
 
 export const shopCategories = [
-  { id: "all", label: "Allar vörur" },
-  { id: "peysur", label: "Peysur" },
-  { id: "bindi", label: "Bindi" },
-  { id: "yfirhafnir", label: "Yfirhafnir" },
-  { id: "fylgihlutir", label: "Fylgihluti" },
-  { id: "gjafabref", label: "Gjafabréf" },
+  { id: "all", slug: "", label: "Allar vörur" },
+  { id: "peysur", slug: "peysur", label: "Peysur" },
+  { id: "bindi", slug: "bindi", label: "Bindi" },
+  { id: "yfirhafnir", slug: "yfirhafnir", label: "Yfirhafnir" },
+  { id: "fylgihlutir", slug: "fylgihluti", label: "Fylgihluti" },
+  { id: "gjafabref", slug: "gjafabref", label: "Gjafabréf" },
 ] as const;
+
+export const categoryLooks = [
+  {
+    id: "all",
+    label: "Allar vörur",
+    href: "/verslun",
+    image: "/images/studio/group.jpg",
+    alt: "Prjónalínan hjá Tjé Tjé",
+    position: "center 20%",
+  },
+  {
+    id: "peysur",
+    label: "Peysur",
+    href: "/verslun/peysur",
+    image: "/images/studio/navy-shawl.jpg",
+    alt: "Navy cardigan",
+    position: "top",
+  },
+  {
+    id: "bindi",
+    label: "Bindi",
+    href: "/verslun/bindi",
+    image: "/images/studio/suit-bag.jpg",
+    alt: "Jakki og bindi",
+    position: "top",
+  },
+  {
+    id: "yfirhafnir",
+    label: "Yfirhafnir",
+    href: "/verslun/yfirhafnir",
+    image: "/images/studio/taupe-cardigan.jpg",
+    alt: "Zip cardigan",
+    position: "top",
+  },
+  {
+    id: "fylgihlutir",
+    label: "Fylgihluti",
+    href: "/verslun/fylgihluti",
+    image: "/images/studio/navy-detail.jpg",
+    alt: "TJ merki á peysu",
+    position: "center",
+  },
+  {
+    id: "gjafabref",
+    label: "Gjafabréf",
+    href: "/verslun/gjafabref",
+    image: "/images/studio/gift-card.jpg",
+    alt: "Gjafabréf Tjé Tjé",
+    position: "center",
+  },
+] as const;
+
+export function hrefForCategory(id: (typeof shopCategories)[number]["id"]) {
+  const row = shopCategories.find((cat) => cat.id === id);
+  return row?.slug ? `/verslun/${row.slug}` : "/verslun";
+}
+
+export function categoryFromSlug(slug: string) {
+  return shopCategories.find((cat) => cat.slug === slug) ?? null;
+}
 
 export type Product = {
   id: string;
