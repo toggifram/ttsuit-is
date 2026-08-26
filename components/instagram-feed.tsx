@@ -1,15 +1,51 @@
 import { brand } from "@/lib/site";
+import { getInstagramFeed, type InstagramPost } from "@/lib/behold";
 
-const posts = [
-  { src: "/images/studio/allar-vorur.jpg", alt: "Tjé Tjé poki og prjón" },
-  { src: "/images/studio/navy-shawl.jpg", alt: "Navy cardigan" },
-  { src: "/images/studio/bindi.jpg", alt: "Bindi" },
-  { src: "/images/studio/yfirhafnir.jpg", alt: "Yfirhöfn" },
-  { src: "/images/studio/olive-zip.jpg", alt: "Olive peysa" },
-  { src: "/images/studio/taupe-cardigan.jpg", alt: "Taupe cardigan" },
+const fallbackPosts: InstagramPost[] = [
+  {
+    id: "allar-vorur",
+    src: "/images/studio/allar-vorur.jpg",
+    href: brand.instagram,
+    alt: "Tjé Tjé poki og prjón",
+  },
+  {
+    id: "navy-shawl",
+    src: "/images/studio/navy-shawl.jpg",
+    href: brand.instagram,
+    alt: "Navy cardigan",
+  },
+  {
+    id: "bindi",
+    src: "/images/studio/bindi.jpg",
+    href: brand.instagram,
+    alt: "Bindi",
+  },
+  {
+    id: "yfirhafnir",
+    src: "/images/studio/yfirhafnir.jpg",
+    href: brand.instagram,
+    alt: "Yfirhöfn",
+  },
+  {
+    id: "olive-zip",
+    src: "/images/studio/olive-zip.jpg",
+    href: brand.instagram,
+    alt: "Olive peysa",
+  },
+  {
+    id: "taupe-cardigan",
+    src: "/images/studio/taupe-cardigan.jpg",
+    href: brand.instagram,
+    alt: "Taupe cardigan",
+  },
 ];
 
-export function InstagramFeed() {
+export async function InstagramFeed() {
+  const feed = await getInstagramFeed(6);
+  const posts = feed.posts.length ? feed.posts : fallbackPosts;
+  const handle = `@${feed.username}`;
+  const profile = `https://www.instagram.com/${feed.username}/`;
+
   return (
     <section className="bg-white" aria-label="Instagram">
       <div className="mx-auto max-w-[1440px] px-5 py-12 text-center md:px-10 md:py-14">
@@ -17,24 +53,23 @@ export function InstagramFeed() {
           Instagram
         </p>
         <a
-          href={brand.instagram}
+          href={profile}
           target="_blank"
           rel="noreferrer"
           className="mt-3 inline-flex items-center gap-2.5 font-serif text-3xl text-forest transition-colors hover:text-forest-mid md:text-4xl"
         >
           <InstagramMark className="size-6" />
-          @ttsuitisland
+          {handle}
         </a>
         <p className="mx-auto mt-3 max-w-md text-sm text-ink/55">
-          Nýjar línur, mælingar og baksvið. Fylgdu okkur — straumurinn tengist
-          beint við Instagram þegar aðgangur er tilbúinn.
+          Nýjar línur, mælingar og baksvið — beint af Instagram.
         </p>
       </div>
       <div className="grid grid-cols-3 md:grid-cols-6">
         {posts.map((post) => (
           <a
-            key={post.src}
-            href={brand.instagram}
+            key={post.id}
+            href={post.href}
             target="_blank"
             rel="noreferrer"
             className="group relative aspect-square overflow-hidden bg-[#ebe6dc]"
