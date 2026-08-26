@@ -15,7 +15,7 @@ export default async function HomePage() {
   return (
     <>
       <h1 className="sr-only">Tjé Tjé — sérsaumur og vefverslun</h1>
-      <section className="grid gap-px bg-[#e6e2db] md:grid-cols-2">
+      <section className="grid md:grid-cols-2">
         <HeroFrame
           href="/hafa-samband#bokun"
           image="/images/studio/suit-bag.png"

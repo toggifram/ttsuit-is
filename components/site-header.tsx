@@ -56,36 +56,39 @@ export function SiteHeader() {
         </Link>
       </div>
       <div className="relative mx-auto flex h-16 max-w-[1440px] items-center px-4 md:h-[4.5rem] md:px-6">
-        <nav className="hidden items-center gap-7 lg:flex">
-          {navLeft.map((item) => (
-            <NavLink
-              key={item.label}
-              href={item.href}
-              label={item.label}
-              pathname={pathname}
-            />
-          ))}
-        </nav>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="flex items-center">
+            <nav className="pointer-events-auto hidden items-center gap-7 pr-8 lg:flex">
+              {navLeft.map((item) => (
+                <NavLink
+                  key={item.label}
+                  href={item.href}
+                  label={item.label}
+                  pathname={pathname}
+                />
+              ))}
+            </nav>
+            <Link
+              href="/"
+              className="pointer-events-auto flex shrink-0 items-center"
+              aria-label={brand.name}
+            >
+              <Logo size="md" variant="light" className="object-center" />
+            </Link>
+            <nav className="pointer-events-auto hidden items-center gap-7 pl-8 lg:flex">
+              {navRight.map((item) => (
+                <NavLink
+                  key={item.label}
+                  href={item.href}
+                  label={item.label}
+                  pathname={pathname}
+                />
+              ))}
+            </nav>
+          </div>
+        </div>
 
-        <Link
-          href="/"
-          className="absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
-          aria-label={brand.name}
-        >
-          <Logo size="md" variant="light" className="object-center" />
-        </Link>
-
-        <div className="relative z-10 ml-auto flex items-center gap-7">
-          <nav className="hidden items-center gap-7 lg:flex">
-            {navRight.map((item) => (
-              <NavLink
-                key={item.label}
-                href={item.href}
-                label={item.label}
-                pathname={pathname}
-              />
-            ))}
-          </nav>
+        <div className="relative z-10 ml-auto flex items-center gap-1">
           <div className="hidden items-center gap-1 md:flex">
             <Button
               nativeButton={false}
