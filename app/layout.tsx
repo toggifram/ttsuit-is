@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Geist_Mono, Great_Vibes, Outfit } from "next/font/g
 
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { SiteOverlays } from "@/components/site-overlays";
 import { brand } from "@/lib/site";
 
 import "./globals.css";
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader />
         <main className="flex-1 bg-white">{children}</main>
         <SiteFooter />
+        <SiteOverlays />
       </body>
     </html>
   );

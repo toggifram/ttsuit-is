@@ -45,6 +45,16 @@ export function SiteFooter() {
                 {brand.email}
               </a>
             </li>
+            <li>
+              <Link href="/skilmalar" className="hover:text-white">
+                Skilmálar
+              </Link>
+            </li>
+            <li>
+              <Link href="/vafrakokur" className="hover:text-white">
+                Vafrakökur
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="md:col-span-3">
