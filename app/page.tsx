@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ProductRail } from "@/components/product-rail";
 import { CategoryLooks } from "@/components/category-looks";
 import { InstagramFeed } from "@/components/instagram-feed";
-import { testimonials } from "@/lib/site";
+import { SersaumurFeature } from "@/components/sersaumur-feature";
 import { getHomeProducts } from "@/lib/shopify";
 
 export default async function HomePage() {
@@ -55,42 +55,7 @@ export default async function HomePage() {
 
       <InstagramFeed />
 
-      <section className="bg-white">
-        <div className="mx-auto max-w-[1440px] px-5 py-16 md:px-10 md:py-20">
-          <h2 className="text-2xl font-medium md:text-3xl">Ánægðir í fötunum</h2>
-          <div className="mt-10 grid gap-10 md:grid-cols-3">
-            {testimonials.map((item) => (
-              <figure key={item.name}>
-                <blockquote className="text-[17px] leading-relaxed text-ink/80">
-                  “{item.quote}”
-                </blockquote>
-                <figcaption className="mt-4 text-sm text-ink/50">
-                  {item.name}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-forest">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-8 px-5 py-16 md:flex-row md:items-center md:px-10 md:py-20">
-          <div>
-            <h2 className="text-3xl font-medium text-white md:text-4xl">
-              Fáðu persónulega ráðgjöf
-            </h2>
-            <p className="mt-3 max-w-lg text-sm text-white/70">
-              Spurning um snið eða passform? Bókaðu mælingu eða sendu okkur línu.
-            </p>
-          </div>
-          <Link
-            href="/hafa-samband#bokun"
-            className="inline-flex h-11 items-center bg-white px-6 text-sm text-forest hover:bg-cream"
-          >
-            Bóka mælingu
-          </Link>
-        </div>
-      </section>
+      <SersaumurFeature />
     </>
   );
 }
