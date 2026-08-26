@@ -17,7 +17,7 @@ export default async function HomePage() {
       <h1 className="sr-only">Tjé Tjé — sérsaumur og vefverslun</h1>
       <section className="grid md:grid-cols-2">
         <HeroFrame
-          href="/hafa-samband#bokun"
+          href="/sersaumur#boka-tima"
           image="/images/studio/suit-bag.png"
           alt="Sérsaumur hjá Tjé Tjé"
           eyebrow="Sérsaumur á 4–6 vikum"

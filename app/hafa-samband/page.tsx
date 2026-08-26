@@ -1,27 +1,36 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { InquiryForm } from "@/components/inquiry-form";
 import { brand } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Hafa samband",
-  description: "Bókaðu mælingu eða sendu okkur línu. Við svörum innan 48 klukkustunda.",
+  description:
+    "Sendu okkur línu. Við svörum innan 48 klukkustunda.",
 };
 
 export default function ContactPage() {
   return (
-    <section className="mx-auto grid max-w-7xl gap-16 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
-      <div>
-        <p className="text-sm text-ink/50">Hafa samband</p>
-        <h1 className="mt-2 text-4xl font-medium tracking-tight md:text-6xl">Halló</h1>
-        <p className="mt-6 max-w-md text-base leading-relaxed text-ink/70">
-          Ekki hika við að hafa samband. Við reynum að svara eins fljótt og
-          auðið er — aldrei lengur en 48 tímum. Þú getur einnig náð í okkur á
+    <section className="mx-auto grid max-w-[1440px] gap-12 px-5 py-16 md:grid-cols-12 md:px-8 md:py-24">
+      <div className="md:col-span-5">
+        <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
+          Halló
+        </p>
+        <h1 className="mt-3 font-serif text-4xl text-forest md:text-6xl">
+          Hafa samband
+        </h1>
+        <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink/70">
+          Ekki hika við að senda línu. Við reynum að svara eins fljótt og
+          auðið er — aldrei lengur en 48 tímum. Þú nærð líka í okkur á
           samfélagsmiðlum.
         </p>
         <div className="mt-10 space-y-3 text-sm">
           <p>
-            <a className="text-forest underline-offset-4 hover:underline" href={`mailto:${brand.email}`}>
+            <a
+              className="text-forest underline-offset-4 hover:underline"
+              href={`mailto:${brand.email}`}
+            >
               {brand.email}
             </a>
           </p>
@@ -46,26 +55,19 @@ export default function ContactPage() {
             </a>
           </p>
         </div>
-        <div className="mt-12">
-          <h2 className="font-serif text-3xl">Spurning?</h2>
-          <div className="mt-6">
-            <InquiryForm kind="contact" />
-          </div>
-        </div>
+        <p className="mt-10 text-sm text-ink/55">
+          Viltu bóka mælingu?{" "}
+          <Link
+            href="/sersaumur#boka-tima"
+            className="text-forest underline-offset-4 hover:underline"
+          >
+            Farðu á sérsaumssíðuna
+          </Link>
+          .
+        </p>
       </div>
-
-      <div id="bokun" className="scroll-mt-28 bg-cream p-6 md:p-10">
-        <p className="text-[11px] tracking-[0.28em] text-forest/60 uppercase">
-          Mæling
-        </p>
-        <h2 className="mt-2 font-serif text-4xl">Bókaðu tíma</h2>
-        <p className="mt-4 text-sm leading-relaxed text-ink/70">
-          Þú bókar og við finnum réttan tíma í sameiningu. Frá mælingu eru
-          það venjulega 4–6 vikur þar til þú klæðist sérsauminum.
-        </p>
-        <div className="mt-8">
-          <InquiryForm kind="booking" />
-        </div>
+      <div className="bg-cream p-6 md:col-span-7 md:p-10">
+        <InquiryForm kind="contact" />
       </div>
     </section>
   );

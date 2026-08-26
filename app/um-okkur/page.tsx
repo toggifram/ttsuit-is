@@ -96,7 +96,7 @@ export default function AboutPage() {
           ))}
         </div>
         <Link
-          href="/hafa-samband#bokun"
+          href="/sersaumur#boka-tima"
           className="mt-12 inline-flex h-12 items-center bg-forest px-6 text-[11px] tracking-[0.18em] text-white uppercase hover:bg-forest-mid"
         >
           Bóka mælingu

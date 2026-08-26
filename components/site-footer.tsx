@@ -36,7 +36,7 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link href="/hafa-samband#bokun" className="hover:text-white">
+              <Link href="/sersaumur#boka-tima" className="hover:text-white">
                 Mæling og mátun
               </Link>
             </li>
