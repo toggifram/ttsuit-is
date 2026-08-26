@@ -13,7 +13,7 @@ export default async function HomePage() {
   return (
     <>
       <h1 className="sr-only">Tjé Tjé — sérsaumur og vefverslun</h1>
-      <section className="relative grid bg-white md:grid-cols-2">
+      <section className="relative grid gap-px bg-[#ece8e2] md:grid-cols-2">
         <HeroFrame
           href="/hafa-samband#bokun"
           image="/images/studio/suit-bag.png"

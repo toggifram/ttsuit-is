@@ -65,7 +65,7 @@ export async function InstagramFeed() {
           Nýjar línur, mælingar og baksvið — beint af Instagram.
         </p>
       </div>
-      <div className="grid grid-cols-3 md:grid-cols-6">
+      <div className="grid grid-cols-3 gap-px bg-[#ece8e2] md:grid-cols-6">
         {posts.map((post) => (
           <a
             key={post.id}
