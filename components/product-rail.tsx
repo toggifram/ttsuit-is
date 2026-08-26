@@ -36,7 +36,7 @@ export function ProductRail({ products }: { products: Product[] }) {
     const el = scroller.current;
     const card = el?.firstElementChild as HTMLElement | undefined;
     if (!el || !card) return;
-    el.scrollBy({ left: dir * (card.offsetWidth + 1), behavior: "smooth" });
+    el.scrollBy({ left: dir * (card.offsetWidth + 8), behavior: "smooth" });
   };
 
   if (!products.length) return null;
@@ -46,12 +46,12 @@ export function ProductRail({ products }: { products: Product[] }) {
       <div className="relative">
         <div
           ref={scroller}
-          className="flex snap-x snap-mandatory gap-px overflow-x-auto scroll-smooth bg-[#ece8e2] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory gap-2 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {products.map((product) => (
             <article
               key={product.id}
-              className="w-[78%] shrink-0 snap-start bg-white sm:w-[48%] lg:w-[calc((100%-4px)/5)]"
+              className="w-[78%] shrink-0 snap-start bg-white sm:w-[48%] lg:w-[calc((100%-2rem)/5)]"
             >
               <Link href={product.href} className="block">
                 <div className="relative aspect-[4/5] bg-[#ebe6dc]">
