@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export function NewsletterForm({
@@ -33,9 +31,17 @@ export function NewsletterForm({
     );
   }
 
+  const dark = variant === "dark";
+
   return (
-    <form onSubmit={onSubmit} className="flex w-full max-w-md gap-2">
-      <Input
+    <form
+      onSubmit={onSubmit}
+      className={cn(
+        "flex w-full max-w-md",
+        dark ? "border border-white" : "border border-forest/25"
+      )}
+    >
+      <input
         type="email"
         required
         value={email}
@@ -43,23 +49,23 @@ export function NewsletterForm({
         placeholder="Netfang"
         aria-label="Netfang"
         className={cn(
-          "h-11 rounded-none text-sm",
-          variant === "dark"
-            ? "border-white/25 bg-white/5 text-white placeholder:text-white/45 focus-visible:border-white/60 focus-visible:ring-white/20"
-            : "border-forest/20 bg-white"
+          "h-12 min-w-0 flex-1 bg-transparent px-4 text-sm outline-none",
+          dark
+            ? "text-white placeholder:text-white/45"
+            : "text-ink placeholder:text-ink/40"
         )}
       />
-      <Button
+      <button
         type="submit"
         className={cn(
-          "h-11 rounded-none px-5 text-[11px] tracking-[0.16em] uppercase",
-          variant === "dark"
-            ? "bg-white text-forest hover:bg-white/90"
-            : "bg-forest text-white hover:bg-forest-mid"
+          "shrink-0 border-l px-5 text-[11px] font-semibold tracking-[0.14em] uppercase",
+          dark
+            ? "border-white text-white hover:bg-white hover:text-forest"
+            : "border-forest/25 text-forest hover:bg-forest hover:text-white"
         )}
       >
         Skrá
-      </Button>
+      </button>
     </form>
   );
 }

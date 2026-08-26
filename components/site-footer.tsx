@@ -8,14 +8,16 @@ export function SiteFooter() {
   return (
     <footer className="bg-forest text-white">
       <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-14 md:grid-cols-12 md:px-8 md:py-16">
-        <div className="md:col-span-4">
+        <div className="md:col-span-6">
           <Logo size="lg" variant="light" />
-          <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/70">
-            Sérsaumur og tilbúin föt. Finndu þitt snið — eða verslaðu þegar þú
-            vilt fötin strax.
+          <p className="mt-8 text-sm text-white/80">
+            Skráðu netfangið þitt á póstlistann
           </p>
+          <div className="mt-5">
+            <NewsletterForm variant="dark" />
+          </div>
         </div>
-        <div className="md:col-span-2">
+        <div className="md:col-span-3">
           <p className="text-xs text-white/45">Verslun</p>
           <ul className="mt-4 space-y-2 text-sm text-white/80">
             {footerNav.map((item) => (
@@ -46,13 +48,6 @@ export function SiteFooter() {
               </a>
             </li>
           </ul>
-        </div>
-        <div className="md:col-span-3">
-          <p className="text-xs text-white/45">Póstlisti</p>
-          <p className="mt-4 mb-4 text-sm text-white/70">
-            Ný efni og fréttir, beint til þín.
-          </p>
-          <NewsletterForm variant="dark" />
         </div>
       </div>
       <div className="border-t border-white/10">
