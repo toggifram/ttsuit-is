@@ -235,3 +235,15 @@ export const fallbackProducts: Product[] = [
     colors: [],
   },
 ];
+
+/** Live Shopify catalog when a Storefront token is set, otherwise studio fallback. */
+export async function getCatalogProducts(): Promise<Product[]> {
+  try {
+    const { fetchShopifyProducts } = await import("./shopify");
+    const live = await fetchShopifyProducts();
+    if (live?.length) return live;
+  } catch {
+    // Password-protected stores and missing tokens fall back below.
+  }
+  return fallbackProducts;
+}

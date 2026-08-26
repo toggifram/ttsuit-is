@@ -1,4 +1,3 @@
-import { fallbackProducts } from "@/lib/catalog";
 import {
   formatMoney,
   shuffle,
@@ -136,7 +135,7 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
   };
 }
 
-async function fetchShopifyProducts(): Promise<Product[] | null> {
+export async function fetchShopifyProducts(): Promise<Product[] | null> {
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
   const domain = (process.env.SHOPIFY_STORE_DOMAIN || "tje-tje.myshopify.com")
     .replace(/^https?:\/\//, "")
@@ -167,17 +166,7 @@ async function fetchShopifyProducts(): Promise<Product[] | null> {
 
 /** Random products from every Shopify category, with a local fallback. */
 export async function getHomeProducts(limit = 18): Promise<Product[]> {
+  const { getCatalogProducts } = await import("./catalog");
   const all = await getCatalogProducts();
   return shuffle(all).slice(0, Math.min(limit, all.length));
-}
-
-/** Full catalog for the 3-up shop grid. */
-export async function getCatalogProducts(): Promise<Product[]> {
-  try {
-    const live = await fetchShopifyProducts();
-    if (live?.length) return live;
-  } catch {
-    // Password-protected stores and missing tokens fall back below.
-  }
-  return fallbackProducts;
 }

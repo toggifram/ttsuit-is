@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ShopCatalog } from "@/components/shop-catalog";
+import { getCatalogProducts } from "@/lib/catalog";
 import { categoryFromSlug, shopCategories } from "@/lib/product";
-import { getCatalogProducts } from "@/lib/shopify";
 
 type Props = { params: Promise<{ slug: string }> };
 
