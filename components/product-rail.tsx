@@ -42,7 +42,7 @@ export function ProductRail({ products }: { products: Product[] }) {
   if (!products.length) return null;
 
   return (
-    <section className="bg-white" aria-label="Vörur">
+    <section className="bg-white px-2" aria-label="Vörur">
       <div className="relative">
         <div
           ref={scroller}

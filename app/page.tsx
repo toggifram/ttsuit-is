@@ -13,7 +13,7 @@ export default async function HomePage() {
   return (
     <>
       <h1 className="sr-only">Tjé Tjé — sérsaumur og vefverslun</h1>
-      <section className="relative grid gap-2 bg-white md:grid-cols-2">
+      <section className="relative grid gap-2 bg-white px-2 md:grid-cols-2">
         <HeroFrame
           href="/hafa-samband#bokun"
           image="/images/studio/suit-bag.png"
@@ -111,7 +111,7 @@ function HeroFrame({
   priority?: boolean;
 }) {
   return (
-    <div className="relative min-h-[85vh] overflow-hidden bg-white md:min-h-[calc(100dvh-6.75rem)]">
+    <div className="relative min-h-[85vh] overflow-hidden bg-white md:min-h-[calc(100dvh-7.25rem)]">
       <Image
         src={image}
         alt={alt}

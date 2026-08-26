@@ -4,7 +4,7 @@ import { categoryLooks } from "@/lib/product";
 
 export function CategoryLooks() {
   return (
-    <section aria-label="Verslun" className="bg-white">
+    <section aria-label="Verslun" className="bg-white px-2">
       <div className="grid grid-cols-3 gap-2 bg-white">
         {categoryLooks.map((look) => (
           <Link
