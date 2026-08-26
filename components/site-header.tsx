@@ -21,8 +21,8 @@ export function SiteHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 bg-white">
-      <div className="bg-forest text-center text-[11px] tracking-[0.18em] text-white/90">
+    <header className="sticky top-0 z-40 bg-forest text-white">
+      <div className="border-b border-white/10 text-center text-[11px] tracking-[0.18em] text-white/85">
         <Link
           href="/hafa-samband#bokun"
           className="block px-4 py-2 transition-colors hover:text-white"
@@ -30,14 +30,14 @@ export function SiteHeader() {
           Sérsaumur á 4–6 vikum · Bókaðu mælingu
         </Link>
       </div>
-      <div className="border-b border-black/8">
+      <div>
         <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-8 px-4 md:h-[4.5rem] md:px-6">
           <Link
             href="/"
-            className="flex h-12 w-[116px] shrink-0 items-center md:h-14 md:w-[135px]"
+            className="flex h-12 w-[113px] shrink-0 items-center md:h-14 md:w-[132px]"
             aria-label={brand.name}
           >
-            <Logo size="md" variant="dark" />
+            <Logo size="md" variant="light" />
           </Link>
 
           <nav className="hidden flex-1 items-center gap-7 lg:flex">
@@ -46,8 +46,8 @@ export function SiteHeader() {
                 key={item.label}
                 href={item.href}
                 className={cn(
-                  "text-[13px] text-ink/80 transition-colors hover:text-ink",
-                  pathname === item.href && "text-ink"
+                  "text-[13px] text-white/80 transition-colors hover:text-white",
+                  pathname === item.href && "text-white"
                 )}
               >
                 {item.label}
@@ -61,7 +61,7 @@ export function SiteHeader() {
               variant="ghost"
               size="icon"
               render={<Link href="/verslun" />}
-              className="text-ink hover:bg-black/5"
+              className="text-white hover:bg-white/10 hover:text-white"
               aria-label="Leita í verslun"
             >
               <Search className="size-4" />
@@ -71,7 +71,7 @@ export function SiteHeader() {
               variant="ghost"
               size="icon"
               render={<Link href="/verslun" />}
-              className="text-ink hover:bg-black/5"
+              className="text-white hover:bg-white/10 hover:text-white"
               aria-label="Karfa"
             >
               <ShoppingBag className="size-4" />
@@ -79,7 +79,7 @@ export function SiteHeader() {
             <Button
               nativeButton={false}
               render={<Link href="/hafa-samband#bokun" />}
-              className="ml-2 h-9 rounded-none bg-forest px-4 text-[12px] text-white hover:bg-forest-mid"
+              className="ml-2 h-9 rounded-none bg-white px-4 text-[12px] text-forest hover:bg-white/90"
             >
               Bóka mælingu
             </Button>
@@ -92,17 +92,20 @@ export function SiteHeader() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-ink hover:bg-black/5"
+                    className="text-white hover:bg-white/10 hover:text-white"
                     aria-label="Opna valmynd"
                   />
                 }
               >
                 <Menu className="size-5" />
               </SheetTrigger>
-              <SheetContent side="right" className="bg-white">
+              <SheetContent
+                side="right"
+                className="border-white/10 bg-forest text-white"
+              >
                 <SheetHeader>
-                  <SheetTitle>
-                    <Logo size="sm" variant="dark" />
+                  <SheetTitle className="text-white">
+                    <Logo size="sm" variant="light" />
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col gap-1 px-4">
@@ -112,7 +115,7 @@ export function SiteHeader() {
                       render={
                         <Link
                           href={item.href}
-                          className="py-3 text-base text-ink/80"
+                          className="py-3 text-base text-white/85"
                         />
                       }
                     >
@@ -123,7 +126,7 @@ export function SiteHeader() {
                     render={
                       <Link
                         href="/hafa-samband#bokun"
-                        className="mt-4 bg-forest px-4 py-3 text-center text-sm text-white"
+                        className="mt-4 bg-white px-4 py-3 text-center text-sm text-forest"
                       />
                     }
                   >
