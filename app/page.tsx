@@ -26,16 +26,16 @@ export default function HomePage() {
         />
       </section>
 
-      <section className="border-y border-black/8 bg-white">
-        <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-12 md:grid-cols-4 md:px-10 md:py-14">
-          {services.map((item) => (
-            <div key={item.title}>
-              <h2 className="text-[15px] font-medium">{item.title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-ink/60">
-                {item.text}
-              </p>
-            </div>
-          ))}
+      <section className="bg-white">
+        <div className="mx-auto max-w-[34rem] px-6 py-14 text-center md:py-20">
+          <blockquote>
+            <p className="font-serif text-[15px] leading-[1.85] text-forest/90 md:text-base">
+              „Fatnaður sem endurspeglar þinn stíl og endist umfram árstíðir.
+              Hvort sem hann er sérsniðinn að þér eða valinn úr okkar eigin
+              línum, leggjum við áherslu á vönduð efni, gott snið og tímalausa
+              hönnun.“
+            </p>
+          </blockquote>
         </div>
       </section>
 
@@ -139,25 +139,6 @@ export default function HomePage() {
     </>
   );
 }
-
-const services = [
-  {
-    title: "Sérsaumur",
-    text: "Jakkaföt saumuð eftir þínum mælingum. Þú velur efni, snið og smáatriði.",
-  },
-  {
-    title: "Persónuleg ráðgjöf",
-    text: "Við förum yfir fit og stíl saman — og ég segi þér hvað mér finnst, hreint út.",
-  },
-  {
-    title: "4–6 vikur",
-    text: "Frá mælingu þar til þú klæðist fötunum. Mátun innifalin.",
-  },
-  {
-    title: "Vefverslun",
-    text: "Tilbúin föt og gjafabréf. Greiðsla fer í gegnum Shopify þegar verslunin opnar.",
-  },
-];
 
 function HeroFrame({
   href,
