@@ -26,6 +26,22 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 - Yfirborð: hvítt, kampanje-myndir frá brún til brúnar
 - Logo: *Tjé Tjé* skriftarmerki (SVG)
 
+## Shopify
+
+Forsíðan sýnir fimm vörur í einu (með örvum) og sækir þær slembnaðar úr **öllum flokkum** í gegnum Shopify Storefront API.
+
+1. Í Shopify Admin: **Settings → Apps and sales channels → Develop apps**
+2. Búðu til app, opnaðu **Storefront API**, og veittu `unauthenticated_read_product_listings` (og `read_products` ef það er í boði)
+3. Afritaðu **Storefront API access token**
+4. Settu í `.env.local`:
+
+```
+SHOPIFY_STORE_DOMAIN=tje-tje.myshopify.com
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=shpat_…
+```
+
+Án tókans notar sleðinn staðbundnar vörur úr ljósmyndum svo útlitið sé tilbúið.
+
 ## Shopify síðar
 
 `/verslun` er undirbúin sem vöruyfirlit. Þegar Shopify-verslunin er tilbúin er hægt að tengja vörulista og greiðslu beint inn á þá síðu.

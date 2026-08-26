@@ -1,9 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { ProductRail } from "@/components/product-rail";
 import { testimonials } from "@/lib/site";
+import { getHomeProducts } from "@/lib/shopify";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const products = await getHomeProducts();
+
   return (
     <>
       <h1 className="sr-only">Tjé Tjé — sérsaumur og vefverslun</h1>
@@ -38,6 +42,8 @@ export default function HomePage() {
           </blockquote>
         </div>
       </section>
+
+      <ProductRail products={products} />
 
       <Look
         href="/verslun"
