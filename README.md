@@ -21,7 +21,7 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 ## Litir og merki
 
-- Haus: `#043034` (grænt úr merkinu), hvítt skriftarlogo og hvítir stafir
+- Haus: `#043034` (grænt úr merkinu), merkið í miðju. Sérsaumur og Vefverslun þétt til vinstri, Hafa samband og Um okkur þétt til hægri. Leit, karfa og Bóka mælingu lengst til hægri.
 - Fótur: sami græni, hvítt merki
 - Yfirborð: hvítt, kampanje-myndir frá brún til brúnar
 - Logo: *Tjé Tjé* skriftarmerki (SVG)
