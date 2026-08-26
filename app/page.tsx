@@ -32,7 +32,7 @@ export default async function HomePage() {
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-20 bg-gradient-to-b from-transparent to-white md:h-24"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-gradient-to-b from-transparent via-white/55 to-white md:h-40"
         />
       </section>
 

@@ -115,13 +115,6 @@ export function SiteHeader() {
               >
                 <ShoppingBag className="size-4" />
               </Button>
-              <Button
-                nativeButton={false}
-                render={<Link href="/hafa-samband#bokun" />}
-                className="ml-2 h-9 rounded-none bg-white px-4 text-[12px] text-forest hover:bg-white/90"
-              >
-                Bóka mælingu
-              </Button>
             </div>
 
             <div className="lg:hidden">
@@ -161,16 +154,6 @@ export function SiteHeader() {
                         {item.label}
                       </SheetClose>
                     ))}
-                    <SheetClose
-                      render={
-                        <Link
-                          href="/hafa-samband#bokun"
-                          className="mt-4 bg-white px-4 py-3 text-center text-sm text-forest"
-                        />
-                      }
-                    >
-                      Bóka mælingu
-                    </SheetClose>
                   </nav>
                 </SheetContent>
               </Sheet>
