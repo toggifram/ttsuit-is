@@ -11,13 +11,13 @@ export default async function HomePage() {
   return (
     <>
       <h1 className="sr-only">Tjé Tjé — sérsaumur og vefverslun</h1>
-      <section className="grid bg-white md:grid-cols-2">
+      <section className="grid gap-px bg-[#c9bba8] md:grid-cols-2">
         <HeroFrame
           href="/hafa-samband#bokun"
           image="/images/studio/suit-bag.png"
           alt="Sérsaumur hjá Tjé Tjé"
           cta="Bóka sérsaum"
-          fit="contain"
+          backdropPosition="left center"
           priority
         />
         <HeroFrame
@@ -25,7 +25,7 @@ export default async function HomePage() {
           image="/images/studio/shop-pair.png"
           alt="Vefverslun Tjé Tjé"
           cta="Skoða vefverslun"
-          fit="contain"
+          backdropPosition="right center"
           priority
         />
       </section>
@@ -151,34 +151,41 @@ function HeroFrame({
   image,
   alt,
   cta,
-  fit = "cover",
+  backdropPosition = "center",
   priority = false,
 }: {
   href: string;
   image: string;
   alt: string;
   cta: string;
-  fit?: "cover" | "contain";
+  backdropPosition?: string;
   priority?: boolean;
 }) {
   return (
-    <div className="relative min-h-[85vh] overflow-hidden bg-white md:min-h-[calc(100dvh-6.75rem)]">
+    <div className="relative min-h-[85vh] overflow-hidden bg-[#d8cbb8] md:min-h-[calc(100dvh-6.75rem)]">
+      <Image
+        src="/images/studio/atelier-backdrop.jpg"
+        alt=""
+        fill
+        priority={priority}
+        aria-hidden
+        className="object-cover"
+        style={{ objectPosition: backdropPosition }}
+        sizes="(min-width:768px) 50vw, 100vw"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10" />
       <Image
         src={image}
         alt={alt}
         fill
         priority={priority}
-        className={
-          fit === "contain"
-            ? "object-contain object-center p-8 md:p-14"
-            : "object-cover object-[center_12%]"
-        }
+        className="object-contain object-bottom p-6 pb-8 drop-shadow-[0_22px_28px_rgba(28,14,8,0.38)] md:p-10 md:pb-12"
         sizes="(min-width:768px) 50vw, 100vw"
       />
       <div className="absolute inset-0 flex items-center justify-center px-6">
         <Link
           href={href}
-          className="inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
+          className="inline-flex h-12 items-center bg-forest px-7 text-sm text-white shadow-sm transition-colors hover:bg-forest-mid"
         >
           {cta}
         </Link>
