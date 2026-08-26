@@ -64,7 +64,7 @@ export const categoryLooks = [
     id: "gjafabref",
     label: "Gjafabréf",
     href: "/verslun/gjafabref",
-    image: "/images/studio/gift-card.jpg",
+    image: "/images/studio/gift-card.png",
     alt: "Gjafabréf Tjé Tjé",
     position: "center",
   },
