@@ -3,9 +3,9 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const sizes = {
-  sm: { className: "h-9 w-auto", width: 140, height: 61 },
-  md: { className: "h-10 w-auto md:h-11", width: 180, height: 79 },
-  lg: { className: "h-14 w-auto md:h-16", width: 240, height: 105 },
+  sm: { className: "h-10 w-auto", width: 160, height: 68 },
+  md: { className: "h-11 w-auto md:h-12", width: 200, height: 85 },
+  lg: { className: "h-14 w-auto md:h-16", width: 260, height: 110 },
 } as const;
 
 export function Logo({
