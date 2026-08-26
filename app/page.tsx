@@ -12,8 +12,6 @@ export default function HomePage() {
           href="/hafa-samband#bokun"
           image="/images/studio/grey-polo.jpg"
           alt="Sérsaumur hjá Tjé Tjé"
-          title="Sérsaumur"
-          text="Mæling, efni og snið eftir þér. 4–6 vikur."
           cta="Bóka sérsaum"
           priority
         />
@@ -21,8 +19,6 @@ export default function HomePage() {
           href="/verslun"
           image="/images/studio/shop-group.jpg"
           alt="Vefverslun Tjé Tjé"
-          title="Vefverslun"
-          text="Tilbúinn fatnaður — greiðsla fer í gegnum Shopify."
           cta="Skoða vefverslun"
           position="object-[center_40%]"
           priority
@@ -166,8 +162,6 @@ function HeroFrame({
   href,
   image,
   alt,
-  title,
-  text,
   cta,
   position = "object-[center_18%]",
   priority = false,
@@ -175,8 +169,6 @@ function HeroFrame({
   href: string;
   image: string;
   alt: string;
-  title: string;
-  text: string;
   cta: string;
   position?: string;
   priority?: boolean;
@@ -191,14 +183,10 @@ function HeroFrame({
         className={`object-cover ${position}`}
         sizes="(min-width:768px) 50vw, 100vw"
       />
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-        <h2 className="text-4xl font-medium tracking-tight text-forest md:text-5xl">
-          {title}
-        </h2>
-        <p className="mt-3 max-w-xs text-sm text-ink/70">{text}</p>
+      <div className="absolute inset-0 flex items-center justify-center px-6">
         <Link
           href={href}
-          className="mt-6 inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
+          className="inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
         >
           {cta}
         </Link>
