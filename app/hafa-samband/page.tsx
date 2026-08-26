@@ -12,10 +12,8 @@ export default function ContactPage() {
   return (
     <section className="mx-auto grid max-w-7xl gap-16 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
       <div>
-        <p className="text-[11px] tracking-[0.28em] text-forest/60 uppercase">
-          Hafa samband
-        </p>
-        <h1 className="mt-2 font-serif text-5xl md:text-6xl">Halló</h1>
+        <p className="text-sm text-ink/50">Hafa samband</p>
+        <h1 className="mt-2 text-4xl font-medium tracking-tight md:text-6xl">Halló</h1>
         <p className="mt-6 max-w-md text-base leading-relaxed text-ink/70">
           Ekki hika við að hafa samband. Við reynum að svara eins fljótt og
           auðið er — aldrei lengur en 48 tímum. Þú getur einnig náð í okkur á

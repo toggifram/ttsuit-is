@@ -10,9 +10,18 @@ export const brand = {
 
 export const nav = [
   { href: "/sersaumur", label: "Sérsaumur" },
+  { href: "/sersaumur", label: "Jakkaföt" },
+  { href: "/sersaumur", label: "Jakkar" },
+  { href: "/verslun", label: "Skyrtur" },
+  { href: "/verslun", label: "Fylgihlutir" },
+] as const;
+
+export const footerNav = [
+  { href: "/sersaumur", label: "Sérsaumur" },
   { href: "/verslun", label: "Vefverslun" },
   { href: "/um-okkur", label: "Um okkur" },
   { href: "/hafa-samband", label: "Hafa samband" },
+  { href: "/hafa-samband#bokun", label: "Bóka mælingu" },
 ] as const;
 
 export const processSteps = [

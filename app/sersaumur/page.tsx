@@ -22,12 +22,12 @@ export default function SersaumurPage() {
           className="object-cover object-top"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-forest/55" />
-        <div className="relative mx-auto flex min-h-[52vh] max-w-7xl flex-col justify-end px-5 pb-12 md:px-8 md:pb-16">
-          <p className="text-[11px] tracking-[0.28em] text-white/75 uppercase">
-            Made to measure
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="relative mx-auto flex min-h-[52vh] max-w-[1440px] flex-col justify-end px-5 pb-12 md:px-10 md:pb-16">
+          <p className="text-sm text-white/75">
+            Custom made
           </p>
-          <h1 className="mt-2 font-serif text-5xl text-white md:text-7xl">
+          <h1 className="mt-2 text-4xl font-medium tracking-tight text-white md:text-6xl">
             Sérsaumur er málið
           </h1>
         </div>

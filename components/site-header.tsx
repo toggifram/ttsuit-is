@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, Search, ShoppingBag } from "lucide-react";
 
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -21,87 +21,114 @@ export function SiteHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 bg-forest text-white">
-      <div className="mx-auto flex h-[4.25rem] max-w-7xl items-center gap-6 px-4 md:h-[5.25rem] md:gap-10 md:px-8">
-        <Link href="/" className="shrink-0" aria-label={brand.name}>
-          <Logo size="md" />
+    <header className="sticky top-0 z-40 bg-white">
+      <div className="bg-forest text-center text-[11px] tracking-[0.18em] text-white/90">
+        <Link
+          href="/hafa-samband#bokun"
+          className="block px-4 py-2 transition-colors hover:text-white"
+        >
+          Sérsaumur á 4–6 vikum · Bókaðu mælingu
         </Link>
+      </div>
+      <div className="border-b border-black/8">
+        <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-8 px-4 md:h-16 md:px-6">
+          <Link href="/" className="shrink-0" aria-label={brand.name}>
+            <Logo size="md" variant="dark" />
+          </Link>
 
-        <nav className="hidden flex-1 items-center gap-5 md:flex lg:gap-8">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "text-[11px] font-medium tracking-[0.22em] uppercase text-white/80 transition-colors hover:text-white",
-                pathname === item.href && "text-white"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+          <nav className="hidden flex-1 items-center gap-7 lg:flex">
+            {nav.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={cn(
+                  "text-[13px] text-ink/80 transition-colors hover:text-ink",
+                  pathname === item.href && "text-ink"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
 
-        <div className="ml-auto hidden items-center md:flex">
-          <Button
-            nativeButton={false}
-            render={<Link href="/hafa-samband#bokun" />}
-            className="h-10 rounded-none border border-white/30 bg-transparent px-4 text-[11px] tracking-[0.18em] uppercase text-white hover:bg-white hover:text-forest"
-          >
-            Bóka mælingu
-          </Button>
-        </div>
+          <div className="ml-auto hidden items-center gap-1 md:flex">
+            <Button
+              nativeButton={false}
+              variant="ghost"
+              size="icon"
+              render={<Link href="/verslun" />}
+              className="text-ink hover:bg-black/5"
+              aria-label="Leita í verslun"
+            >
+              <Search className="size-4" />
+            </Button>
+            <Button
+              nativeButton={false}
+              variant="ghost"
+              size="icon"
+              render={<Link href="/verslun" />}
+              className="text-ink hover:bg-black/5"
+              aria-label="Karfa"
+            >
+              <ShoppingBag className="size-4" />
+            </Button>
+            <Button
+              nativeButton={false}
+              render={<Link href="/hafa-samband#bokun" />}
+              className="ml-2 h-9 rounded-none bg-forest px-4 text-[12px] text-white hover:bg-forest-mid"
+            >
+              Bóka mælingu
+            </Button>
+          </div>
 
-        <div className="ml-auto md:hidden">
-          <Sheet>
-            <SheetTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-white/10 hover:text-white"
-                  aria-label="Opna valmynd"
-                />
-              }
-            >
-              <Menu className="size-5" />
-            </SheetTrigger>
-            <SheetContent
-              side="right"
-              className="border-forest/20 bg-forest text-white"
-            >
-              <SheetHeader>
-                <SheetTitle className="text-white">
-                  <Logo size="sm" />
-                </SheetTitle>
-              </SheetHeader>
-              <nav className="flex flex-col gap-1 px-4">
-                {nav.map((item) => (
+          <div className="ml-auto md:hidden">
+            <Sheet>
+              <SheetTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-ink hover:bg-black/5"
+                    aria-label="Opna valmynd"
+                  />
+                }
+              >
+                <Menu className="size-5" />
+              </SheetTrigger>
+              <SheetContent side="right" className="bg-white">
+                <SheetHeader>
+                  <SheetTitle>
+                    <Logo size="sm" variant="dark" />
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-1 px-4">
+                  {nav.map((item) => (
+                    <SheetClose
+                      key={item.label}
+                      render={
+                        <Link
+                          href={item.href}
+                          className="py-3 text-base text-ink/80"
+                        />
+                      }
+                    >
+                      {item.label}
+                    </SheetClose>
+                  ))}
                   <SheetClose
-                    key={item.href}
                     render={
                       <Link
-                        href={item.href}
-                        className="py-3 text-sm tracking-[0.16em] uppercase text-white/85"
+                        href="/hafa-samband#bokun"
+                        className="mt-4 bg-forest px-4 py-3 text-center text-sm text-white"
                       />
                     }
                   >
-                    {item.label}
+                    Bóka mælingu
                   </SheetClose>
-                ))}
-                <SheetClose
-                  render={
-                    <Link
-                      href="/hafa-samband#bokun"
-                      className="mt-4 border border-white/40 px-4 py-3 text-center text-xs tracking-[0.18em] uppercase"
-                    />
-                  }
-                >
-                  Bóka mælingu
-                </SheetClose>
-              </nav>
-            </SheetContent>
-          </Sheet>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
     </header>

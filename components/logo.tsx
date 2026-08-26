@@ -3,22 +3,24 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const sizes = {
-  sm: { className: "h-10 w-auto md:h-11", width: 160, height: 70 },
-  md: { className: "h-12 w-auto md:h-14", width: 200, height: 88 },
-  lg: { className: "h-16 w-auto md:h-[4.5rem]", width: 260, height: 114 },
+  sm: { className: "h-9 w-auto", width: 140, height: 61 },
+  md: { className: "h-10 w-auto md:h-11", width: 180, height: 79 },
+  lg: { className: "h-14 w-auto md:h-16", width: 240, height: 105 },
 } as const;
 
 export function Logo({
   className,
   size = "md",
+  variant = "light",
 }: {
   className?: string;
   size?: keyof typeof sizes;
+  variant?: "light" | "dark";
 }) {
   const s = sizes[size];
   return (
     <Image
-      src="/brand/logo.png"
+      src={variant === "dark" ? "/brand/logo-dark.png" : "/brand/logo.png"}
       alt="Tjé Tjé"
       width={s.width}
       height={s.height}

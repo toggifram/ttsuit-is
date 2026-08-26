@@ -21,10 +21,8 @@ export default function VerslunPage() {
   return (
     <>
       <section className="mx-auto max-w-7xl px-5 py-16 md:px-8 md:py-24">
-        <p className="text-[11px] tracking-[0.28em] text-forest/60 uppercase">
-          Ready to wear
-        </p>
-        <h1 className="mt-2 max-w-3xl font-serif text-5xl md:text-7xl">
+        <p className="text-sm text-ink/50">Ready to wear</p>
+        <h1 className="mt-2 max-w-3xl text-4xl font-medium tracking-tight md:text-6xl">
           Verslunin er á leiðinni
         </h1>
         <p className="mt-6 max-w-xl text-base leading-relaxed text-ink/70">
