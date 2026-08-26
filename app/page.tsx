@@ -2,11 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ProductRail } from "@/components/product-rail";
+import { ShopCatalog } from "@/components/shop-catalog";
 import { testimonials } from "@/lib/site";
-import { getHomeProducts } from "@/lib/shopify";
+import { getCatalogProducts, getHomeProducts } from "@/lib/shopify";
 
 export default async function HomePage() {
   const products = await getHomeProducts();
+  const catalog = await getCatalogProducts();
 
   return (
     <>
@@ -132,6 +134,8 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+
+      <ShopCatalog products={catalog} />
     </>
   );
 }

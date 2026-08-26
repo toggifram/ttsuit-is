@@ -1,5 +1,11 @@
 import { fallbackProducts } from "@/lib/catalog";
-import { formatMoney, shuffle, type Product, type ProductColor } from "@/lib/product";
+import {
+  formatMoney,
+  shuffle,
+  type Product,
+  type ProductCategory,
+  type ProductColor,
+} from "@/lib/product";
 
 const API_VERSION = "2025-01";
 
@@ -86,6 +92,19 @@ function badgeFromTags(tags: string[]) {
   return undefined;
 }
 
+function categoryFrom(node: ShopifyProduct): ProductCategory {
+  const hay = `${node.productType ?? ""} ${node.tags.join(" ")} ${node.title}`.toLowerCase();
+  if (/gift|gjafa|voucher/.test(hay)) return "gjafabref";
+  if (/\btie\b|bindi|bow tie|slaufa/.test(hay)) return "bindi";
+  if (/coat|outerwear|yfirhafn|frakki|overshirt|parka|overcoat/.test(hay)) {
+    return "yfirhafnir";
+  }
+  if (/accessor|fylgi|belt|scarf|pocket|cuff|bracelet|klút/.test(hay)) {
+    return "fylgihlutir";
+  }
+  return "peysur";
+}
+
 function mapProduct(node: ShopifyProduct, domain: string): Product | null {
   if (!node.featuredImage?.url) return null;
   const colorOption = node.options.find((o) =>
@@ -113,6 +132,7 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
     ),
     badge: badgeFromTags(node.tags),
     colors,
+    category: categoryFrom(node),
   };
 }
 
@@ -147,11 +167,17 @@ async function fetchShopifyProducts(): Promise<Product[] | null> {
 
 /** Random products from every Shopify category, with a local fallback. */
 export async function getHomeProducts(limit = 18): Promise<Product[]> {
+  const all = await getCatalogProducts();
+  return shuffle(all).slice(0, Math.min(limit, all.length));
+}
+
+/** Full catalog for the 3-up shop grid. */
+export async function getCatalogProducts(): Promise<Product[]> {
   try {
     const live = await fetchShopifyProducts();
-    if (live?.length) return shuffle(live).slice(0, limit);
+    if (live?.length) return live;
   } catch {
     // Password-protected stores and missing tokens fall back below.
   }
-  return shuffle(fallbackProducts).slice(0, limit);
+  return fallbackProducts;
 }

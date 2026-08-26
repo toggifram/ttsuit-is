@@ -28,7 +28,7 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 ## Shopify
 
-Forsíðan sýnir fimm vörur í einu (með örvum) og sækir þær slembnaðar úr **öllum flokkum** í gegnum Shopify Storefront API.
+Forsíðan sýnir fimm vörur í einu (með örvum) og síðan, beint fyrir ofan fótinn, **2×3 vörunet** með flokkunum Allar vörur, Peysur, Bindi, Yfirhafnir, Fylgihluti og Gjafabréf. Vörurnar koma úr Shopify Storefront API.
 
 1. Í Shopify Admin: **Settings → Apps and sales channels → Develop apps**
 2. Búðu til app, opnaðu **Storefront API**, og veittu `unauthenticated_read_product_listings` (og `read_products` ef það er í boði)

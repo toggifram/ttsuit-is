@@ -3,6 +3,22 @@ export type ProductColor = {
   hex: string;
 };
 
+export type ProductCategory =
+  | "peysur"
+  | "bindi"
+  | "yfirhafnir"
+  | "fylgihlutir"
+  | "gjafabref";
+
+export const shopCategories = [
+  { id: "all", label: "Allar vörur" },
+  { id: "peysur", label: "Peysur" },
+  { id: "bindi", label: "Bindi" },
+  { id: "yfirhafnir", label: "Yfirhafnir" },
+  { id: "fylgihlutir", label: "Fylgihluti" },
+  { id: "gjafabref", label: "Gjafabréf" },
+] as const;
+
 export type Product = {
   id: string;
   handle: string;
@@ -14,6 +30,7 @@ export type Product = {
   price: string;
   badge?: string;
   colors: ProductColor[];
+  category: ProductCategory;
 };
 
 export function shuffle<T>(items: T[]): T[] {
