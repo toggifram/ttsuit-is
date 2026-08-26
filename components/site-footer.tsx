@@ -8,7 +8,7 @@ export function SiteFooter() {
   return (
     <footer className="bg-forest text-white">
       <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-14 md:grid-cols-12 md:px-8 md:py-16">
-        <div className="md:col-span-3">
+        <div className="md:col-span-3" id="postlisti">
           <Logo size="lg" variant="light" />
           <p className="mt-6 text-sm text-white/80">Póstlisti</p>
           <div className="mt-3">

@@ -17,6 +17,40 @@ import {
 import { brand, nav, navLeft, navRight } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
+const promoCopy =
+  "Við vorum að opna nýja heimasíðu, 15% afsláttur af gjafabréfum og öllum tilbúnum fatnaði ef þú skráir þig á póstlistann";
+
+function PromoTicker() {
+  return (
+    <div className="group overflow-hidden border-b border-white/10 text-[11px] tracking-[0.14em] whitespace-nowrap text-white/85">
+      <Link
+        href="#postlisti"
+        className="flex w-max hover:text-white"
+        aria-label={promoCopy}
+      >
+        <span className="flex w-max animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none">
+          {[0, 1].map((copy) => (
+            <span
+              key={copy}
+              className="flex shrink-0 items-center"
+              aria-hidden={copy === 1}
+            >
+              {Array.from({ length: 4 }).map((_, i) => (
+                <span key={i} className="flex items-center">
+                  <span className="px-6 py-2">{promoCopy}</span>
+                  <span aria-hidden className="text-white/35">
+                    ·
+                  </span>
+                </span>
+              ))}
+            </span>
+          ))}
+        </span>
+      </Link>
+    </div>
+  );
+}
+
 function NavLink({
   href,
   label,
@@ -47,14 +81,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 bg-forest text-white">
-      <div className="border-b border-white/10 text-center text-[11px] tracking-[0.18em] text-white/85">
-        <Link
-          href="/hafa-samband#bokun"
-          className="block px-4 py-2 transition-colors hover:text-white"
-        >
-          Sérsaumur á 4–6 vikum · Bókaðu mælingu
-        </Link>
-      </div>
+      <PromoTicker />
       <div className="relative mx-auto flex h-16 max-w-[1440px] items-center px-4 md:h-[4.5rem] md:px-6">
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="flex items-center">
