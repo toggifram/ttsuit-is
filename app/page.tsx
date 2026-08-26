@@ -19,11 +19,12 @@ export default function HomePage() {
         />
         <HeroFrame
           href="/verslun"
-          image="/images/studio/brown-zip.jpg"
+          image="/images/studio/shop-group.jpg"
           alt="Vefverslun Tjé Tjé"
           title="Vefverslun"
           text="Tilbúinn fatnaður — greiðsla fer í gegnum Shopify."
           cta="Skoða vefverslun"
+          position="object-[center_40%]"
           priority
         />
       </section>
@@ -168,6 +169,7 @@ function HeroFrame({
   title,
   text,
   cta,
+  position = "object-[center_18%]",
   priority = false,
 }: {
   href: string;
@@ -176,6 +178,7 @@ function HeroFrame({
   title: string;
   text: string;
   cta: string;
+  position?: string;
   priority?: boolean;
 }) {
   return (
@@ -185,15 +188,14 @@ function HeroFrame({
         alt={alt}
         fill
         priority={priority}
-        className="object-cover object-[center_15%]"
+        className={`object-cover ${position}`}
         sizes="(min-width:768px) 50vw, 100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 px-6 pb-10 md:px-12 md:pb-14">
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
         <h2 className="text-4xl font-medium tracking-tight text-forest md:text-5xl">
           {title}
         </h2>
-        <p className="mt-2 max-w-sm text-sm text-ink/70">{text}</p>
+        <p className="mt-3 max-w-xs text-sm text-ink/70">{text}</p>
         <Link
           href={href}
           className="mt-6 inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
