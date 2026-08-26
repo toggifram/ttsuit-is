@@ -10,14 +10,15 @@ export default function HomePage() {
       <section className="grid bg-white md:grid-cols-2">
         <HeroFrame
           href="/hafa-samband#bokun"
-          image="/images/studio/suit-bag.jpg"
+          image="/images/studio/suit-bag.png"
           alt="Sérsaumur hjá Tjé Tjé"
           cta="Bóka sérsaum"
+          fit="contain"
           priority
         />
         <HeroFrame
           href="/verslun"
-          image="/images/studio/shop-group.jpg"
+          image="/images/studio/shop-pair.png"
           alt="Vefverslun Tjé Tjé"
           cta="Skoða vefverslun"
           fit="contain"
@@ -174,27 +175,19 @@ function HeroFrame({
   priority?: boolean;
 }) {
   return (
-    <div className="relative flex min-h-[85vh] items-center justify-center overflow-hidden bg-white md:min-h-[calc(100dvh-6.75rem)]">
-      {fit === "contain" ? (
-        <Image
-          src={image}
-          alt={alt}
-          width={2048}
-          height={1365}
-          priority={priority}
-          className="h-auto max-h-[58vh] w-auto max-w-[90%] object-contain md:max-h-[62vh]"
-          sizes="(min-width:768px) 50vw, 90vw"
-        />
-      ) : (
-        <Image
-          src={image}
-          alt={alt}
-          fill
-          priority={priority}
-          className="object-cover object-[center_12%]"
-          sizes="(min-width:768px) 50vw, 100vw"
-        />
-      )}
+    <div className="relative min-h-[85vh] overflow-hidden bg-white md:min-h-[calc(100dvh-6.75rem)]">
+      <Image
+        src={image}
+        alt={alt}
+        fill
+        priority={priority}
+        className={
+          fit === "contain"
+            ? "object-contain object-center p-8 md:p-14"
+            : "object-cover object-[center_12%]"
+        }
+        sizes="(min-width:768px) 50vw, 100vw"
+      />
       <div className="absolute inset-0 flex items-center justify-center px-6">
         <Link
           href={href}
