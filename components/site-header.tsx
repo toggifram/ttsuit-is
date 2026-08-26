@@ -14,7 +14,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { brand, nav, navLeft, navRight, socialLinks } from "@/lib/site";
+import { brand, nav, navLeft, navRight } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 function NavLink({
@@ -55,150 +55,100 @@ export function SiteHeader() {
           Sérsaumur á 4–6 vikum · Bókaðu mælingu
         </Link>
       </div>
-      <div>
-        <div className="relative mx-auto flex h-16 max-w-[1440px] items-center px-4 md:h-[4.5rem] md:px-6">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="flex items-center">
-              <nav className="hidden items-center gap-7 pr-8 lg:flex">
-                {navLeft.map((item) => (
-                  <NavLink
-                    key={item.label}
-                    href={item.href}
-                    label={item.label}
-                    pathname={pathname}
-                  />
-                ))}
-              </nav>
-              <Link
-                href="/"
-                className="flex shrink-0 items-center"
-                aria-label={brand.name}
-              >
-                <Logo
-                  size="md"
-                  variant="light"
-                  className="object-center"
-                />
-              </Link>
-              <nav className="hidden items-center gap-7 pl-8 lg:flex">
-                {navRight.map((item) => (
-                  <NavLink
-                    key={item.label}
-                    href={item.href}
-                    label={item.label}
-                    pathname={pathname}
-                  />
-                ))}
-                <div className="group relative">
-                  <button
-                    type="button"
-                    className="text-[13px] text-white/80 transition-colors group-hover:text-white"
-                  >
-                    Fylgdu okkur
-                  </button>
-                  <div className="invisible absolute left-0 top-full z-50 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                    <div className="min-w-[9.5rem] bg-forest py-2 shadow-[0_8px_24px_rgba(0,0,0,0.25)]">
-                      {socialLinks.map((item) => (
-                        <a
-                          key={item.label}
-                          href={item.href}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="block px-4 py-2 text-[13px] text-white/80 hover:text-white"
-                        >
-                          {item.label}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </nav>
-            </div>
+      <div className="relative mx-auto flex h-16 max-w-[1440px] items-center px-4 md:h-[4.5rem] md:px-6">
+        <nav className="hidden items-center gap-7 lg:flex">
+          {navLeft.map((item) => (
+            <NavLink
+              key={item.label}
+              href={item.href}
+              label={item.label}
+              pathname={pathname}
+            />
+          ))}
+        </nav>
+
+        <Link
+          href="/"
+          className="absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
+          aria-label={brand.name}
+        >
+          <Logo size="md" variant="light" className="object-center" />
+        </Link>
+
+        <div className="relative z-10 ml-auto flex items-center gap-7">
+          <nav className="hidden items-center gap-7 lg:flex">
+            {navRight.map((item) => (
+              <NavLink
+                key={item.label}
+                href={item.href}
+                label={item.label}
+                pathname={pathname}
+              />
+            ))}
+          </nav>
+          <div className="hidden items-center gap-1 md:flex">
+            <Button
+              nativeButton={false}
+              variant="ghost"
+              size="icon"
+              render={<Link href="/verslun" />}
+              className="text-white hover:bg-white/10 hover:text-white"
+              aria-label="Leita í verslun"
+            >
+              <Search className="size-4" />
+            </Button>
+            <Button
+              nativeButton={false}
+              variant="ghost"
+              size="icon"
+              render={<Link href="/verslun" />}
+              className="text-white hover:bg-white/10 hover:text-white"
+              aria-label="Karfa"
+            >
+              <ShoppingBag className="size-4" />
+            </Button>
           </div>
 
-          <div className="relative z-10 ml-auto flex items-center gap-1">
-            <div className="hidden items-center gap-1 md:flex">
-              <Button
-                nativeButton={false}
-                variant="ghost"
-                size="icon"
-                render={<Link href="/verslun" />}
-                className="text-white hover:bg-white/10 hover:text-white"
-                aria-label="Leita í verslun"
+          <div className="lg:hidden">
+            <Sheet>
+              <SheetTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-white/10 hover:text-white"
+                    aria-label="Opna valmynd"
+                  />
+                }
               >
-                <Search className="size-4" />
-              </Button>
-              <Button
-                nativeButton={false}
-                variant="ghost"
-                size="icon"
-                render={<Link href="/verslun" />}
-                className="text-white hover:bg-white/10 hover:text-white"
-                aria-label="Karfa"
+                <Menu className="size-5" />
+              </SheetTrigger>
+              <SheetContent
+                side="right"
+                className="border-white/10 bg-forest text-white"
               >
-                <ShoppingBag className="size-4" />
-              </Button>
-            </div>
-
-            <div className="lg:hidden">
-              <Sheet>
-                <SheetTrigger
-                  render={
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-white hover:bg-white/10 hover:text-white"
-                      aria-label="Opna valmynd"
-                    />
-                  }
-                >
-                  <Menu className="size-5" />
-                </SheetTrigger>
-                <SheetContent
-                  side="right"
-                  className="border-white/10 bg-forest text-white"
-                >
-                  <SheetHeader>
-                    <SheetTitle className="text-white">
-                      <Logo size="sm" variant="light" />
-                    </SheetTitle>
-                  </SheetHeader>
-                  <nav className="flex flex-col gap-1 px-4">
-                    {nav.map((item) => (
-                      <SheetClose
-                        key={item.label}
-                        render={
-                          <Link
-                            href={item.href}
-                            className="py-3 text-base text-white/85"
-                          />
-                        }
-                      >
-                        {item.label}
-                      </SheetClose>
-                    ))}
-                    <p className="mt-6 text-[11px] tracking-[0.18em] text-white/45 uppercase">
-                      Fylgdu okkur
-                    </p>
-                    {socialLinks.map((item) => (
-                      <SheetClose
-                        key={item.label}
-                        render={
-                          <a
-                            href={item.href}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="py-3 text-base text-white/85"
-                          />
-                        }
-                      >
-                        {item.label}
-                      </SheetClose>
-                    ))}
-                  </nav>
-                </SheetContent>
-              </Sheet>
-            </div>
+                <SheetHeader>
+                  <SheetTitle className="text-white">
+                    <Logo size="sm" variant="light" />
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-1 px-4">
+                  {nav.map((item) => (
+                    <SheetClose
+                      key={item.label}
+                      render={
+                        <Link
+                          href={item.href}
+                          className="py-3 text-base text-white/85"
+                        />
+                      }
+                    >
+                      {item.label}
+                    </SheetClose>
+                  ))}
+                </nav>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
