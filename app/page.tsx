@@ -53,9 +53,9 @@ export default async function HomePage() {
 
       <CategoryLooks />
 
-      <InstagramFeed />
-
       <SersaumurFeature />
+
+      <InstagramFeed />
     </>
   );
 }
