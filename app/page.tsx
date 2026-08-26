@@ -7,13 +7,15 @@ import { InstagramFeed } from "@/components/instagram-feed";
 import { SersaumurFeature } from "@/components/sersaumur-feature";
 import { getHomeProducts } from "@/lib/shopify";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const products = await getHomeProducts();
 
   return (
     <>
       <h1 className="sr-only">Tjé Tjé — sérsaumur og vefverslun</h1>
-      <section className="relative grid gap-2 bg-white px-2 md:grid-cols-2">
+      <section className="grid gap-2 bg-white px-2 md:grid-cols-2">
         <HeroFrame
           href="/hafa-samband#bokun"
           image="/images/studio/suit-bag.png"
@@ -29,10 +31,6 @@ export default async function HomePage() {
           cta="Skoða vefverslun"
           fit="contain"
           priority
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-gradient-to-b from-transparent via-white/55 to-white md:h-40"
         />
       </section>
 

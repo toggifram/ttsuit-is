@@ -1,17 +1,21 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import type { Product } from "@/lib/product";
+import { shuffle, type Product } from "@/lib/product";
 import { cn } from "@/lib/utils";
 
 export function ProductRail({ products }: { products: Product[] }) {
   const scroller = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
+  const [items, setItems] = useState(products);
+
+  useEffect(() => {
+    setItems(shuffle(products));
+  }, [products]);
 
   const update = () => {
     const el = scroller.current;
@@ -30,7 +34,7 @@ export function ProductRail({ products }: { products: Product[] }) {
       el.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, [products]);
+  }, [items]);
 
   const scrollByCard = (dir: -1 | 1) => {
     const el = scroller.current;
@@ -39,7 +43,7 @@ export function ProductRail({ products }: { products: Product[] }) {
     el.scrollBy({ left: dir * (card.offsetWidth + 8), behavior: "smooth" });
   };
 
-  if (!products.length) return null;
+  if (!items.length) return null;
 
   return (
     <section className="bg-white px-2" aria-label="Vörur">
@@ -48,19 +52,28 @@ export function ProductRail({ products }: { products: Product[] }) {
           ref={scroller}
           className="flex snap-x snap-mandatory gap-2 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {products.map((product) => (
+          {items.map((product) => (
             <article
               key={product.id}
               className="w-[78%] shrink-0 snap-start bg-white sm:w-[48%] lg:w-[calc((100%-2rem)/5)]"
             >
               <Link href={product.href} className="block">
-                <div className="relative aspect-[4/5] bg-[#ebe6dc]">
-                  <Image
+                <div
+                  className={cn(
+                    "relative aspect-[4/5] overflow-hidden",
+                    product.category === "gjafabref"
+                      ? "bg-[#1a1a1a]"
+                      : "bg-[#ebe6dc]"
+                  )}
+                >
+                  <img
                     src={product.image}
                     alt={product.imageAlt}
-                    fill
-                    sizes="(min-width:1024px) 20vw, (min-width:640px) 48vw, 78vw"
-                    className="object-cover object-top"
+                    className={
+                      product.category === "gjafabref"
+                        ? "absolute inset-0 h-full w-full object-contain p-4"
+                        : "absolute inset-0 h-full w-full object-cover object-top"
+                    }
                   />
                   {product.badge ? (
                     <span className="absolute left-2 top-2 bg-black px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">

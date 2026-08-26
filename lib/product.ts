@@ -102,6 +102,16 @@ export function shuffle<T>(items: T[]): T[] {
   return next;
 }
 
+/** Keep the first product for each image so gift cards do not repeat in a row. */
+export function uniqueByImage(products: Product[]): Product[] {
+  const seen = new Set<string>();
+  return products.filter((product) => {
+    if (seen.has(product.image)) return false;
+    seen.add(product.image);
+    return true;
+  });
+}
+
 export function formatMoney(amount: string | number, currency = "ISK") {
   const value = typeof amount === "string" ? Number(amount) : amount;
   if (!Number.isFinite(value)) return "";

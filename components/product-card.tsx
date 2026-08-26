@@ -13,12 +13,20 @@ export function ProductCard({
   return (
     <article className={cn("bg-white", className)}>
       <Link href={product.href} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden bg-[#ebe6dc]">
-          {/* Native img so Shopify CDN and local studio photos both render. */}
+        <div
+          className={cn(
+            "relative aspect-[4/5] overflow-hidden",
+            product.category === "gjafabref" ? "bg-[#1a1a1a]" : "bg-[#ebe6dc]"
+          )}
+        >
           <img
             src={product.image}
             alt={product.imageAlt}
-            className="absolute inset-0 h-full w-full object-cover object-top"
+            className={
+              product.category === "gjafabref"
+                ? "absolute inset-0 h-full w-full object-contain p-4"
+                : "absolute inset-0 h-full w-full object-cover object-top"
+            }
           />
           {product.badge ? (
             <span className="absolute left-2 top-2 bg-black px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">

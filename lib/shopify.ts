@@ -1,6 +1,7 @@
 import {
   formatMoney,
   shuffle,
+  uniqueByImage,
   type Product,
   type ProductCategory,
   type ProductColor,
@@ -168,5 +169,5 @@ export async function fetchShopifyProducts(): Promise<Product[] | null> {
 export async function getHomeProducts(limit = 18): Promise<Product[]> {
   const { getCatalogProducts } = await import("./catalog");
   const all = await getCatalogProducts();
-  return shuffle(all).slice(0, Math.min(limit, all.length));
+  return uniqueByImage(shuffle(all)).slice(0, Math.min(limit, all.length));
 }
