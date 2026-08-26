@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { ProductRail } from "@/components/product-rail";
 import { CategoryLooks } from "@/components/category-looks";
+import { InstagramFeed } from "@/components/instagram-feed";
 import { testimonials } from "@/lib/site";
 import { getHomeProducts } from "@/lib/shopify";
 
@@ -12,7 +13,7 @@ export default async function HomePage() {
   return (
     <>
       <h1 className="sr-only">Tjé Tjé — sérsaumur og vefverslun</h1>
-      <section className="grid bg-white md:grid-cols-2">
+      <section className="relative grid bg-white md:grid-cols-2">
         <HeroFrame
           href="/hafa-samband#bokun"
           image="/images/studio/suit-bag.png"
@@ -29,10 +30,14 @@ export default async function HomePage() {
           fit="contain"
           priority
         />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-20 bg-gradient-to-b from-transparent to-white md:h-24"
+        />
       </section>
 
       <section className="bg-white">
-        <div className="mx-auto max-w-[34rem] px-6 py-14 text-center md:py-20">
+        <div className="mx-auto max-w-[34rem] px-6 pt-4 pb-10 text-center md:pt-5 md:pb-12">
           <blockquote>
             <p className="font-serif text-[15px] leading-[1.85] text-forest/90 md:text-base">
               „Fatnaður sem endurspeglar þinn stíl og endist umfram árstíðir.
@@ -47,6 +52,8 @@ export default async function HomePage() {
       <ProductRail products={products} />
 
       <CategoryLooks />
+
+      <InstagramFeed />
 
       <section className="bg-white">
         <div className="mx-auto max-w-[1440px] px-5 py-16 md:px-10 md:py-20">

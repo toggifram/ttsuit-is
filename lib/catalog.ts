@@ -187,6 +187,38 @@ export const fallbackProducts: Product[] = [
   },
 
   {
+    id: "navy-dot-tie",
+    handle: "navy-dot-bindi",
+    title: "Navy bindi með doppum",
+    subtitle: "Silki · Klassískt snið",
+    category: "bindi",
+    href: "/verslun/bindi",
+    image: "/images/studio/bindi.jpg",
+    imageAlt: "Navy bindi með kopar doppum",
+    price: "8.990 kr.",
+    colors: [
+      { name: "Navy", hex: "#1e3a5f" },
+      { name: "Black", hex: "#1a1a1a" },
+    ],
+  },
+  {
+    id: "brown-overshirt",
+    handle: "brunn-ullarjakki",
+    title: "Brúnn ullarjakki",
+    subtitle: "Yfirhöfn · Regular fit",
+    category: "yfirhafnir",
+    href: "/verslun/yfirhafnir",
+    image: "/images/studio/yfirhafnir.jpg",
+    imageAlt: "Brúnn jakki",
+    price: "34.990 kr.",
+    badge: "NÝTT",
+    colors: [
+      { name: "Brown", hex: "#5c3d2e" },
+      { name: "Navy", hex: "#1e3a5f" },
+    ],
+  },
+
+  {
     id: "gift-4032",
     handle: "gjafabref-4032",
     title: "Gjafabréf",
