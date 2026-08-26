@@ -97,6 +97,8 @@ export default async function HomePage() {
         />
       </section>
 
+      <CategoryLooks />
+
       <section className="bg-white">
         <div className="mx-auto max-w-[1440px] px-5 py-16 md:px-10 md:py-20">
           <h2 className="text-2xl font-medium md:text-3xl">Ánægðir í fötunum</h2>
@@ -133,8 +135,6 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
-
-      <CategoryLooks />
     </>
   );
 }

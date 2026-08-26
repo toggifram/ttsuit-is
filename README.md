@@ -28,7 +28,7 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 ## Shopify
 
-Forsíðan sýnir fimm vörur í einu (með örvum) og síðan, beint fyrir ofan fótinn, **sex flokkamyndir** (2×3) með „Versla núna“ og flokksheitinu. Smellur opnar vörur þess flokks.
+Forsíðan sýnir fimm vörur í einu (með örvum) og síðan **sex flokkamyndir** (2×3) með „Versla núna“ og flokksheitinu, fyrir ofan ummæli viðskiptavina. Smellur opnar vörur þess flokks.
 
 1. Í Shopify Admin: **Settings → Apps and sales channels → Develop apps**
 2. Búðu til app, opnaðu **Storefront API**, og veittu `unauthenticated_read_product_listings` (og `read_products` ef það er í boði)
