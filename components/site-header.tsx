@@ -57,7 +57,7 @@ function SersaumurNav({ pathname }: { pathname: string }) {
     pathname === "/sersaumur" || pathname.startsWith("/sersaumur/");
 
   return (
-    <div className="group relative">
+    <div className="group relative -my-7 flex items-center py-7">
       <Link
         href="/sersaumur"
         className={cn(
@@ -67,8 +67,8 @@ function SersaumurNav({ pathname }: { pathname: string }) {
       >
         Sérsaumur
       </Link>
-      <div className="invisible absolute top-full left-0 z-50 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-        <div className="min-w-[12.5rem] bg-forest py-2 shadow-[0_8px_24px_rgba(0,0,0,0.25)]">
+      <div className="pointer-events-none absolute top-full left-0 z-50 min-w-[12.5rem] pt-1 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+        <div className="bg-forest py-2 shadow-[0_8px_24px_rgba(0,0,0,0.25)]">
           {sersaumurMenu.map((item) => (
             <a
               key={item.href}
