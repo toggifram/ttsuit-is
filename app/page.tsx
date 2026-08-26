@@ -46,6 +46,8 @@ export default async function HomePage() {
 
       <ProductRail products={products} />
 
+      <CategoryLooks />
+
       <section className="grid md:grid-cols-2">
         <Look
           href="/verslun"
@@ -96,8 +98,6 @@ export default async function HomePage() {
           text="Merkið á brjóstinu — saumað inn."
         />
       </section>
-
-      <CategoryLooks />
 
       <section className="bg-white">
         <div className="mx-auto max-w-[1440px] px-5 py-16 md:px-10 md:py-20">
