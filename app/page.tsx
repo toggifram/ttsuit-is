@@ -20,6 +20,8 @@ export default async function HomePage() {
           href="/hafa-samband#bokun"
           image="/images/studio/suit-bag.png"
           alt="Sérsaumur hjá Tjé Tjé"
+          eyebrow="Sérsaumur á 4–6 vikum"
+          headline="Saumað fyrir þig"
           cta="Bóka sérsaum"
           fit="contain"
           priority
@@ -28,6 +30,8 @@ export default async function HomePage() {
           href="/verslun"
           image="/images/studio/shop-pair.png"
           alt="Vefverslun Tjé Tjé"
+          eyebrow="Tilbúin föt og fylgihlutir"
+          headline="Nýja línan"
           cta="Skoða vefverslun"
           fit="contain"
           priority
@@ -62,6 +66,8 @@ function HeroFrame({
   href,
   image,
   alt,
+  eyebrow,
+  headline,
   cta,
   fit = "cover",
   priority = false,
@@ -69,6 +75,8 @@ function HeroFrame({
   href: string;
   image: string;
   alt: string;
+  eyebrow: string;
+  headline: string;
   cta: string;
   fit?: "cover" | "contain";
   priority?: boolean;
@@ -88,12 +96,20 @@ function HeroFrame({
         sizes="(min-width:768px) 50vw, 100vw"
       />
       <div className="absolute inset-0 z-20 flex items-center justify-center px-6">
-        <Link
-          href={href}
-          className="inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
-        >
-          {cta}
-        </Link>
+        <div className="flex flex-col items-center text-center">
+          <p className="text-[11px] font-semibold tracking-[0.22em] text-forest uppercase md:text-xs">
+            {eyebrow}
+          </p>
+          <p className="mt-3 font-serif text-[2.65rem] leading-[0.95] font-medium text-forest italic md:text-[3.35rem] lg:text-[3.75rem]">
+            {headline}
+          </p>
+          <Link
+            href={href}
+            className="mt-7 inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
+          >
+            {cta}
+          </Link>
+        </div>
       </div>
     </div>
   );
