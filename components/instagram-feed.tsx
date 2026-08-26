@@ -47,7 +47,7 @@ export async function InstagramFeed() {
   const profile = `https://www.instagram.com/${feed.username}/`;
 
   return (
-    <section className="bg-white pb-4" aria-label="Instagram">
+    <section className="bg-white pb-2" aria-label="Instagram">
       <div className="mx-auto max-w-[1440px] px-5 py-12 text-center md:px-10 md:py-14">
         <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
           Instagram
