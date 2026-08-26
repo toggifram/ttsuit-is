@@ -1,6 +1,6 @@
 # Tjé Tjé — ttsuit.is
 
-Nútímaleg heimasíða fyrir **Tjé Tjé** (áður TT suit): sérsaumur og tilbúinn herrafatnaður. Forsíðan er létt, ljós og myndræn — í anda síðna eins og John Henric — með dökku skógargrænu í haus og fæti og hvítu yfirborði.
+Nútímaleg heimasíða fyrir **Tjé Tjé** (áður TT suit): sérsaumur og tilbúinn herrafatnaður. Forsíðan er byggð upp í kampanje-stíl eins og Suitsupply — fullbreiddar ljósmyndir, hvítur haus og dökk-teal fótur úr merkinu.
 
 ## Keyra staðbundið
 
@@ -21,9 +21,10 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 ## Litir og merki
 
-- Haus og fótur: `#023030` (dökk teal-grænt úr merkinu)
-- Yfirborð: hvítt, með mjúku cream í köflum
-- Logo: *Tjé Tjé* í skriftarletursstíl
+- Haus: hvítur, með þunnu grænu tilkynningastriði
+- Fótur: `#023030` (dökk teal-grænt úr merkinu)
+- Yfirborð: hvítt, kampanje-myndir frá brún til brúnar
+- Logo: *Tjé Tjé* + TJ
 
 ## Shopify síðar
 
