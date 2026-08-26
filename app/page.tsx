@@ -48,57 +48,6 @@ export default async function HomePage() {
 
       <CategoryLooks />
 
-      <section className="grid md:grid-cols-2">
-        <Look
-          href="/verslun"
-          image="/images/studio/navy-shawl.jpg"
-          alt="Navy cardigan"
-          title="Cardigan"
-          text="Sjal-kragi og þungt prjón."
-        />
-        <Look
-          href="/verslun"
-          image="/images/studio/olive-zip.jpg"
-          alt="Olive zip peysa"
-          title="Quarter-zip"
-          text="Prjónapeysa með rennilás og skyrtu undir."
-        />
-      </section>
-
-      <section className="grid md:grid-cols-2">
-        <Look
-          href="/verslun"
-          image="/images/studio/taupe-cardigan.jpg"
-          alt="Taupe cardigan"
-          title="Zip cardigan"
-          text="Klassískt cable-knit yfir hvítri skyrtu."
-        />
-        <Look
-          href="/verslun"
-          image="/images/studio/black-polo.jpg"
-          alt="Svart prjóna-polo"
-          title="Polo"
-          text="Rifjað prjón, hreint snið."
-        />
-      </section>
-
-      <section className="grid md:grid-cols-2">
-        <Look
-          href="/verslun"
-          image="/images/studio/navy-back.jpg"
-          alt="Bakning af prjónapeysu"
-          title="Passformið"
-          text="Sniðið sést best að aftan."
-        />
-        <Look
-          href="/verslun"
-          image="/images/studio/navy-logo.jpg"
-          alt="TJ merki á peysu"
-          title="TJ"
-          text="Merkið á brjóstinu — saumað inn."
-        />
-      </section>
-
       <section className="bg-white">
         <div className="mx-auto max-w-[1440px] px-5 py-16 md:px-10 md:py-20">
           <h2 className="text-2xl font-medium md:text-3xl">Ánægðir í fötunum</h2>
@@ -177,50 +126,5 @@ function HeroFrame({
         </Link>
       </div>
     </div>
-  );
-}
-
-function Look({
-  href,
-  image,
-  alt,
-  title,
-  text,
-  kicker,
-  cta,
-}: {
-  href: string;
-  image: string;
-  alt: string;
-  title: string;
-  text: string;
-  kicker?: string;
-  cta?: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex min-h-[560px] flex-col bg-white md:min-h-[72vh]"
-    >
-      <div className="relative min-h-0 flex-1">
-        <Image
-          src={image}
-          alt={alt}
-          fill
-          className="object-contain object-center p-6 transition-transform duration-700 group-hover:scale-[1.02] md:p-8"
-          sizes="(min-width:768px) 50vw, 100vw"
-        />
-      </div>
-      <div className="px-6 pb-8 md:px-10 md:pb-10">
-        {kicker ? <p className="text-sm text-ink/45">{kicker}</p> : null}
-        <h2 className="text-2xl font-medium text-forest md:text-3xl">{title}</h2>
-        <p className="mt-2 max-w-md text-sm text-ink/60">{text}</p>
-        {cta ? (
-          <span className="mt-4 inline-block text-sm text-forest underline-offset-4 group-hover:underline">
-            {cta}
-          </span>
-        ) : null}
-      </div>
-    </Link>
   );
 }
