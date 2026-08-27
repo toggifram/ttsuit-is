@@ -47,7 +47,7 @@ export async function FooterInstagram() {
   const profile = `https://www.instagram.com/${feed.username}/`;
 
   return (
-    <div className="w-full max-w-[14.5rem] md:ml-auto">
+    <div className="w-full max-w-[14.5rem]">
       <p className="text-[11px] tracking-[0.22em] text-white/45 uppercase">
         Instagram
       </p>
