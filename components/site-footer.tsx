@@ -18,7 +18,11 @@ export async function SiteFooter() {
             className="block h-14 w-auto max-w-none border-0 bg-transparent object-contain object-left md:h-16"
           />
           <p className="mt-5 text-sm text-white/80">Póstlisti</p>
-          <div className="mt-2">
+          <p className="mt-1.5 max-w-[13.5rem] text-[12px] leading-snug text-white/55">
+            Gleymdu ekki að skrá þig — 15% afsláttur af fyrstu pöntuninni fylgir
+            með.
+          </p>
+          <div className="mt-3">
             <NewsletterForm variant="dark" />
           </div>
         </div>
