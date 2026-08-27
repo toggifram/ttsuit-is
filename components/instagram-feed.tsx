@@ -43,19 +43,27 @@ const fallbackPosts: InstagramPost[] = [
 export async function FooterInstagram() {
   const feed = await getInstagramFeed(6);
   const posts = feed.posts.length ? feed.posts : fallbackPosts;
+  const handle = `@${feed.username}`;
   const profile = `https://www.instagram.com/${feed.username}/`;
 
   return (
-    <div className="w-full max-w-[13.75rem] md:ml-auto">
+    <div className="w-full max-w-[14.5rem] md:ml-auto">
+      <p className="text-[11px] tracking-[0.22em] text-white/45 uppercase">
+        Instagram
+      </p>
       <a
         href={profile}
         target="_blank"
         rel="noreferrer"
-        className="text-xs text-white/45 hover:text-white"
+        className="mt-1.5 inline-flex items-center gap-2 font-serif text-xl text-white transition-colors hover:text-white/80"
       >
-        Instagram
+        <InstagramMark className="size-4" />
+        {handle}
       </a>
-      <div className="mt-2.5 grid grid-cols-3 gap-1">
+      <p className="mt-1.5 text-[12px] leading-snug text-white/55">
+        Nýjar línur, mælingar og baksvið — beint af Instagram.
+      </p>
+      <div className="mt-3 grid grid-cols-3 gap-1">
         {posts.map((post) => (
           <a
             key={post.id}
@@ -74,5 +82,22 @@ export async function FooterInstagram() {
         ))}
       </div>
     </div>
+  );
+}
+
+function InstagramMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      className={className}
+      aria-hidden
+    >
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
   );
 }
