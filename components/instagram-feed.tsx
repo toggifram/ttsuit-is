@@ -40,69 +40,39 @@ const fallbackPosts: InstagramPost[] = [
   },
 ];
 
-export async function InstagramFeed() {
+export async function FooterInstagram() {
   const feed = await getInstagramFeed(6);
   const posts = feed.posts.length ? feed.posts : fallbackPosts;
-  const handle = `@${feed.username}`;
   const profile = `https://www.instagram.com/${feed.username}/`;
 
   return (
-    <section className="bg-white pb-2" aria-label="Instagram">
-      <div className="mx-auto max-w-[1440px] px-5 py-12 text-center md:px-10 md:py-14">
-        <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
-          Instagram
-        </p>
-        <a
-          href={profile}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 inline-flex items-center gap-2.5 font-serif text-3xl text-forest transition-colors hover:text-forest-mid md:text-4xl"
-        >
-          <InstagramMark className="size-6" />
-          {handle}
-        </a>
-        <p className="mx-auto mt-3 max-w-md text-sm text-ink/55">
-          Nýjar línur, mælingar og baksvið — beint af Instagram.
-        </p>
-      </div>
-      <div className="grid grid-cols-3 gap-2 bg-white md:grid-cols-6">
+    <div className="w-full max-w-[13.75rem] md:ml-auto">
+      <a
+        href={profile}
+        target="_blank"
+        rel="noreferrer"
+        className="text-xs text-white/45 hover:text-white"
+      >
+        Instagram
+      </a>
+      <div className="mt-2.5 grid grid-cols-3 gap-1">
         {posts.map((post) => (
           <a
             key={post.id}
             href={post.href}
             target="_blank"
             rel="noreferrer"
-            className="group relative aspect-square overflow-hidden bg-[#ebe6dc]"
+            className="relative aspect-square overflow-hidden bg-white/10"
           >
             <img
               src={post.src}
               alt={post.alt}
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-[1.06]"
             />
-            <span className="absolute inset-0 flex items-center justify-center bg-forest/0 text-white opacity-0 transition-all duration-300 group-hover:bg-forest/35 group-hover:opacity-100">
-              <InstagramMark className="size-6" />
-              <span className="sr-only">Opna Instagram</span>
-            </span>
+            <span className="sr-only">Opna Instagram</span>
           </a>
         ))}
       </div>
-    </section>
-  );
-}
-
-function InstagramMark({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      className={className}
-      aria-hidden
-    >
-      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none" />
-    </svg>
+    </div>
   );
 }

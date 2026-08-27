@@ -3,7 +3,6 @@ import Link from "next/link";
 
 import { ProductRail } from "@/components/product-rail";
 import { CategoryLooks } from "@/components/category-looks";
-import { InstagramFeed } from "@/components/instagram-feed";
 import { SersaumurFeature } from "@/components/sersaumur-feature";
 import { getHomeProducts } from "@/lib/shopify";
 
@@ -56,8 +55,6 @@ export default async function HomePage() {
       <CategoryLooks />
 
       <SersaumurFeature />
-
-      <InstagramFeed />
     </>
   );
 }
