@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export function SersaumurFeature() {
   return (
     <section aria-label="Sérsaumur" className="bg-white">
@@ -20,13 +18,12 @@ export function SersaumurFeature() {
           snið og smáatriði — við tökum nákvæmar mælingar og saumum fötin
           sem sitja eins og þau eiga að sitja. Ferlið tekur 4–6 vikur.
         </p>
-          <Link
-            href="/sersaumur"
-            scroll
-            className="mt-8 inline-flex h-12 w-fit items-center bg-forest px-8 text-sm text-white transition-colors hover:bg-forest-mid"
-          >
+        <a
+          href="/sersaumur"
+          className="mt-8 inline-flex h-12 w-fit items-center bg-forest px-8 text-sm text-white transition-colors hover:bg-forest-mid"
+        >
           Skoða
-        </Link>
+        </a>
       </div>
     </section>
   );
