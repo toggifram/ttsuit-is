@@ -17,12 +17,12 @@ export default async function HomePage() {
       <h1 className="sr-only">Tjé Tjé — sérsaumur og vefverslun</h1>
       <section className="grid md:grid-cols-2">
         <HeroFrame
-          href="/sersaumur#boka-tima"
+          href="/sersaumur"
           image="/images/studio/suit-bag.png"
           alt="Sérsaumur hjá Tjé Tjé"
           eyebrow="Sérsaumur á 4–6 vikum"
           headline="Saumað fyrir þig"
-          cta="Bóka sérsaum"
+          cta="Sérsaumur"
           fit="contain"
           priority
         />
@@ -32,7 +32,7 @@ export default async function HomePage() {
           alt="Vefverslun Tjé Tjé"
           eyebrow="Tilbúin föt og fylgihlutir"
           headline="Nýja línan"
-          cta="Skoða vefverslun"
+          cta="Vefverslun"
           fit="contain"
           priority
         />
@@ -105,6 +105,7 @@ function HeroFrame({
           </p>
           <Link
             href={href}
+            scroll
             className="mt-7 inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
           >
             {cta}

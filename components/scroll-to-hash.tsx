@@ -6,7 +6,10 @@ export function ScrollToHash() {
   useEffect(() => {
     function go() {
       const id = window.location.hash.replace(/^#/, "");
-      if (!id) return;
+      if (!id) {
+        window.scrollTo(0, 0);
+        return;
+      }
       window.requestAnimationFrame(() => {
         document.getElementById(id)?.scrollIntoView({
           behavior: "smooth",
