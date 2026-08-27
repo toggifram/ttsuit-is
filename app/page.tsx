@@ -38,7 +38,7 @@ export default async function HomePage() {
       </section>
 
       <section className="bg-white">
-        <div className="mx-auto max-w-[34rem] px-6 pt-4 pb-10 text-center md:pt-5 md:pb-12">
+        <div className="mx-auto max-w-[34rem] px-6 pt-2 pb-7 text-center md:pt-3 md:pb-9">
           <blockquote>
             <p className="font-serif text-[15px] leading-[1.85] text-forest/90 md:text-base">
               „Fatnaður sem endurspeglar þinn stíl og endist umfram árstíðir.
@@ -79,7 +79,7 @@ function HeroFrame({
   priority?: boolean;
 }) {
   return (
-    <div className="relative min-h-[85vh] overflow-hidden bg-white md:min-h-[calc(100dvh-6.8rem)]">
+    <div className="relative min-h-[72vh] overflow-hidden bg-white md:min-h-[calc(100dvh-10.5rem)]">
       <Image
         src={image}
         alt={alt}
