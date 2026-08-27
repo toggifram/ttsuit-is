@@ -23,30 +23,9 @@ const promoCopy =
 
 function PromoTicker() {
   return (
-    <div className="group overflow-hidden border-b border-white/10 text-[11px] tracking-[0.14em] whitespace-nowrap text-white/85">
-      <Link
-        href="#postlisti"
-        className="flex w-max hover:text-white"
-        aria-label={promoCopy}
-      >
-        <span className="flex w-max animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none">
-          {[0, 1].map((copy) => (
-            <span
-              key={copy}
-              className="flex shrink-0 items-center"
-              aria-hidden={copy === 1}
-            >
-              {Array.from({ length: 4 }).map((_, i) => (
-                <span key={i} className="flex items-center">
-                  <span className="px-6 py-2">{promoCopy}</span>
-                  <span aria-hidden className="text-white/35">
-                    ·
-                  </span>
-                </span>
-              ))}
-            </span>
-          ))}
-        </span>
+    <div className="border-b border-white/10 px-4 py-2 text-center text-[11px] leading-relaxed tracking-[0.08em] text-white/85">
+      <Link href="#postlisti" className="hover:text-white">
+        {promoCopy}
       </Link>
     </div>
   );

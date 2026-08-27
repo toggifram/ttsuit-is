@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { Logo } from "@/components/logo";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { brand, footerNav, socialLinks } from "@/lib/site";
 
@@ -9,7 +8,14 @@ export function SiteFooter() {
     <footer className="bg-forest text-white">
       <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-14 md:grid-cols-12 md:px-8 md:py-16">
         <div className="md:col-span-3" id="postlisti">
-          <Logo size="lg" variant="light" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/logo-tl.png"
+            alt="Tjé Tjé"
+            width={151}
+            height={90}
+            className="block h-16 w-auto max-w-none border-0 bg-transparent object-contain object-left md:h-[4.5rem]"
+          />
           <p className="mt-6 text-sm text-white/80">Póstlisti</p>
           <div className="mt-3">
             <NewsletterForm variant="dark" />

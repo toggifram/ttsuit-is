@@ -52,7 +52,6 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --animate-marquee: marquee 42s linear infinite;
 }
 
 :root {
@@ -105,19 +104,4 @@
 
 @utility font-serif {
   font-family: var(--font-cormorant), ui-serif, Georgia, serif;
-}
-
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-marquee {
-    animation: none;
-  }
 }
