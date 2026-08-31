@@ -55,6 +55,20 @@ MAILCHIMP_AUDIENCE_ID=…
 
 Audience ID finnur þú í Mailchimp undir Audience → Settings, eða með API (`GET /3.0/lists`). Án lykilsins virðist formið en skráningin fer ekki inn.
 
+## Hafa samband og bókun
+
+Formin á `/hafa-samband` og `/sersaumur` (bókun mælingar) senda póst á **ttsuit@ttsuit.is**. Svar fer á netfangið sem gesturinn skrifaði.
+
+Fyrsta sendingin getur kallað á staðfestingarpóst frá FormSubmit — opnaðu hann einu sinni svo pósturinn fari inn í hólfið.
+
+Ef þú vilt senda í gegnum Resend síðar:
+
+```
+RESEND_API_KEY=
+INQUIRY_TO=ttsuit@ttsuit.is
+INQUIRY_FROM=Tjé Tjé <hallo@ttsuit.is>
+```
+
 ## Shopify síðar
 
 `/verslun` er undirbúin sem vöruyfirlit. Þegar Shopify-verslunin er tilbúin er hægt að tengja vörulista og greiðslu beint inn á þá síðu.
