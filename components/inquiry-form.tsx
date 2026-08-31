@@ -1,49 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { submitInquiry } from "@/lib/send-inquiry";
+import { brand } from "@/lib/site";
 
 type Kind = "contact" | "booking";
 
 export function InquiryForm({ kind }: { kind: Kind }) {
-  const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
-  const [error, setError] = useState("");
+  const [sent, setSent] = useState(false);
+  const [nextUrl, setNextUrl] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [when, setWhen] = useState("");
+  const [message, setMessage] = useState("");
   const isBooking = kind === "booking";
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (status === "loading") return;
-    const form = e.currentTarget;
-    const data = new FormData(form);
-    setError("");
-    setStatus("loading");
-    try {
-      await submitInquiry({
-        kind,
-        name: String(data.get("name") ?? ""),
-        email: String(data.get("email") ?? ""),
-        phone: String(data.get("phone") ?? ""),
-        when: String(data.get("when") ?? ""),
-        message: String(data.get("message") ?? ""),
-        company: String(data.get("company") ?? ""),
-      });
-      setStatus("done");
-    } catch (err) {
-      setStatus("idle");
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Gat ekki sent skilaboðin. Reyndu aftur."
-      );
+  useEffect(() => {
+    const here = new URL(window.location.href);
+    if (here.searchParams.get("sent") === kind) {
+      setSent(true);
     }
-  }
+    here.searchParams.set("sent", kind);
+    if (isBooking) here.hash = "boka-tima";
+    else here.hash = "";
+    setNextUrl(here.toString());
+  }, [kind, isBooking]);
 
-  if (status === "done") {
+  if (sent) {
     return (
       <div className="border border-forest/15 bg-cream px-6 py-10">
         <p className="font-serif text-2xl text-forest">Takk fyrir línuna.</p>
@@ -56,22 +44,35 @@ export function InquiryForm({ kind }: { kind: Kind }) {
     );
   }
 
+  const subject = `${isBooking ? "Bókun mælingar" : "Hafa samband"}${
+    name.trim() ? ` — ${name.trim()}` : ""
+  }`;
+
   return (
-    <form onSubmit={onSubmit} className="relative space-y-5">
+    <form
+      action={`https://formsubmit.co/${brand.email}`}
+      method="POST"
+      acceptCharset="UTF-8"
+      className="relative space-y-5"
+    >
+      <input type="hidden" name="_next" value={nextUrl} />
+      <input type="hidden" name="_subject" value={subject} />
+      <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_honey" tabIndex={-1} autoComplete="off" />
       <input
-        type="text"
-        name="company"
-        tabIndex={-1}
-        autoComplete="off"
-        className="absolute -left-[9999px] h-0 w-0 opacity-0"
-        aria-hidden
+        type="hidden"
+        name="Tegund"
+        value={isBooking ? "Bókun mælingar" : "Hafa samband"}
       />
+
       <Field label="Nafn" htmlFor={`${kind}-name`}>
         <Input
           id={`${kind}-name`}
-          name="name"
+          name="Nafn"
           required
-          disabled={status === "loading"}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           className="h-11 rounded-none"
         />
       </Field>
@@ -81,15 +82,17 @@ export function InquiryForm({ kind }: { kind: Kind }) {
           name="email"
           type="email"
           required
-          disabled={status === "loading"}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="h-11 rounded-none"
         />
       </Field>
       <Field label="Sími" htmlFor={`${kind}-phone`}>
         <Input
           id={`${kind}-phone`}
-          name="phone"
-          disabled={status === "loading"}
+          name="Sími"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
           className="h-11 rounded-none"
         />
       </Field>
@@ -97,9 +100,10 @@ export function InquiryForm({ kind }: { kind: Kind }) {
         <Field label="Æskilegur tími" htmlFor={`${kind}-when`}>
           <Input
             id={`${kind}-when`}
-            name="when"
+            name="Æskilegur tími"
             placeholder="T.d. næsta vika, eftir vinnu, laugardag"
-            disabled={status === "loading"}
+            value={when}
+            onChange={(e) => setWhen(e.target.value)}
             className="h-11 rounded-none"
           />
         </Field>
@@ -110,10 +114,11 @@ export function InquiryForm({ kind }: { kind: Kind }) {
       >
         <Textarea
           id={`${kind}-message`}
-          name="message"
+          name="Skilaboð"
           required
           rows={5}
-          disabled={status === "loading"}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           className="min-h-28 rounded-none"
           placeholder={
             isBooking
@@ -122,22 +127,32 @@ export function InquiryForm({ kind }: { kind: Kind }) {
           }
         />
       </Field>
-      {error ? (
-        <p role="alert" className="text-sm text-red-700">
-          {error}
-        </p>
-      ) : null}
-      <Button
-        type="submit"
-        disabled={status === "loading"}
-        className="h-12 rounded-none bg-forest px-8 text-[11px] tracking-[0.18em] uppercase text-white hover:bg-forest-mid"
-      >
-        {status === "loading"
-          ? "Sendi…"
-          : isBooking
-            ? "Senda bókun"
-            : "Senda"}
-      </Button>
+      <div className="flex flex-col items-start gap-3">
+        <Button
+          type="submit"
+          disabled={!nextUrl}
+          className="h-12 rounded-none bg-forest px-8 text-[11px] tracking-[0.18em] uppercase text-white hover:bg-forest-mid"
+        >
+          {isBooking ? "Senda bókun" : "Senda"}
+        </Button>
+        <a
+          href={`mailto:${brand.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+            [
+              isBooking ? "Bókun mælingar af vefnum." : "Fyrirspurn af vefnum.",
+              "",
+              `Nafn: ${name}`,
+              `Netfang: ${email}`,
+              `Sími: ${phone || "—"}`,
+              ...(isBooking ? [`Æskilegur tími: ${when || "—"}`] : []),
+              "",
+              message,
+            ].join("\n")
+          )}`}
+          className="text-sm text-forest/70 underline-offset-4 hover:text-forest hover:underline"
+        >
+          Eða senda beint úr póstforritinu
+        </a>
+      </div>
     </form>
   );
 }
