@@ -40,19 +40,14 @@ export async function submitInquiry(payload: InquiryPayload) {
     body: JSON.stringify(payload),
   });
 
-  if (response.ok) return;
-
-  const data = (await response.json().catch(() => null)) as {
-    error?: string;
-    fallback?: boolean;
-  } | null;
-
-  if (response.status === 503 || data?.fallback) {
-    await submitViaFormInbox(payload);
-    return;
+  if (!response.ok) {
+    const data = (await response.json().catch(() => null)) as {
+      error?: string;
+    } | null;
+    throw new Error(data?.error || "Gat ekki sent skilaboðin. Reyndu aftur.");
   }
 
-  throw new Error(data?.error || "Gat ekki sent skilaboðin. Reyndu aftur.");
+  await submitViaFormInbox(payload);
 }
 
 async function submitViaFormInbox(payload: InquiryPayload) {
