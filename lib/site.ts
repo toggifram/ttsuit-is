@@ -132,6 +132,67 @@ export const priceNotes = [
   "Flýtismeðferð +20%",
 ] as const;
 
+export const prices = [
+  {
+    name: "Jakki",
+    from: "59.990 kr.",
+    note: "Jakkar eru undirstaðan. Þú ræður ferðinni hvað varðar útlit, hönnun og snið.",
+  },
+  {
+    name: "Buxur",
+    from: "38.990 kr.",
+    note: "Buxur eru ekki bara buxur. Hér getur þú meðal annars ákveðið hvort beltagöt séu óþarfi.",
+  },
+  {
+    name: "Vesti",
+    from: "26.990 kr.",
+    note: "Ekki allir sem fíla sig í vesti. Hins vegar er gott vesti gulls ígildi.",
+  },
+  {
+    name: "Skyrta",
+    from: "22.990 kr.",
+    note: "Yfir þúsund skyrtuefni — allir ættu að geta fundið sér skyrtu við hæfi.",
+  },
+  {
+    name: "Fylgihlutir",
+    from: "6.490 kr.",
+    note: "Bindi, slaufur, axlabönd, hefðarklútar, armbönd og brjóstklútar.",
+  },
+];
+
+export const packages = [
+  {
+    name: "Eitt sett",
+    from: "89.990 kr.",
+    items: "Þetta klassíska: jakki og buxur sem virka fyrir öll betri tilefni.",
+  },
+  {
+    name: "Heilög þrenna",
+    from: "116.980 kr.",
+    items: "Jakki, buxur og vesti. Gott að eiga vestið þó það sé ekki alltaf nauðsyn.",
+  },
+  {
+    name: "Klár í slaginn",
+    from: "139.970 kr.",
+    items: "Jakki, buxur, vesti og skyrta. Þú ert klár í slaginn.",
+  },
+  {
+    name: "Allur pakkinn",
+    from: "159.990 kr.",
+    items: "Fyrir þá sem nenna ekki að flækja hlutina: jakki, buxur, vesti, skyrta, bindi, klútur og armband.",
+  },
+  {
+    name: "Smáatriði",
+    from: "10.000 kr.",
+    items: "Velur þrjá fylgihluti og færð þá á 20% afslætti.",
+  },
+  {
+    name: "Sex(ý) skyrtum",
+    from: "99.950 kr.",
+    items: "Fáðu sex skyrtur á verði fimm.",
+  },
+];
+
 export const giftCards = [
   { name: "Gjafabréf", price: "4.032 kr." },
   { name: "Gjafabréf", price: "8.065 kr." },

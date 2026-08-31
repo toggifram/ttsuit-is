@@ -160,9 +160,10 @@ export default function SersaumurPage() {
             Fötin eru kannski ekki ókeypis. Verðin gætu samt komið þér á óvart.
           </h2>
           <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-ink/70">
-            Allar flíkur eru sérsaumaðar eftir líkamsbyggingu kaupanda. Verð
-            flokkast eftir efnisvali og frá hvaða framleiðanda efnin koma. Við
-            förum betur yfir þetta í sameiningu þegar þú mætir í mælingu.
+            Allar flíkur eru sérsaumaðar eftir líkamsbyggingu kaupanda. Hér
+            finnur þú föt á ásættanlegu verði. Verðflokkarnir fara eftir
+            efnisvali og frá hvaða framleiðanda efnin koma. Við förum betur
+            yfir þetta í sameiningu þegar þú mætir í mælingu.
           </p>
           <PriceList />
         </div>

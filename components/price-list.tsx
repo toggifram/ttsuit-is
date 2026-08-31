@@ -1,7 +1,9 @@
 import {
   accessoryPrices,
   garmentPrices,
+  packages,
   priceNotes,
+  prices,
   priceTiers,
 } from "@/lib/site";
 
@@ -15,7 +17,7 @@ function AmountCells({ amounts }: { amounts: readonly number[] }) {
       {priceTiers.map((_, i) => (
         <td
           key={priceTiers[i]}
-          className="px-1 py-[0.7rem] text-center font-serif text-[13px] italic text-white/90 md:text-[17px]"
+          className="px-2 py-3 text-center font-serif text-[13px] text-forest tabular-nums md:px-3 md:text-[15px]"
         >
           {amounts[i] != null ? isk(amounts[i]) : ""}
         </td>
@@ -26,45 +28,38 @@ function AmountCells({ amounts }: { amounts: readonly number[] }) {
 
 export function PriceList() {
   return (
-    <div className="relative mt-10 overflow-hidden bg-forest px-4 py-10 text-gold md:mt-12 md:px-12 md:py-14">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 -left-16 size-[28rem] opacity-25"
-        style={{
-          background:
-            "repeating-conic-gradient(from 0deg at 0% 0%, transparent 0deg 11deg, rgb(212 197 161 / 0.18) 11deg 12deg)",
-        }}
-      />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/brand/logo-tl.png"
-        alt=""
-        aria-hidden
-        className="pointer-events-none absolute top-1/2 left-1/2 h-[55%] w-auto -translate-x-1/2 -translate-y-1/2 object-contain opacity-[0.12] mix-blend-screen"
-      />
-      <p
-        aria-hidden
-        className="pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 font-serif text-[11px] tracking-[0.55em] text-gold/25 uppercase md:block"
-        style={{ writingMode: "vertical-rl" }}
-      >
-        Suit
+    <>
+      <div className="mt-12 grid gap-px bg-forest/10 sm:grid-cols-2 lg:grid-cols-5">
+        {prices.map((item) => (
+          <div key={item.name} className="bg-white p-6 md:p-8">
+            <h3 className="font-serif text-2xl text-forest">{item.name}</h3>
+            <p className="mt-2 text-sm text-forest/80">Frá {item.from}</p>
+            <p className="mt-3 text-sm leading-relaxed text-ink/60">
+              {item.note}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <h3 className="mt-16 font-serif text-3xl text-forest">Efnisflokkar</h3>
+      <p className="mt-3 max-w-xl text-sm text-ink/65">
+        Verð fer eftir efnisvali. Flokkur 1 er upphafsverð — hærri flokkar eru
+        fínni dúkur frá öðrum framleiðendum.
       </p>
 
-      <div className="relative overflow-x-auto">
-        <table className="w-full min-w-[40rem] border-collapse">
+      <div className="mt-8 overflow-x-auto bg-white">
+        <table className="w-full min-w-[44rem] border-collapse">
           <thead>
-            <tr className="border-b border-gold/55">
-              <th className="w-[22%] pb-4 text-left align-bottom font-serif text-sm font-normal tracking-wide italic md:text-base">
+            <tr className="border-b border-forest/15">
+              <th className="px-5 py-4 text-left text-[11px] font-semibold tracking-[0.16em] text-forest/55 uppercase">
                 Efnisval
               </th>
               {priceTiers.map((tier) => (
                 <th
                   key={tier}
-                  className="relative h-24 w-[13%] align-bottom font-normal"
+                  className="px-2 py-4 text-center text-[11px] font-semibold tracking-[0.08em] text-forest/55 uppercase"
                 >
-                  <span className="absolute bottom-4 left-1/2 origin-bottom-left -translate-x-[0.35rem] -rotate-45 whitespace-nowrap font-serif text-[12px] italic md:text-sm">
-                    {tier}
-                  </span>
+                  {tier}
                 </th>
               ))}
             </tr>
@@ -75,13 +70,13 @@ export function PriceList() {
                 key={row.name}
                 className={
                   index === garmentPrices.length - 1
-                    ? "border-b border-gold/55"
-                    : undefined
+                    ? "border-b border-forest/20"
+                    : "border-b border-forest/10"
                 }
               >
                 <th
                   scope="row"
-                  className="py-[0.7rem] pr-4 text-left font-serif text-[15px] font-normal italic md:text-xl"
+                  className="px-5 py-3 text-left font-serif text-[15px] font-normal text-forest md:text-lg"
                 >
                   {row.name}
                 </th>
@@ -89,10 +84,10 @@ export function PriceList() {
               </tr>
             ))}
             {accessoryPrices.map((row) => (
-              <tr key={row.name}>
+              <tr key={row.name} className="border-b border-forest/10 last:border-b-0">
                 <th
                   scope="row"
-                  className="py-[0.7rem] pr-4 text-left font-serif text-[15px] font-normal italic md:text-xl"
+                  className="px-5 py-3 text-left font-serif text-[15px] font-normal text-forest md:text-lg"
                 >
                   {row.name}
                 </th>
@@ -103,11 +98,28 @@ export function PriceList() {
         </table>
       </div>
 
-      <div className="relative mt-10 space-y-1 text-center font-serif text-[13px] italic text-white/80 md:text-[15px]">
+      <div className="mt-5 space-y-1 text-sm leading-relaxed text-ink/60">
         {priceNotes.map((note) => (
           <p key={note}>{note}</p>
         ))}
       </div>
-    </div>
+
+      <h3 className="mt-16 font-serif text-3xl text-forest">Pakkar</h3>
+      <p className="mt-3 max-w-xl text-sm text-ink/65">
+        Við elskum öll pakka. Þú getur alltaf bætt við skyrtu, vesti eða
+        fylgihlutum.
+      </p>
+      <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {packages.map((item) => (
+          <div key={item.name} className="bg-white px-6 py-8">
+            <h4 className="font-serif text-2xl text-forest">{item.name}</h4>
+            <p className="mt-2 text-sm text-forest/80">Frá {item.from}</p>
+            <p className="mt-3 text-sm leading-relaxed text-ink/65">
+              {item.items}
+            </p>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
