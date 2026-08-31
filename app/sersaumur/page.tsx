@@ -1,16 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 
 import { InquiryForm } from "@/components/inquiry-form";
+import { PriceList } from "@/components/price-list";
 import { ScrollToHash } from "@/components/scroll-to-hash";
-import {
-  brand,
-  fabrics,
-  faqs,
-  packages,
-  prices,
-  processSteps,
-} from "@/lib/site";
+import { brand, fabrics, faqs, processSteps } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Sérsaumur",
@@ -24,8 +17,8 @@ export default function SersaumurPage() {
   return (
     <>
       <ScrollToHash />
-      <section className="grid bg-white md:grid-cols-2">
-        <div className="flex flex-col justify-center px-6 py-16 md:min-h-[calc(100dvh-7rem)] md:px-14 lg:px-20">
+      <section className="grid items-end bg-white md:grid-cols-2">
+        <div className="flex flex-col justify-end px-6 pb-8 pt-12 md:px-14 md:pb-10 md:pt-16 lg:px-20">
           <p className="text-[11px] font-semibold tracking-[0.22em] text-forest/55 uppercase">
             Custom made · 4–6 vikur
           </p>
@@ -51,14 +44,12 @@ export default function SersaumurPage() {
             </a>
           </div>
         </div>
-        <div className="relative min-h-[420px] bg-white md:min-h-[calc(100dvh-7rem)]">
-          <Image
+        <div className="flex items-end justify-center bg-white px-5 pt-4 md:px-8 md:pt-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/images/studio/suit-bag.png"
             alt="Sérsaumuð jakkaföt og fatapoki Tjé Tjé"
-            fill
-            priority
-            className="object-contain object-center p-8 md:p-12"
-            sizes="(min-width:768px) 50vw, 100vw"
+            className="block h-auto w-full max-h-[min(62vh,560px)] object-contain object-bottom"
           />
         </div>
       </section>
@@ -68,7 +59,7 @@ export default function SersaumurPage() {
         aria-labelledby="ferlid-heading"
         className={`${sectionClass} bg-cream`}
       >
-        <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-16 md:grid-cols-12 md:px-8 md:py-24">
+        <div className="mx-auto grid max-w-[1440px] gap-12 px-5 pt-8 pb-16 md:grid-cols-12 md:px-8 md:pt-10 md:pb-24">
           <div className="md:col-span-4">
             <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
               Ferlið
@@ -169,37 +160,15 @@ export default function SersaumurPage() {
             Fötin eru kannski ekki ókeypis. Verðin gætu samt komið þér á óvart.
           </h2>
           <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-ink/70">
-            Verð flokkast eftir efnisvali og framleiðanda. Við förum betur
-            yfir þetta þegar þú mætir í mælingu — án pressu.
+            Allar flíkur eru sérsaumaðar eftir líkamsbyggingu kaupanda. Verð
+            flokkast eftir efnisvali og framleiðanda. Við förum betur yfir
+            þetta þegar þú mætir í mælingu — án pressu.{" "}
+            <a href="/verdskra" className="text-forest underline-offset-4 hover:underline">
+              Opna verðskrá
+            </a>
+            .
           </p>
-          <div className="mt-12 grid gap-px bg-forest/10 sm:grid-cols-2 lg:grid-cols-5">
-            {prices.map((item) => (
-              <div key={item.name} className="bg-white p-6 md:p-8">
-                <h3 className="font-serif text-2xl text-forest">{item.name}</h3>
-                <p className="mt-2 text-sm text-forest/80">Frá {item.from}</p>
-                <p className="mt-3 text-sm leading-relaxed text-ink/60">
-                  {item.note}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <h3 className="mt-16 font-serif text-3xl text-forest">Pakkar</h3>
-          <p className="mt-3 max-w-xl text-sm text-ink/65">
-            Sett sem flestir byrja á. Þú getur alltaf bætt við skyrtu, vesti
-            eða fylgihlutum.
-          </p>
-          <div className="mt-8 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            {packages.map((item) => (
-              <div key={item.name} className="bg-white px-6 py-8">
-                <h4 className="font-serif text-2xl text-forest">{item.name}</h4>
-                <p className="mt-2 text-sm text-forest/80">Frá {item.from}</p>
-                <p className="mt-3 text-sm leading-relaxed text-ink/65">
-                  {item.items}
-                </p>
-              </div>
-            ))}
-          </div>
+          <PriceList />
         </div>
       </section>
 

@@ -14,7 +14,8 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 ## Hvað er innifalið
 
 - Forsíða með sérsaum og tilbúnum fötum
-- Sérsaumur: ferli og verðskrá
+- Sérsaumur: ferli, efni, bókun
+- Verðskrá og pakkar (`/verdskra`)
 - Verslun: Shopify-staðgengill (vörur og greiðsla koma síðar)
 - Um okkur og hafa samband / bóka mælingu
 - Póstlisti og form með staðfestingu (póstur er ekki sendur sjálfkrafa í þessari prufu)

@@ -50,6 +50,11 @@ export async function SiteFooter() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/verdskra" className="hover:text-white">
+                    Verðskrá
+                  </Link>
+                </li>
+                <li>
                   <Link href="/sersaumur#boka-tima" className="hover:text-white">
                     Mæling og mátun
                   </Link>
