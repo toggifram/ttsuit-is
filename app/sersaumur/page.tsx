@@ -161,12 +161,8 @@ export default function SersaumurPage() {
           </h2>
           <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-ink/70">
             Allar flíkur eru sérsaumaðar eftir líkamsbyggingu kaupanda. Verð
-            flokkast eftir efnisvali og framleiðanda. Við förum betur yfir
-            þetta þegar þú mætir í mælingu — án pressu.{" "}
-            <a href="/verdskra" className="text-forest underline-offset-4 hover:underline">
-              Opna verðskrá
-            </a>
-            .
+            flokkast eftir efnisvali og frá hvaða framleiðanda efnin koma. Við
+            förum betur yfir þetta í sameiningu þegar þú mætir í mælingu.
           </p>
           <PriceList />
         </div>

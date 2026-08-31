@@ -17,7 +17,7 @@ export const navLeft = [
 export const sersaumurMenu = [
   { href: "/sersaumur#ferlid", label: "Ferlið" },
   { href: "/sersaumur#efnin", label: "Efnin" },
-  { href: "/verdskra", label: "Verðskrá" },
+  { href: "/sersaumur#verdskra", label: "Verðskrá" },
   { href: "/sersaumur#boka-tima", label: "Bóka tíma" },
   { href: "/sersaumur#spurningar", label: "Algengar spurningar" },
 ] as const;
@@ -98,66 +98,39 @@ export const categories = [
   },
 ];
 
-export const prices = [
-  {
-    name: "Jakki",
-    from: "59.990 kr.",
-    note: "Jakkar eru undirstaðan. Þú ræður ferðinni hvað varðar útlit, hönnun og snið.",
-  },
-  {
-    name: "Buxur",
-    from: "38.990 kr.",
-    note: "Buxur eru ekki bara buxur. Hér getur þú meðal annars ákveðið hvort beltagöt séu óþarfi.",
-  },
-  {
-    name: "Vesti",
-    from: "26.990 kr.",
-    note: "Ekki allir sem fíla sig í vesti. Hins vegar er gott vesti gulls ígildi.",
-  },
-  {
-    name: "Skyrta",
-    from: "22.990 kr.",
-    note: "Yfir þúsund skyrtuefni — allir ættu að geta fundið sér skyrtu við hæfi.",
-  },
-  {
-    name: "Fylgihlutir",
-    from: "6.490 kr.",
-    note: "Bindi, slaufur, axlabönd, hefðarklútar, armbönd og brjóstklútar.",
-  },
-];
+export const priceTiers = [
+  "Flokkur 1",
+  "Flokkur 2",
+  "Flokkur 3",
+  "Flokkur 4",
+  "Flokkur 5*",
+  "Flokkur 6*",
+] as const;
 
-export const packages = [
-  {
-    name: "Eitt sett",
-    from: "89.990 kr.",
-    items: "Þetta klassíska: jakki og buxur sem virka fyrir öll betri tilefni.",
-  },
-  {
-    name: "Heilög þrenna",
-    from: "116.980 kr.",
-    items: "Jakki, buxur og vesti. Gott að eiga vestið þó það sé ekki alltaf nauðsyn.",
-  },
-  {
-    name: "Klár í slaginn",
-    from: "139.970 kr.",
-    items: "Jakki, buxur, vesti og skyrta. Þú ert klár í slaginn.",
-  },
-  {
-    name: "Allur pakkinn",
-    from: "159.990 kr.",
-    items: "Fyrir þá sem nenna ekki að flækja hlutina: jakki, buxur, vesti, skyrta, bindi, klútur og armband.",
-  },
-  {
-    name: "Smáatriði",
-    from: "10.000 kr.",
-    items: "Velur þrjá fylgihluti og færð þá á 20% afslætti.",
-  },
-  {
-    name: "Sex(ý) skyrtum",
-    from: "99.950 kr.",
-    items: "Fáðu sex skyrtur á verði fimm.",
-  },
-];
+export const garmentPrices = [
+  { name: "Jakkaföt", amounts: [89990, 99990, 114990, 135990, 145990, 155990] },
+  { name: "Jakki", amounts: [59990, 68990, 84990, 94990, 103990, 107990] },
+  { name: "Buxur", amounts: [38990, 42990, 44990, 49990, 54990, 57990] },
+  { name: "Vesti", amounts: [26990, 28990, 30990, 34990, 36990, 38990] },
+  { name: "3 setta föt", amounts: [116980, 128980, 145980, 170980, 182980, 194980] },
+] as const;
+
+export const accessoryPrices = [
+  { name: "Skyrta", amounts: [22990, 28990] },
+  { name: "Axlabönd", amounts: [9990] },
+  { name: "Bindi", amounts: [9990, 12990] },
+  { name: "Slaufa", amounts: [6490] },
+  { name: "Klútur", amounts: [6490] },
+  { name: "Hálsklútur", amounts: [7990] },
+  { name: "Armbönd", amounts: [3990, 5990] },
+] as const;
+
+export const priceNotes = [
+  "Hálf striguð jakkaföt (e. Half canvas) +10.990 kr.",
+  "Full striguð jakkaföt (e. Full canvas) +16.990 kr.",
+  "*Hálfur strigi innifalinn (Flokkur 5 og 6)",
+  "Flýtismeðferð +20%",
+] as const;
 
 export const giftCards = [
   { name: "Gjafabréf", price: "4.032 kr." },
@@ -208,7 +181,7 @@ export const faqs = [
   },
   {
     q: "Hvað kostar þetta?",
-    a: "Jakki frá 59.990 kr., buxur frá 38.990 kr. og heilt sett frá 89.990 kr. Verð flokkast eftir efnisvali. Sjá alla verðskrána — við förum yfir þetta í mælingu, án pressu.",
+    a: "Jakki frá 59.990 kr., buxur frá 38.990 kr. og heilt sett frá 89.990 kr. Verð flokkast eftir efnisvali (flokkur 1–6). Við förum yfir þetta í mælingu, án pressu.",
   },
   {
     q: "Gildir 15% afslátturinn á sérsaum?",

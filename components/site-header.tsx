@@ -33,9 +33,7 @@ function PromoTicker() {
 
 function SersaumurNav({ pathname }: { pathname: string }) {
   const active =
-    pathname === "/sersaumur" ||
-    pathname.startsWith("/sersaumur/") ||
-    pathname === "/verdskra";
+    pathname === "/sersaumur" || pathname.startsWith("/sersaumur/");
 
   return (
     <div className="group relative -my-7 flex items-center py-7">
