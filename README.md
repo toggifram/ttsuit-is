@@ -17,7 +17,7 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 - Sérsaumur: ferli, efni, verðskrá og bókun
 - Verslun: Shopify-staðgengill (vörur og greiðsla koma síðar)
 - Um okkur og hafa samband / bóka mælingu
-- Póstlisti og form með staðfestingu (póstur er ekki sendur sjálfkrafa í þessari prufu)
+- Póstlisti tengdur Mailchimp (listinn „TT suit“)
 
 ## Litir og merki
 
@@ -41,6 +41,19 @@ SHOPIFY_STOREFRONT_ACCESS_TOKEN=shpat_…
 ```
 
 Án tókans notar sleðinn staðbundnar vörur úr ljósmyndum svo útlitið sé tilbúið.
+
+## Mailchimp
+
+Póstlistinn í fætinum og sprettiglugganum skráir netföng á **TT suit** listann.
+
+Settu í `.env.local`:
+
+```
+MAILCHIMP_API_KEY=…-us9
+MAILCHIMP_AUDIENCE_ID=…
+```
+
+Audience ID finnur þú í Mailchimp undir Audience → Settings, eða með API (`GET /3.0/lists`). Án lykilsins virðist formið en skráningin fer ekki inn.
 
 ## Shopify síðar
 

@@ -9,13 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CONSENT_KEYS, readConsent, writeConsent } from "@/lib/consent";
+import { subscribeNewsletter } from "@/lib/subscribe-newsletter";
 import { cn } from "@/lib/utils";
 
 export function NewsletterPopup() {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [agreed, setAgreed] = useState(false);
-  const [status, setStatus] = useState<"idle" | "done">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
   const [error, setError] = useState("");
   const emailId = useId();
   const termsId = useId();
@@ -45,16 +46,27 @@ export function NewsletterPopup() {
     setOpen(false);
   }
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim() || status === "loading") return;
     if (!agreed) {
       setError("Þú þarft að samþykkja skilmálana.");
       return;
     }
     setError("");
-    setStatus("done");
-    writeConsent(CONSENT_KEYS.newsletter, "subscribed");
+    setStatus("loading");
+    try {
+      await subscribeNewsletter(email);
+      writeConsent(CONSENT_KEYS.newsletter, "subscribed");
+      setStatus("done");
+    } catch (err) {
+      setStatus("idle");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Gat ekki skráð netfangið. Reyndu aftur."
+      );
+    }
   }
 
   useEffect(() => {
@@ -126,6 +138,7 @@ export function NewsletterPopup() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Netfangið þitt"
                   aria-label="Netfang"
+                  disabled={status === "loading"}
                   className="h-12 rounded-none px-3 text-sm"
                 />
                 <Label
@@ -156,11 +169,12 @@ export function NewsletterPopup() {
                 ) : null}
                 <Button
                   type="submit"
+                  disabled={status === "loading"}
                   className={cn(
                     "mt-6 h-12 w-full rounded-none text-[11px] font-semibold tracking-[0.16em] uppercase"
                   )}
                 >
-                  Fáðu afsláttinn
+                  {status === "loading" ? "Skrái…" : "Fáðu afsláttinn"}
                 </Button>
               </form>
             </>

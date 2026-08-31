@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { subscribeNewsletter } from "@/lib/subscribe-newsletter";
 import { cn } from "@/lib/utils";
 
 export function NewsletterForm({
@@ -10,12 +11,25 @@ export function NewsletterForm({
   variant?: "light" | "dark";
 }) {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "done">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
+  const [error, setError] = useState("");
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim()) return;
-    setStatus("done");
+    if (!email.trim() || status === "loading") return;
+    setError("");
+    setStatus("loading");
+    try {
+      await subscribeNewsletter(email);
+      setStatus("done");
+    } catch (err) {
+      setStatus("idle");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Gat ekki skráð netfangið. Reyndu aftur."
+      );
+    }
   }
 
   if (status === "done") {
@@ -26,7 +40,7 @@ export function NewsletterForm({
           variant === "dark" ? "text-white/80" : "text-forest"
         )}
       >
-        Takk — þú ert á listanum þegar póstlistinn fer í loftið.
+        Takk — þú ert á póstlistanum.
       </p>
     );
   }
@@ -34,38 +48,53 @@ export function NewsletterForm({
   const dark = variant === "dark";
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className={cn(
-        "flex w-full max-w-[13.5rem]",
-        dark ? "border border-white" : "border border-forest/25"
-      )}
-    >
-      <input
-        type="email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Netfang"
-        aria-label="Netfang"
+    <div className="w-full max-w-[13.5rem]">
+      <form
+        onSubmit={onSubmit}
         className={cn(
-          "h-10 min-w-0 flex-1 bg-transparent px-3 text-[13px] outline-none",
-          dark
-            ? "text-white placeholder:text-white/45"
-            : "text-ink placeholder:text-ink/40"
-        )}
-      />
-      <button
-        type="submit"
-        className={cn(
-          "shrink-0 border-l px-3 text-[10px] font-semibold tracking-[0.14em] uppercase",
-          dark
-            ? "border-white text-white hover:bg-white hover:text-forest"
-            : "border-forest/25 text-forest hover:bg-forest hover:text-white"
+          "flex w-full",
+          dark ? "border border-white" : "border border-forest/25"
         )}
       >
-        Skrá
-      </button>
-    </form>
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Netfang"
+          aria-label="Netfang"
+          disabled={status === "loading"}
+          className={cn(
+            "h-10 min-w-0 flex-1 bg-transparent px-3 text-[13px] outline-none",
+            dark
+              ? "text-white placeholder:text-white/45"
+              : "text-ink placeholder:text-ink/40"
+          )}
+        />
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className={cn(
+            "shrink-0 border-l px-3 text-[10px] font-semibold tracking-[0.14em] uppercase",
+            dark
+              ? "border-white text-white hover:bg-white hover:text-forest"
+              : "border-forest/25 text-forest hover:bg-forest hover:text-white"
+          )}
+        >
+          {status === "loading" ? "…" : "Skrá"}
+        </button>
+      </form>
+      {error ? (
+        <p
+          role="alert"
+          className={cn(
+            "mt-2 text-[12px] leading-snug",
+            dark ? "text-white/70" : "text-red-700"
+          )}
+        >
+          {error}
+        </p>
+      ) : null}
+    </div>
   );
 }
