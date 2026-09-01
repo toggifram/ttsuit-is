@@ -57,9 +57,7 @@ Audience ID finnur þú í Mailchimp undir Audience → Settings, eða með API 
 
 ## Hafa samband og bókun
 
-Formin á `/hafa-samband` og `/sersaumur` (bókun mælingar) senda póst á **ttsuit@ttsuit.is**. Mailchimp er aðeins notað fyrir póstlistann. Svar fer á netfangið sem gesturinn skrifaði.
-
-Fyrsta sendingin getur sent staðfestingarpóst á ttsuit@ttsuit.is — opnaðu hlekkinn í honum einu sinni, svo næstu bókanir og skilaboð komist inn.
+Formin á `/hafa-samband` og `/sersaumur` (bókun mælingar) senda póst á **ttsuit@ttsuit.is**. Gesturinn fer ekki á Mailchimp-póstlistann.
 
 ## Shopify síðar
 
