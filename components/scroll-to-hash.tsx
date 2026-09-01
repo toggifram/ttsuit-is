@@ -3,6 +3,23 @@
 import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 
+export function scrollToHash(
+  hash: string,
+  behavior: ScrollBehavior = "smooth"
+) {
+  const id = hash.replace(/^#/, "");
+  if (!id) {
+    window.scrollTo({ top: 0, behavior });
+    return;
+  }
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ block: "start", behavior });
+  if (window.location.hash !== `#${id}`) {
+    window.history.pushState(null, "", `#${id}`);
+  }
+}
+
 export function ScrollToHash() {
   const pathname = usePathname();
 
@@ -14,26 +31,22 @@ export function ScrollToHash() {
       if (id) {
         document.getElementById(id)?.scrollIntoView({
           block: "start",
+          behavior: "smooth",
         });
         return;
       }
       window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
     }
 
-    go();
     const raf = window.requestAnimationFrame(go);
-    const t1 = window.setTimeout(go, 0);
-    const t2 = window.setTimeout(go, 80);
-    const t3 = window.setTimeout(go, 200);
+    const t1 = window.setTimeout(go, 80);
+    const t2 = window.setTimeout(go, 240);
     window.addEventListener("hashchange", go);
 
     return () => {
       window.cancelAnimationFrame(raf);
       window.clearTimeout(t1);
       window.clearTimeout(t2);
-      window.clearTimeout(t3);
       window.removeEventListener("hashchange", go);
     };
   }, [pathname]);

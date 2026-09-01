@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { FooterInstagram } from "@/components/instagram-feed";
+import { HashLink } from "@/components/hash-link";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { brand, footerNav, socialLinks } from "@/lib/site";
 
@@ -50,14 +51,22 @@ export async function SiteFooter() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/sersaumur/verdskra" className="hover:text-white">
+                  <HashLink
+                    hash="verdskra"
+                    href="/sersaumur#verdskra"
+                    className="hover:text-white"
+                  >
                     Verðskrá
-                  </Link>
+                  </HashLink>
                 </li>
                 <li>
-                  <Link href="/sersaumur/boka-tima" className="hover:text-white">
+                  <HashLink
+                    hash="boka-tima"
+                    href="/sersaumur#boka-tima"
+                    className="hover:text-white"
+                  >
                     Mæling og mátun
-                  </Link>
+                  </HashLink>
                 </li>
                 <li>
                   <a href={`mailto:${brand.email}`} className="hover:text-white">

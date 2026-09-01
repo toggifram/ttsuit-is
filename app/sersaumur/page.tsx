@@ -7,7 +7,6 @@ import {
   SersaumurFerlid,
   SersaumurHero,
   SersaumurSpurningar,
-  SersaumurSubnav,
   SersaumurVerdskra,
 } from "@/components/sersaumur-sections";
 
@@ -22,7 +21,6 @@ export default function SersaumurPage() {
     <>
       <ScrollToHash />
       <SersaumurHero />
-      <SersaumurSubnav />
       <SersaumurFerlid />
       <SersaumurEfnin />
       <SersaumurVerdskra />

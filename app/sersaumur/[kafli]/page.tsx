@@ -1,38 +1,19 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+"use client";
 
-import {
-  sersaumurSectionMap,
-  SersaumurSubnav,
-} from "@/components/sersaumur-sections";
-import { sersaumurSection, sersaumurSections } from "@/lib/site";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
-type Props = { params: Promise<{ kafli: string }> };
+import { sersaumurMenu } from "@/lib/site";
 
-export function generateStaticParams() {
-  return sersaumurSections.map((item) => ({ kafli: item.slug }));
-}
+const hashes = new Set<string>(sersaumurMenu.map((item) => item.hash));
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { kafli } = await params;
-  const section = sersaumurSection(kafli);
-  if (!section) return { title: "Sérsaumur" };
-  return {
-    title: `${section.label} · Sérsaumur`,
-    description: section.description,
-  };
-}
+export default function LegacySersaumurRedirect() {
+  const { kafli } = useParams<{ kafli: string }>();
 
-export default async function SersaumurKafliPage({ params }: Props) {
-  const { kafli } = await params;
-  const section = sersaumurSection(kafli);
-  const Body = sersaumurSectionMap[kafli as keyof typeof sersaumurSectionMap];
-  if (!section || !Body) notFound();
+  useEffect(() => {
+    const hash = hashes.has(kafli) ? kafli : "";
+    window.location.replace(hash ? `/sersaumur#${hash}` : "/sersaumur");
+  }, [kafli]);
 
-  return (
-    <>
-      <SersaumurSubnav active={section.slug} />
-      <Body />
-    </>
-  );
+  return null;
 }

@@ -1,46 +1,9 @@
-import Link from "next/link";
-
+import { HashLink } from "@/components/hash-link";
 import { InquiryForm } from "@/components/inquiry-form";
 import { PriceList } from "@/components/price-list";
-import { brand, fabrics, faqs, processSteps, sersaumurSections } from "@/lib/site";
-import { cn } from "@/lib/utils";
+import { brand, fabrics, faqs, processSteps } from "@/lib/site";
 
 const sectionClass = "scroll-mt-36";
-
-export function SersaumurSubnav({ active }: { active?: string }) {
-  return (
-    <nav
-      aria-label="Sérsaumur"
-      className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-forest/10 bg-white px-5 py-4 md:px-8"
-    >
-      <Link
-        href="/sersaumur"
-        className={cn(
-          "text-[13px] transition-colors",
-          !active
-            ? "text-forest underline decoration-forest/40 underline-offset-8"
-            : "text-ink/40 hover:text-ink"
-        )}
-      >
-        Yfirlit
-      </Link>
-      {sersaumurSections.map((item) => (
-        <Link
-          key={item.slug}
-          href={item.href}
-          className={cn(
-            "text-[13px] transition-colors",
-            active === item.slug
-              ? "text-forest underline decoration-forest/40 underline-offset-8"
-              : "text-ink/40 hover:text-ink"
-          )}
-        >
-          {item.label}
-        </Link>
-      ))}
-    </nav>
-  );
-}
 
 export function SersaumurHero() {
   return (
@@ -57,18 +20,20 @@ export function SersaumurHero() {
           velur efni, snið og smáatriði. Við tökum mælinguna og saumum.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            href="/sersaumur/boka-tima"
+          <HashLink
+            hash="boka-tima"
+            href="/sersaumur#boka-tima"
             className="inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
           >
             Bóka tíma
-          </Link>
-          <Link
-            href="/sersaumur/ferlid"
+          </HashLink>
+          <HashLink
+            hash="ferlid"
+            href="/sersaumur#ferlid"
             className="inline-flex h-12 items-center border border-forest/20 px-7 text-sm text-forest transition-colors hover:border-forest hover:bg-forest hover:text-white"
           >
             Sjá ferlið
-          </Link>
+          </HashLink>
         </div>
       </div>
       <div className="flex items-end justify-center bg-white px-5 pt-4 md:px-8 md:pt-8">
@@ -295,10 +260,3 @@ export function SersaumurSpurningar() {
   );
 }
 
-export const sersaumurSectionMap = {
-  ferlid: SersaumurFerlid,
-  efnin: SersaumurEfnin,
-  verdskra: SersaumurVerdskra,
-  "boka-tima": SersaumurBoka,
-  spurningar: SersaumurSpurningar,
-} as const;

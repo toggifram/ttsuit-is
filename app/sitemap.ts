@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { shopCategories } from "@/lib/product";
-import { isProductionSite, sersaumurSections, siteUrl } from "@/lib/site";
+import { isProductionSite, siteUrl } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   if (!isProductionSite()) return [];
@@ -12,7 +12,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     "/",
     "/sersaumur",
-    ...sersaumurSections.map((item) => item.href),
     "/verslun",
     ...shopCategories.filter((cat) => cat.slug).map((cat) => `/verslun/${cat.slug}`),
     "/hafa-samband",
