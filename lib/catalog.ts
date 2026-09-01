@@ -330,7 +330,7 @@ export const fallbackProducts: Product[] = [
   },
 ];
 
-/** Live Shopify catalog when a Storefront token is set, otherwise studio fallback. */
+/** Live Shopify catalog via Admin API (or Storefront), otherwise studio fallback. */
 export async function getCatalogProducts(): Promise<Product[]> {
   try {
     const { fetchShopifyProducts } = await import("./shopify");

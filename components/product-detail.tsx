@@ -188,8 +188,8 @@ export function ProductDetail({
               </p>
             ) : (
               <p className="text-[12px] leading-relaxed text-ink/50">
-                Vefverslunin á Shopify er enn í undirbúningi. Sendu okkur línu
-                og við klárum pöntunina handvirkt.
+                Sendu okkur línu og við klárum pöntunina. Shopify-verslunin er
+                ekki opin almenningi — vörurnar eru sýndar hér.
               </p>
             )}
           </div>

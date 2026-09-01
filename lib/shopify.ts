@@ -103,15 +103,58 @@ type ShopifyProduct = {
   variants?: { nodes: { availableForSale: boolean }[] };
 };
 
+type AdminImage = { src: string; alt: string | null };
+type AdminOption = { name: string; values: string[] };
+type AdminVariant = {
+  price: string;
+  inventory_management: string | null;
+  inventory_quantity?: number | null;
+};
+
+type AdminProduct = {
+  id: number;
+  title: string;
+  handle: string;
+  body_html: string | null;
+  product_type: string | null;
+  tags: string;
+  images: AdminImage[];
+  options: AdminOption[];
+  variants: AdminVariant[];
+};
+
 function storeDomain() {
   return (process.env.SHOPIFY_STORE_DOMAIN || "tje-tje.myshopify.com")
     .replace(/^https?:\/\//, "")
     .replace(/\/$/, "");
 }
 
+function adminToken() {
+  return process.env.SHOPIFY_ADMIN_ACCESS_TOKEN?.trim() || "";
+}
+
+function publicCheckout() {
+  return process.env.SHOPIFY_PUBLIC_CHECKOUT === "true";
+}
+
 function colorHex(name: string) {
   const key = name.trim().toLowerCase();
   return COLOR_HEX[key] ?? "#8a8a8a";
+}
+
+function stripHtml(html: string) {
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
 }
 
 function badgeFromTags(tags: string[]) {
@@ -159,6 +202,9 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
   const available =
     node.variants?.nodes.some((variant) => variant.availableForSale) ?? true;
   const extraImages = gallery.filter((url) => url !== featured);
+  const shopifyUrl = publicCheckout()
+    ? node.onlineStoreUrl || `https://${domain}/products/${node.handle}`
+    : undefined;
 
   return {
     id: node.id,
@@ -166,8 +212,7 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
     title: node.title,
     subtitle: node.productType?.trim() || "Ready to wear",
     href: productHref(node.handle),
-    shopifyUrl:
-      node.onlineStoreUrl || `https://${domain}/products/${node.handle}`,
+    shopifyUrl,
     image: featured,
     imageAlt: node.featuredImage?.altText || node.title,
     images: extraImages.length ? extraImages : undefined,
@@ -182,6 +227,108 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
     category: categoryFrom(node),
     available,
   };
+}
+
+function fromAdminProduct(product: AdminProduct): ShopifyProduct {
+  const images = (product.images ?? []).map((image) => ({
+    url: image.src,
+    altText: image.alt,
+  }));
+  const tags = (product.tags ?? "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+  const price = product.variants?.[0]?.price ?? "0";
+
+  return {
+    id: `gid://shopify/Product/${product.id}`,
+    title: product.title,
+    handle: product.handle,
+    productType: product.product_type,
+    tags,
+    description: stripHtml(product.body_html ?? ""),
+    onlineStoreUrl: null,
+    featuredImage: images[0] ?? null,
+    images: { nodes: images },
+    priceRange: {
+      minVariantPrice: { amount: price, currencyCode: "ISK" },
+    },
+    options: (product.options ?? []).map((option) => ({
+      name: option.name,
+      values: option.values,
+    })),
+    variants: {
+      nodes: (product.variants ?? []).map((variant) => ({
+        availableForSale:
+          !variant.inventory_management || (variant.inventory_quantity ?? 1) > 0,
+      })),
+    },
+  };
+}
+
+function nextLink(header: string | null) {
+  if (!header) return null;
+  const match = header.split(",").find((part) => part.includes('rel="next"'));
+  const url = match?.match(/<([^>]+)>/)?.[1];
+  return url ?? null;
+}
+
+async function adminFetch(url: string) {
+  const token = adminToken();
+  if (!token) return null;
+  const res = await fetch(url, {
+    headers: {
+      "X-Shopify-Access-Token": token,
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    console.error(`Shopify Admin API ${res.status} ${url.replace(/https?:\/\/[^/]+/, "")}`);
+    return null;
+  }
+  return res;
+}
+
+async function fetchAdminProducts(): Promise<Product[] | null> {
+  if (!adminToken()) return null;
+
+  const domain = storeDomain();
+  const collected: AdminProduct[] = [];
+  let url: string | null =
+    `https://${domain}/admin/api/${API_VERSION}/products.json?limit=250&status=active`;
+  let pages = 0;
+
+  while (url && pages < 8) {
+    const res = await adminFetch(url);
+    if (!res) return collected.length ? mapAdminList(collected, domain) : null;
+    const json = (await res.json()) as { products?: AdminProduct[] };
+    collected.push(...(json.products ?? []));
+    url = nextLink(res.headers.get("link"));
+    pages += 1;
+  }
+
+  return mapAdminList(collected, domain);
+}
+
+async function fetchAdminProduct(handle: string): Promise<Product | null> {
+  if (!adminToken()) return null;
+  const domain = storeDomain();
+  const res = await adminFetch(
+    `https://${domain}/admin/api/${API_VERSION}/products.json?handle=${encodeURIComponent(handle)}&status=active&limit=1`
+  );
+  if (!res) return null;
+  const json = (await res.json()) as { products?: AdminProduct[] };
+  const product = json.products?.[0];
+  if (!product) return null;
+  return mapProduct(fromAdminProduct(product), domain);
+}
+
+function mapAdminList(products: AdminProduct[], domain: string) {
+  const mapped = products
+    .map((product) => mapProduct(fromAdminProduct(product), domain))
+    .filter((item): item is Product => item !== null);
+  return mapped.length ? mapped : null;
 }
 
 type ShopifyJson<T> = {
@@ -204,7 +351,7 @@ async function shopifyGraphql<T>(
       "X-Shopify-Storefront-Access-Token": token,
     },
     body: JSON.stringify({ query, variables }),
-    next: { revalidate: 300 },
+    next: { revalidate: 60 },
   });
   if (!res.ok) return null;
 
@@ -213,7 +360,7 @@ async function shopifyGraphql<T>(
   return json.data ?? null;
 }
 
-export async function fetchShopifyProducts(): Promise<Product[] | null> {
+async function fetchStorefrontProducts(): Promise<Product[] | null> {
   const data = await shopifyGraphql<{ products?: { nodes: ShopifyProduct[] } }>(
     PRODUCTS_QUERY
   );
@@ -225,15 +372,36 @@ export async function fetchShopifyProducts(): Promise<Product[] | null> {
     .filter((item): item is Product => item !== null);
 }
 
-export async function fetchShopifyProduct(
-  handle: string
-): Promise<Product | null> {
+async function fetchStorefrontProduct(handle: string): Promise<Product | null> {
   const data = await shopifyGraphql<{ product?: ShopifyProduct | null }>(
     PRODUCT_QUERY,
     { handle }
   );
   if (!data?.product) return null;
   return mapProduct(data.product, storeDomain());
+}
+
+/** Admin API first (works while the Online Store stays password-protected). */
+export async function fetchShopifyProducts(): Promise<Product[] | null> {
+  try {
+    const admin = await fetchAdminProducts();
+    if (admin?.length) return admin;
+  } catch {
+    // Fall through to Storefront.
+  }
+  return fetchStorefrontProducts();
+}
+
+export async function fetchShopifyProduct(
+  handle: string
+): Promise<Product | null> {
+  try {
+    const admin = await fetchAdminProduct(handle);
+    if (admin) return admin;
+  } catch {
+    // Fall through to Storefront.
+  }
+  return fetchStorefrontProduct(handle);
 }
 
 /** Random products from every Shopify category, with a local fallback. */

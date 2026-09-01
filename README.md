@@ -15,7 +15,7 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 - Forsíða með sérsaum og tilbúnum fötum
 - Sérsaumur: ferli, efni, verðskrá og bókun
-- Verslun með vörusíðum (`/verslun/vara/[handle]`), tengdum Shopify þegar tóki er settur
+- Verslun með vörusíðum (`/verslun/vara/[handle]`), sóttum úr Shopify Admin API
 - Um okkur og hafa samband / bóka mælingu
 - Póstlisti tengdur Mailchimp (listinn „TT suit“)
 
@@ -28,24 +28,30 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 ## Shopify
 
-Forsíðan sýnir fimm vörur í einu (með örvum) og síðan **sex flokkamyndir** (2×3) með „Versla núna“. Smellur á vöru opnar vörusíðu hér á síðunni: `/verslun/vara/[handle]`.
+Online Store má vera **lokuð almenningi** (lykilorð á `tje-tje.myshopify.com`). Síðan sækir vörur með **Admin API**, ekki opinni vefverslun Shopify.
 
-Vörusíðan sýnir myndir, verð, lýsingu og stærðir. Ef Shopify er tengt fer **Kaupa** á Shopify-vörusíðuna (greiðsla er enn í Shopify). Án tókans eru notaðar staðbundnar vörur úr ljósmyndum og kaup fara í gegnum **Hafa samband**.
+Smellur á vöru opnar `/verslun/vara/[handle]` hér. Nýjar vörur sem þú setur inn í Shopify birtast sjálfkrafa (síðan sækir listann upp á nýtt við hverja heimsókn). Kaup fara í gegnum **Hafa samband** á meðan Shopify-verslunin er lokuð.
 
-`tje-tje.myshopify.com` er núna **lykilorðslæst** (Online Store channel locked). Þá svarar Storefront API ekki, jafnvel með tóka, fyrr en verslunin er opnuð.
+### Tengja Admin API
 
 1. Í Shopify Admin: **Settings → Apps and sales channels → Develop apps**
-2. Búðu til app, opnaðu **Storefront API**, og veittu `unauthenticated_read_product_listings`
-3. Afritaðu **Storefront API access token** (ekki Admin-tókann sem byrjar á `shpat_`)
-4. Taktu lykilorðið af Online Store svo rásin sé ekki læst
-5. Settu í `.env.local`:
+2. Leyfðu custom apps ef Shopify biður um það
+3. **Create an app** — t.d. „Tjé Tjé vefur“
+4. **Configure Admin API scopes** → hakaðu við `read_products` → Save
+5. **Install app**
+6. Afritaðu **Admin API access token** (byrjar á `shpat_`). Hann sýnist bara einu sinni.
+7. Settu í `.env.local`:
 
 ```
 SHOPIFY_STORE_DOMAIN=tje-tje.myshopify.com
-SHOPIFY_STOREFRONT_ACCESS_TOKEN=…
+SHOPIFY_ADMIN_ACCESS_TOKEN=shpat_…
 ```
 
-Án tókans (eða með læstri verslun) notar síðan staðbundnar vörur svo útlitið sé tilbúið.
+Endurræstu `npm run dev`. Vörur, myndir, verð og lýsing koma þá beint úr Shopify.
+
+Án tókans notar síðan staðbundnar vörur úr ljósmyndum.
+
+Ef þú vilt síðar opna Shopify-verslunina og láta **Kaupa** fara þangað: settu `SHOPIFY_PUBLIC_CHECKOUT=true`.
 
 ## Mailchimp
 
@@ -66,7 +72,7 @@ Formin á `/hafa-samband` og `/sersaumur` (bókun mælingar) senda póst á **tt
 
 ## Verslun
 
-`/verslun` er vöruyfirlit. Hver vara hefur síðu á `/verslun/vara/[handle]`. Þegar Storefront-tókinn er settur og Online Store opnuð koma vörur, myndir og verð beint úr Shopify.
+`/verslun` er vöruyfirlit. Hver vara hefur síðu á `/verslun/vara/[handle]`. Með Admin-tóka koma vörur, myndir og verð beint úr Shopify — þótt Online Store sé lokuð.
 
 ## Tæknin
 

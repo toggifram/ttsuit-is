@@ -7,6 +7,8 @@ import { categoryFromSlug, shopCategories } from "@/lib/product";
 
 type Props = { params: Promise<{ slug: string }> };
 
+export const dynamic = "force-dynamic";
+
 export function generateStaticParams() {
   return shopCategories
     .filter((cat) => cat.slug)

@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { ShopCatalog } from "@/components/shop-catalog";
 import { getCatalogProducts } from "@/lib/catalog";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Allar vörur",
   description:
