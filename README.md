@@ -13,7 +13,9 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 Við breytum **alltaf local fyrst**. Þegar þú ert sáttur biðurðu um að setja á vefinn.
 
-Sama GitHub- og Netlify-aðgangur og fram.is — en **sér repo og sér Netlify-site**. Ekki blanda þessu inn í fram.is-verkefnið.
+## Prufusíða
+
+[https://ttsuit-is.netlify.app](https://ttsuit-is.netlify.app) — **nýtt** Netlify-site á Skellur-aðganginum, **ekki** tengt fram.is (`www.nytt.fram.is` er óhreyft).
 
 ## Síður
 
@@ -32,20 +34,9 @@ Sama GitHub- og Netlify-aðgangur og fram.is — en **sér repo og sér Netlify-
 
 ## GitHub og Netlify
 
-Nýtt repo (t.d. `ttsuit-is`) og nýtt Netlify-site á **sama aðgangi** og fram.is. Ekki sama repo, ekki sameinað build.
+Sama GitHub- og Netlify-aðgangur og fram.is, en **sér repo og sér site**. Prufusíðan er [ttsuit-is.netlify.app](https://ttsuit-is.netlify.app). Auto-publish frá git er slökkt — við deploy-um þegar þú biður um það.
 
-Héðan vantar innskráningu: smelltu á **Create repo** í Cursor (nýtt repo, ekki fram.is) og sendu [Netlify personal access token](https://app.netlify.com/user/applications#personal-access-tokens) svo hægt sé að búa til **nýtt** site og deploy-a. Eða tengdu nýja GitHub-repoið sjálfur við Netlify: Add site → Import → veldu `ttsuit-is` (ekki fram.is).
-
-Í Netlify: **Stop auto publishing**. Environment variables:
-
-```
-NEXT_PUBLIC_SITE_URL=https://<þitt-netlify-nafn>.netlify.app
-SHOPIFY_STORE_DOMAIN=tje-tje.myshopify.com
-SHOPIFY_CLIENT_ID=…
-SHOPIFY_CLIENT_SECRET=…
-MAILCHIMP_API_KEY=…
-MAILCHIMP_AUDIENCE_ID=…
-```
+Shopify og Mailchimp eru stillt sem environment variables á Netlify-site-inu. Lyklar fara **aldrei** í git.
 
 ## Hvað er innifalið
 
