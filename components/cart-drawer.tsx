@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { Minus, Plus, ShoppingBag, X } from "lucide-react";
 
 import { useCart } from "@/components/cart-provider";
@@ -41,38 +40,8 @@ export function CartButton({ className }: { className?: string }) {
 }
 
 export function CartDrawer() {
-  const { items, totalAmount, open, setOpen, setQuantity, removeItem, clear } =
+  const { items, totalAmount, open, setOpen, setQuantity, removeItem } =
     useCart();
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
-
-  const checkout = async () => {
-    setPending(true);
-    setError("");
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          lines: items.map((item) => ({
-            variantId: item.variantId,
-            quantity: item.quantity,
-          })),
-        }),
-      });
-      const json = (await res.json()) as { url?: string; error?: string };
-      if (!res.ok || !json.url) {
-        setError(json.error || "Gat ekki opnað Shopify-kassann.");
-        return;
-      }
-      clear();
-      window.location.href = json.url;
-    } catch {
-      setError("Gat ekki opnað Shopify-kassann.");
-    } finally {
-      setPending(false);
-    }
-  };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -170,22 +139,16 @@ export function CartDrawer() {
                 </span>
               </div>
               <p className="mt-2 text-[12px] leading-relaxed text-ink/50">
-                Sending og greiðsla eru reiknuð í Shopify-kassanum — með þeim
-                leiðum sem þú hefur sett upp þar.
+                Sendingarleiðir og heimilisfang fyllirðu út hér á síðunni.
+                Kortagreiðsla fer síðan um Shopify.
               </p>
-              {error ? (
-                <p className="mt-3 text-[13px] leading-relaxed text-red-800">
-                  {error}
-                </p>
-              ) : null}
-              <button
-                type="button"
-                onClick={checkout}
-                disabled={pending}
-                className="mt-4 inline-flex h-12 w-full items-center justify-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid disabled:opacity-60"
+              <Link
+                href="/kassi"
+                onClick={() => setOpen(false)}
+                className="mt-4 inline-flex h-12 w-full items-center justify-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
               >
-                {pending ? "Opna kassa…" : "Ganga frá kaupum"}
-              </button>
+                Ganga frá kaupum
+              </Link>
             </div>
           </>
         ) : (

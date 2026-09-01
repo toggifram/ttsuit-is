@@ -37,7 +37,7 @@ Vörur, sending og greiðsla koma **ekki** allar með sama API.
 | Sending | Shopify Checkout | **Settings → Shipping** |
 | Greiðsla | Shopify Checkout | **Settings → Payments** |
 
-Síðan sýnir vörurnar og körfuna. **Ganga frá kaupum** opnar Shopify-kassann, þar sem sendingarleiðir og kort (Shopify Payments o.s.frv.) eru þegar stillt.
+Síðan sýnir vörurnar, körfuna og **kassa** á `/kassi`: heimilisfang, sendingarleiðir og afsláttarkóði koma úr Shopify. **Greiða** opnar Shopify-kassann fyrir kort — Shopify leyfir ekki að taka við kortanúmerum á utanaðkomandi síðu.
 
 ### 1. Vörur — Admin API
 
