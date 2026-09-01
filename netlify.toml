@@ -1,0 +1,8 @@
+# Next.js 16 on Netlify is zero-config (OpenNext). Do not pin @netlify/plugin-nextjs.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  SHOPIFY_STORE_DOMAIN = "tje-tje.myshopify.com"

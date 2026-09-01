@@ -9,18 +9,75 @@ export const brand = {
   domain: "ttsuit.is",
 };
 
+export function siteUrl() {
+  const raw =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.URL ||
+    `https://${brand.domain}`;
+  return raw.replace(/\/$/, "");
+}
+
+export function isProductionSite() {
+  return siteUrl() === `https://${brand.domain}`;
+}
+
 export const navLeft = [
   { href: "/sersaumur", label: "Sérsaumur" },
   { href: "/verslun", label: "Vefverslun" },
 ] as const;
 
-export const sersaumurMenu = [
-  { href: "/sersaumur#ferlid", label: "Ferlið" },
-  { href: "/sersaumur#efnin", label: "Efnin" },
-  { href: "/sersaumur#verdskra", label: "Verðskrá" },
-  { href: "/sersaumur#boka-tima", label: "Bóka tíma" },
-  { href: "/sersaumur#spurningar", label: "Algengar spurningar" },
+export const sersaumurSections = [
+  {
+    slug: "ferlid",
+    href: "/sersaumur/ferlid",
+    label: "Ferlið",
+    title: "Fimm skref. Ekkert flókið.",
+    description:
+      "Frá fyrstu línu til fata sem sitja eins og þau eiga að sitja. Við förum hægt yfir valin.",
+  },
+  {
+    slug: "efnin",
+    href: "/sersaumur/efnin",
+    label: "Efnin",
+    title: "Þú snertir dúkinn áður en við klippum.",
+    description:
+      "Hundruð efnis — ull, hör, flannel, tweed og skyrtuefni. Þú velur.",
+  },
+  {
+    slug: "verdskra",
+    href: "/sersaumur/verdskra",
+    label: "Verðskrá",
+    title: "Verðin gætu samt komið þér á óvart.",
+    description:
+      "Jakkaföt, jakkar og skyrtur eftir efnisflokki. Við förum yfir þetta í mælingu.",
+  },
+  {
+    slug: "boka-tima",
+    href: "/sersaumur/boka-tima",
+    label: "Bóka tíma",
+    title: "Við finnum tíma sem hentar.",
+    description:
+      "Virkir dagar, helgi eða eftir vinnu. Þú sendir línu og við höfum samband innan 48 klukkustunda.",
+  },
+  {
+    slug: "spurningar",
+    href: "/sersaumur/spurningar",
+    label: "Algengar spurningar",
+    title: "Það sem flestir spyrja.",
+    description: "Tími, mæling, verð og hvað gerist ef eitthvað þarf að hnika til.",
+  },
 ] as const;
+
+export const sersaumurMenu = sersaumurSections.map((item) => ({
+  href: item.href,
+  label: item.label,
+}));
+
+export type SersaumurSlug = (typeof sersaumurSections)[number]["slug"];
+
+export function sersaumurSection(slug: string) {
+  return sersaumurSections.find((item) => item.slug === slug) ?? null;
+}
 
 export const navRight = [
   { href: "/hafa-samband", label: "Hafa samband" },
@@ -40,7 +97,7 @@ export const footerNav = [
   { href: "/verslun", label: "Vefverslun" },
   { href: "/um-okkur", label: "Um okkur" },
   { href: "/hafa-samband", label: "Hafa samband" },
-  { href: "/sersaumur#boka-tima", label: "Bóka mælingu" },
+  { href: "/sersaumur/boka-tima", label: "Bóka mælingu" },
 ] as const;
 
 export const processSteps = [

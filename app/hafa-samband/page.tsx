@@ -58,7 +58,7 @@ export default function ContactPage() {
         <p className="mt-10 text-sm text-ink/55">
           Viltu bóka mælingu?{" "}
           <Link
-            href="/sersaumur#boka-tima"
+            href="/sersaumur/boka-tima"
             className="text-forest underline-offset-4 hover:underline"
           >
             Farðu á sérsaumssíðuna

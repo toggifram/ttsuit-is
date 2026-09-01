@@ -50,13 +50,13 @@ function SersaumurNav({ pathname }: { pathname: string }) {
       <div className="pointer-events-none absolute top-full left-0 z-50 min-w-[12.5rem] pt-1 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
         <div className="bg-forest py-2 shadow-[0_8px_24px_rgba(0,0,0,0.25)]">
           {sersaumurMenu.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className="block px-4 py-2 text-[13px] text-white/80 hover:text-white"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
@@ -189,7 +189,7 @@ export function SiteHeader() {
                             <SheetClose
                               key={sub.href}
                               render={
-                                <a
+                                <Link
                                   href={sub.href}
                                   className="py-2 pl-3 text-sm text-white/55"
                                 />

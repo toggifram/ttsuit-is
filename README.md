@@ -11,6 +11,59 @@ npm run dev
 
 Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
+Við breytum **alltaf local fyrst**. Þegar þú ert sáttur biðurðu um að setja á vefinn — þá fer prufusíðan á Netlify. Ekki tengja þetta við fram.is.
+
+## Síður
+
+| Slóð | Hvað |
+| --- | --- |
+| `/` | Forsíða |
+| `/sersaumur` | Sérsaumur — yfirlit |
+| `/sersaumur/ferlid` | Ferlið |
+| `/sersaumur/efnin` | Efnin |
+| `/sersaumur/verdskra` | Verðskrá (undir sérsaum, ekki sjálfstæð síða) |
+| `/sersaumur/boka-tima` | Bóka mælingu |
+| `/sersaumur/spurningar` | Algengar spurningar |
+| `/verslun` | Allar vörur |
+| `/verslun/peysur` · `/bindi` · `/yfirhafnir` · `/fylgihluti` · `/gjafabref` | Flokkar |
+| `/verslun/vara/[handle]` | Vörusíða |
+| `/kassi` | Sending og greiðsla |
+| `/hafa-samband` | Hafa samband |
+| `/um-okkur` | Um okkur |
+| `/skilmalar` | Skilmálar |
+| `/vafrakokur` | Vafrakökur |
+
+## GitHub — nýtt repo, ekki fram.is
+
+Þetta verkefni á **ekki** að vera inni í fram.is. Stofnaðu **nýtt GitHub-repo** (t.d. `ttsuit-is` eða `tje-tje`) á persónulegum/Tjé Tjé-reikningi.
+
+Í Cursor: smelltu á **Create repo** og veldu nýtt repo — ekki fram.is-skipulagið.
+
+## Netlify — prufusíða
+
+Héðan get ég ekki skráð þig inn á Netlify eða GitHub. Þú gerir þetta einu sinni:
+
+1. [app.netlify.com](https://app.netlify.com) → **Add new site → Import an existing project**
+2. Veldu **nýja GitHub-repoið** (ekki fram.is)
+3. Build: `npm run build` · Publish: `.next` (eða láttu Netlify greina Next.js)
+4. **Stop auto publishing** undir Site configuration → Build & deploy — svo hver `git push` fari ekki beint á vefinn
+5. Environment variables (Site configuration → Environment variables):
+
+```
+NEXT_PUBLIC_SITE_URL=https://<þitt-netlify-nafn>.netlify.app
+SHOPIFY_STORE_DOMAIN=tje-tje.myshopify.com
+SHOPIFY_CLIENT_ID=…
+SHOPIFY_CLIENT_SECRET=…
+MAILCHIMP_API_KEY=…
+MAILCHIMP_AUDIENCE_ID=…
+```
+
+Lyklar fara **aldrei** í git.
+
+Þegar þú vilt birta: **Deploys → Trigger deploy** í Netlify, eða skrifaðu hér „settu á vefinn“. Ef þú sendir mér [Netlify personal access token](https://app.netlify.com/user/applications) get ég keyrt `netlify deploy --prod --build` fyrir þig.
+
+Prufusíðan er `noindex` þar til `NEXT_PUBLIC_SITE_URL` er `https://ttsuit.is`.
+
 ## Hvað er innifalið
 
 - Forsíða með sérsaum og tilbúnum fötum

@@ -6,7 +6,7 @@ import { CartProvider } from "@/components/cart-provider";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SiteOverlays } from "@/components/site-overlays";
-import { brand } from "@/lib/site";
+import { brand, siteUrl } from "@/lib/site";
 
 import "./globals.css";
 
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   description:
     "Tjé Tjé er herrafatnaður á Íslandi: sérsaumuð jakkaföt og tilbúin föt. Bókaðu mælingu eða skoðaðu verslunina.",
-  metadataBase: new URL("https://ttsuit.is"),
+  metadataBase: new URL(siteUrl()),
   icons: {
     icon: [{ url: "/icon.png", type: "image/png" }],
     apple: [{ url: "/apple-icon.png", type: "image/png" }],
