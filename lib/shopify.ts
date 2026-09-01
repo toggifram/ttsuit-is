@@ -8,6 +8,11 @@ import {
   type ProductColor,
   type ProductVariant,
 } from "@/lib/product";
+import {
+  getAdminAccessToken,
+  getStorefrontAccessToken,
+  storeDomain,
+} from "@/lib/shopify-auth";
 
 const API_VERSION = "2025-01";
 
@@ -146,16 +151,6 @@ type AdminProduct = {
   options: AdminOption[];
   variants: AdminVariant[];
 };
-
-function storeDomain() {
-  return (process.env.SHOPIFY_STORE_DOMAIN || "tje-tje.myshopify.com")
-    .replace(/^https?:\/\//, "")
-    .replace(/\/$/, "");
-}
-
-function adminToken() {
-  return process.env.SHOPIFY_ADMIN_ACCESS_TOKEN?.trim() || "";
-}
 
 function publicCheckout() {
   return process.env.SHOPIFY_PUBLIC_CHECKOUT === "true";
@@ -344,7 +339,7 @@ function nextLink(header: string | null) {
 }
 
 async function adminFetch(url: string) {
-  const token = adminToken();
+  const token = await getAdminAccessToken();
   if (!token) return null;
   const res = await fetch(url, {
     headers: {
@@ -361,7 +356,7 @@ async function adminFetch(url: string) {
 }
 
 async function fetchAdminProducts(): Promise<Product[] | null> {
-  if (!adminToken()) return null;
+  if (!(await getAdminAccessToken())) return null;
 
   const domain = storeDomain();
   const collected: AdminProduct[] = [];
@@ -382,7 +377,7 @@ async function fetchAdminProducts(): Promise<Product[] | null> {
 }
 
 async function fetchAdminProduct(handle: string): Promise<Product | null> {
-  if (!adminToken()) return null;
+  if (!(await getAdminAccessToken())) return null;
   const domain = storeDomain();
   const res = await adminFetch(
     `https://${domain}/admin/api/${API_VERSION}/products.json?handle=${encodeURIComponent(handle)}&status=active&limit=1`
@@ -411,7 +406,7 @@ async function shopifyGraphql<T>(
   variables?: Record<string, unknown>,
   mutate = false
 ): Promise<T | null> {
-  const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN?.trim();
+  const token = await getStorefrontAccessToken();
   const domain = storeDomain();
   if (!token) return null;
 
@@ -531,7 +526,7 @@ async function createStorefrontCheckout(
 async function createDraftOrderCheckout(
   lines: { variantId: string; quantity: number }[]
 ) {
-  if (!adminToken()) return null;
+  if (!(await getAdminAccessToken())) return null;
   const domain = storeDomain();
   const lineItems = lines
     .map((line) => {
@@ -549,7 +544,7 @@ async function createDraftOrderCheckout(
     {
       method: "POST",
       headers: {
-        "X-Shopify-Access-Token": adminToken(),
+        "X-Shopify-Access-Token": await getAdminAccessToken(),
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ draft_order: { line_items: lineItems } }),
