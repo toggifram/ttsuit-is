@@ -194,10 +194,14 @@ function categoryFrom(node: ShopifyProduct): ProductCategory {
   const hay = `${node.productType ?? ""} ${node.tags.join(" ")} ${node.title}`.toLowerCase();
   if (/gift|gjafa|voucher/.test(hay)) return "gjafabref";
   if (/\btie\b|bindi|bow tie|slaufa/.test(hay)) return "bindi";
-  if (/coat|outerwear|yfirhafn|frakki|overshirt|parka|overcoat/.test(hay)) {
+  if (/coat|outerwear|yfirhafn|frakki|jakki|jakkar|overshirt|parka|overcoat/.test(hay)) {
     return "yfirhafnir";
   }
-  if (/accessor|fylgi|belt|scarf|pocket|cuff|bracelet|klút/.test(hay)) {
+  if (
+    /accessor|fylgi|belt|scarf|pocket|cuff|bracelet|armband|axlabond|klút|klutur/.test(
+      hay
+    )
+  ) {
     return "fylgihlutir";
   }
   return "peysur";
