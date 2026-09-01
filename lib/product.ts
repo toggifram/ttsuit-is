@@ -75,8 +75,16 @@ export function hrefForCategory(id: (typeof shopCategories)[number]["id"]) {
   return row?.slug ? `/verslun/${row.slug}` : "/verslun";
 }
 
+export function productHref(handle: string) {
+  return `/verslun/vara/${handle}`;
+}
+
 export function categoryFromSlug(slug: string) {
   return shopCategories.find((cat) => cat.slug === slug) ?? null;
+}
+
+export function categoryLabel(id: ProductCategory) {
+  return shopCategories.find((cat) => cat.id === id)?.label ?? "Verslun";
 }
 
 export type Product = {
@@ -91,7 +99,17 @@ export type Product = {
   badge?: string;
   colors: ProductColor[];
   category: ProductCategory;
+  description?: string;
+  images?: string[];
+  sizes?: string[];
+  shopifyUrl?: string;
+  available?: boolean;
 };
+
+export function productImages(product: Product): string[] {
+  const urls = [product.image, ...(product.images ?? [])];
+  return [...new Set(urls.filter(Boolean))];
+}
 
 export function shuffle<T>(items: T[]): T[] {
   const next = [...items];

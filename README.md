@@ -15,7 +15,7 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 - Forsíða með sérsaum og tilbúnum fötum
 - Sérsaumur: ferli, efni, verðskrá og bókun
-- Verslun: Shopify-staðgengill (vörur og greiðsla koma síðar)
+- Verslun með vörusíðum (`/verslun/vara/[handle]`), tengdum Shopify þegar tóki er settur
 - Um okkur og hafa samband / bóka mælingu
 - Póstlisti tengdur Mailchimp (listinn „TT suit“)
 
@@ -28,19 +28,24 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 ## Shopify
 
-Forsíðan sýnir fimm vörur í einu (með örvum) og síðan **sex flokkamyndir** (2×3) með „Versla núna“, beint undir vörulistanum. Þar undir er sérsaumsreitur með mynd, texta og **Skoða**, og síðan Instagram-reitur sem sækir færslur frá Behold.
+Forsíðan sýnir fimm vörur í einu (með örvum) og síðan **sex flokkamyndir** (2×3) með „Versla núna“. Smellur á vöru opnar vörusíðu hér á síðunni: `/verslun/vara/[handle]`.
+
+Vörusíðan sýnir myndir, verð, lýsingu og stærðir. Ef Shopify er tengt fer **Kaupa** á Shopify-vörusíðuna (greiðsla er enn í Shopify). Án tókans eru notaðar staðbundnar vörur úr ljósmyndum og kaup fara í gegnum **Hafa samband**.
+
+`tje-tje.myshopify.com` er núna **lykilorðslæst** (Online Store channel locked). Þá svarar Storefront API ekki, jafnvel með tóka, fyrr en verslunin er opnuð.
 
 1. Í Shopify Admin: **Settings → Apps and sales channels → Develop apps**
-2. Búðu til app, opnaðu **Storefront API**, og veittu `unauthenticated_read_product_listings` (og `read_products` ef það er í boði)
-3. Afritaðu **Storefront API access token**
-4. Settu í `.env.local`:
+2. Búðu til app, opnaðu **Storefront API**, og veittu `unauthenticated_read_product_listings`
+3. Afritaðu **Storefront API access token** (ekki Admin-tókann sem byrjar á `shpat_`)
+4. Taktu lykilorðið af Online Store svo rásin sé ekki læst
+5. Settu í `.env.local`:
 
 ```
 SHOPIFY_STORE_DOMAIN=tje-tje.myshopify.com
-SHOPIFY_STOREFRONT_ACCESS_TOKEN=shpat_…
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=…
 ```
 
-Án tókans notar sleðinn staðbundnar vörur úr ljósmyndum svo útlitið sé tilbúið.
+Án tókans (eða með læstri verslun) notar síðan staðbundnar vörur svo útlitið sé tilbúið.
 
 ## Mailchimp
 
@@ -59,9 +64,9 @@ Audience ID finnur þú í Mailchimp undir Audience → Settings, eða með API 
 
 Formin á `/hafa-samband` og `/sersaumur` (bókun mælingar) senda póst á **ttsuit@ttsuit.is**. Gesturinn fer ekki á Mailchimp-póstlistann.
 
-## Shopify síðar
+## Verslun
 
-`/verslun` er undirbúin sem vöruyfirlit. Þegar Shopify-verslunin er tilbúin er hægt að tengja vörulista og greiðslu beint inn á þá síðu.
+`/verslun` er vöruyfirlit. Hver vara hefur síðu á `/verslun/vara/[handle]`. Þegar Storefront-tókinn er settur og Online Store opnuð koma vörur, myndir og verð beint úr Shopify.
 
 ## Tæknin
 

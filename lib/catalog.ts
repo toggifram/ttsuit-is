@@ -1,4 +1,6 @@
-import type { Product } from "@/lib/product";
+import { productHref, type Product } from "@/lib/product";
+
+const knitSizes = ["S", "M", "L", "XL"];
 
 /** Studio fallback until a Storefront token is set. Mix of categories. */
 export const fallbackProducts: Product[] = [
@@ -8,15 +10,19 @@ export const fallbackProducts: Product[] = [
     title: "Navy cardigan með sjal-kraga",
     subtitle: "Þungt prjón · Regular fit",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("navy-shawl-cardigan"),
     image: "/images/studio/navy-shawl.jpg",
     imageAlt: "Navy cardigan",
+    images: ["/images/studio/navy-back.jpg", "/images/studio/navy-detail.jpg"],
     price: "24.990 kr.",
     badge: "NÝTT",
+    sizes: knitSizes,
     colors: [
       { name: "Navy", hex: "#1e3a5f" },
       { name: "Charcoal", hex: "#3d3d3d" },
     ],
+    description:
+      "Þungur navy cardigan með sjal-kraga og hreinu sniði. Prjónað til að sitja vel yfir skyrtu eða polo — næsta lag yfir allt árið, ekki bara á milli árstíða.",
   },
   {
     id: "olive-zip",
@@ -24,15 +30,19 @@ export const fallbackProducts: Product[] = [
     title: "Olive quarter-zip peysa",
     subtitle: "Prjónapeysa með rennilás",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("olive-quarter-zip"),
     image: "/images/studio/olive-zip.jpg",
     imageAlt: "Olive zip peysa",
+    images: ["/images/studio/brown-zip.jpg"],
     price: "19.990 kr.",
+    sizes: knitSizes,
     colors: [
       { name: "Olive", hex: "#5c5a3a" },
       { name: "Navy", hex: "#1e3a5f" },
       { name: "Brown", hex: "#5c3d2e" },
     ],
+    description:
+      "Quarter-zip í ólífu, með rennilás sem situr lágt og hreinum kraga. Auðveld peysa að kasta yfir sig — ein og sér eða undir jakka.",
   },
   {
     id: "taupe-cardigan",
@@ -40,15 +50,18 @@ export const fallbackProducts: Product[] = [
     title: "Taupe zip cardigan",
     subtitle: "Cable-knit · Klassískt snið",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("taupe-zip-cardigan"),
     image: "/images/studio/taupe-cardigan.jpg",
     imageAlt: "Taupe cardigan",
     price: "22.990 kr.",
     badge: "NÝTT",
+    sizes: knitSizes,
     colors: [
       { name: "Taupe", hex: "#8a7a6b" },
       { name: "Navy", hex: "#1e3a5f" },
     ],
+    description:
+      "Zip cardigan í taupe með cable-knit. Léttari en sjal-kraginn, en jafn klár í vinnuna og helgina.",
   },
   {
     id: "black-polo",
@@ -56,15 +69,19 @@ export const fallbackProducts: Product[] = [
     title: "Svart prjóna-polo",
     subtitle: "Rifjað prjón · Hreint snið",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("black-knit-polo"),
     image: "/images/studio/black-polo.jpg",
     imageAlt: "Svart polo",
+    images: ["/images/studio/dark-polo.jpg", "/images/studio/charcoal-polo.jpg"],
     price: "14.990 kr.",
+    sizes: knitSizes,
     colors: [
       { name: "Black", hex: "#1a1a1a" },
       { name: "Grey", hex: "#6b6b6b" },
       { name: "Navy", hex: "#1e3a5f" },
     ],
+    description:
+      "Svart prjóna-polo með rifjuðum kraga. Grunnvara sem klæðir bæði gallabuxur og snyrtilegri buxur — og þarf ekki skyrtu undir.",
   },
   {
     id: "charcoal-polo",
@@ -72,14 +89,18 @@ export const fallbackProducts: Product[] = [
     title: "Charcoal polo",
     subtitle: "Prjón · Regular fit",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("charcoal-polo"),
     image: "/images/studio/charcoal-polo.jpg",
     imageAlt: "Charcoal polo",
+    images: ["/images/studio/grey-polo.jpg"],
     price: "14.990 kr.",
+    sizes: knitSizes,
     colors: [
       { name: "Charcoal", hex: "#3d3d3d" },
       { name: "Black", hex: "#1a1a1a" },
     ],
+    description:
+      "Charcoal polo í sama sniði og það svarta. Daufari litur, sama notagildi — inn á skrifstofu eða út um kvöldið.",
   },
   {
     id: "brown-zip",
@@ -87,14 +108,18 @@ export const fallbackProducts: Product[] = [
     title: "Brún prjónapeysa",
     subtitle: "Quarter-zip · Cable-knit",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("brown-quarter-zip"),
     image: "/images/studio/brown-zip.jpg",
     imageAlt: "Brún peysa",
+    images: ["/images/studio/olive-zip.jpg"],
     price: "19.990 kr.",
+    sizes: knitSizes,
     colors: [
       { name: "Brown", hex: "#5c3d2e" },
       { name: "Olive", hex: "#5c5a3a" },
     ],
+    description:
+      "Brún quarter-zip með cable-knit. Hlý en ekki þung, og liturinn situr vel með navy og khaki.",
   },
   {
     id: "navy-crew",
@@ -102,14 +127,18 @@ export const fallbackProducts: Product[] = [
     title: "Navy crewneck",
     subtitle: "Klassísk peysa án kraga",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("navy-crewneck"),
     image: "/images/studio/navy-crew.jpg",
     imageAlt: "Navy crewneck",
+    images: ["/images/studio/navy-back.jpg"],
     price: "16.990 kr.",
+    sizes: knitSizes,
     colors: [
       { name: "Navy", hex: "#1e3a5f" },
       { name: "Grey", hex: "#6b6b6b" },
     ],
+    description:
+      "Klassísk navy peysa án kraga. Situr hreint yfir skyrtu og er sú peysa sem flestir eiga of fáar af.",
   },
   {
     id: "grey-polo",
@@ -117,16 +146,20 @@ export const fallbackProducts: Product[] = [
     title: "Grátt prjóna-polo",
     subtitle: "Rifjað prjón",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("grey-knit-polo"),
     image: "/images/studio/grey-polo.jpg",
     imageAlt: "Grátt polo",
+    images: ["/images/studio/charcoal-polo.jpg"],
     price: "14.990 kr.",
     badge: "NÝTT",
+    sizes: knitSizes,
     colors: [
       { name: "Grey", hex: "#8a8a8a" },
       { name: "Black", hex: "#1a1a1a" },
       { name: "Navy", hex: "#1e3a5f" },
     ],
+    description:
+      "Ljósara polo í gráu. Léttara í útliti en charcoal, sama rifjaða prjón og hreina snið.",
   },
   {
     id: "dark-polo",
@@ -134,14 +167,18 @@ export const fallbackProducts: Product[] = [
     title: "Dökkt polo",
     subtitle: "Prjón · Tímalaus grunnvara",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("dark-knit-polo"),
     image: "/images/studio/dark-polo.jpg",
     imageAlt: "Dökkt polo",
+    images: ["/images/studio/black-polo.jpg"],
     price: "14.990 kr.",
+    sizes: knitSizes,
     colors: [
       { name: "Forest", hex: "#043034" },
       { name: "Navy", hex: "#1e3a5f" },
     ],
+    description:
+      "Dökkt polo í skógargrænu. Næstum svart í kvöldljósi, en grænt þegar sólin nær því — eins og merkið.",
   },
   {
     id: "navy-logo",
@@ -149,11 +186,15 @@ export const fallbackProducts: Product[] = [
     title: "Navy peysa með TJ merki",
     subtitle: "Merkið saumað á brjóstið",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("navy-tj-peysa"),
     image: "/images/studio/navy-logo.jpg",
     imageAlt: "Navy peysa með merki",
+    images: ["/images/studio/navy-detail.jpg"],
     price: "18.990 kr.",
+    sizes: knitSizes,
     colors: [{ name: "Navy", hex: "#1e3a5f" }],
+    description:
+      "Navy peysa með TJ merkinu saumuðu á brjóstið. Ekki stórt lógó — bara merkið, sem þeir sem þekkja það sjá.",
   },
   {
     id: "navy-back",
@@ -161,14 +202,18 @@ export const fallbackProducts: Product[] = [
     title: "Navy prjónapeysa",
     subtitle: "Sniðið sést best að aftan",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("navy-passform"),
     image: "/images/studio/navy-back.jpg",
     imageAlt: "Bakning af navy peysu",
+    images: ["/images/studio/navy-crew.jpg", "/images/studio/navy-shawl.jpg"],
     price: "18.990 kr.",
+    sizes: knitSizes,
     colors: [
       { name: "Navy", hex: "#1e3a5f" },
       { name: "Charcoal", hex: "#3d3d3d" },
     ],
+    description:
+      "Navy prjónapeysa með sniði sem situr þétt um axlirnar og fellur hreint niður bakið. Regular fit, ekki oversized.",
   },
   {
     id: "brown-back",
@@ -176,14 +221,18 @@ export const fallbackProducts: Product[] = [
     title: "Brún crewneck peysa",
     subtitle: "Þungt prjón · Regular fit",
     category: "peysur",
-    href: "/verslun",
+    href: productHref("brown-crewneck"),
     image: "/images/studio/brown-back.jpg",
     imageAlt: "Brún peysa að aftan",
+    images: ["/images/studio/brown-zip.jpg"],
     price: "16.990 kr.",
+    sizes: knitSizes,
     colors: [
       { name: "Brown", hex: "#5c3d2e" },
       { name: "Taupe", hex: "#8a7a6b" },
     ],
+    description:
+      "Brún crewneck í þungu prjóni. Situr vel yfir skyrtu og er sú peysa sem þú tekur með þér þegar þú veist ekki hvað kvöldið verður.",
   },
 
   {
@@ -192,7 +241,7 @@ export const fallbackProducts: Product[] = [
     title: "Navy bindi með doppum",
     subtitle: "Silki · Klassískt snið",
     category: "bindi",
-    href: "/verslun/bindi",
+    href: productHref("navy-dot-bindi"),
     image: "/images/studio/bindi.jpg",
     imageAlt: "Navy bindi með kopar doppum",
     price: "8.990 kr.",
@@ -200,6 +249,8 @@ export const fallbackProducts: Product[] = [
       { name: "Navy", hex: "#1e3a5f" },
       { name: "Black", hex: "#1a1a1a" },
     ],
+    description:
+      "Navy silkibindi með kopar doppum. Klassískt snið sem virkar jafnt með navy jakkafötum og brúnum tweed.",
   },
   {
     id: "brown-overshirt",
@@ -207,15 +258,18 @@ export const fallbackProducts: Product[] = [
     title: "Brúnn ullarjakki",
     subtitle: "Yfirhöfn · Regular fit",
     category: "yfirhafnir",
-    href: "/verslun/yfirhafnir",
+    href: productHref("brunn-ullarjakki"),
     image: "/images/studio/yfirhafnir.jpg",
     imageAlt: "Brúnn jakki",
     price: "34.990 kr.",
     badge: "NÝTT",
+    sizes: ["46", "48", "50", "52", "54"],
     colors: [
       { name: "Brown", hex: "#5c3d2e" },
       { name: "Navy", hex: "#1e3a5f" },
     ],
+    description:
+      "Brúnn ullarjakki sem situr milli yfirhafnar og blazers. Regular fit, nægilega hlýr fyrir íslenskt haust og nógu snyrtilegur fyrir vinnuna.",
   },
 
   {
@@ -224,11 +278,13 @@ export const fallbackProducts: Product[] = [
     title: "Gjafabréf",
     subtitle: "Innleysanlegt í verslun og sérsaum",
     category: "gjafabref",
-    href: "/hafa-samband",
+    href: productHref("gjafabref-4032"),
     image: "/images/studio/gift-card.png",
     imageAlt: "Gjafabréf Tjé Tjé",
     price: "4.032 kr.",
     colors: [],
+    description:
+      "Gjafabréf sem nýtist bæði í tilbúnum fötum og sérsaum. Við sendum bréfið rafrænt — eða prentum það út ef þú vilt afhenda það sjálfur.",
   },
   {
     id: "gift-8065",
@@ -236,11 +292,13 @@ export const fallbackProducts: Product[] = [
     title: "Gjafabréf",
     subtitle: "Innleysanlegt í verslun og sérsaum",
     category: "gjafabref",
-    href: "/hafa-samband",
+    href: productHref("gjafabref-8065"),
     image: "/images/studio/gift-card.png",
     imageAlt: "Gjafabréf Tjé Tjé",
     price: "8.065 kr.",
     colors: [],
+    description:
+      "Gjafabréf sem nýtist bæði í tilbúnum fötum og sérsaum. Við sendum bréfið rafrænt — eða prentum það út ef þú vilt afhenda það sjálfur.",
   },
   {
     id: "gift-40323",
@@ -248,11 +306,13 @@ export const fallbackProducts: Product[] = [
     title: "Gjafabréf",
     subtitle: "Innleysanlegt í verslun og sérsaum",
     category: "gjafabref",
-    href: "/hafa-samband",
+    href: productHref("gjafabref-40323"),
     image: "/images/studio/gift-card.png",
     imageAlt: "Gjafabréf Tjé Tjé",
     price: "40.323 kr.",
     colors: [],
+    description:
+      "Gjafabréf sem nýtist bæði í tilbúnum fötum og sérsaum. Við sendum bréfið rafrænt — eða prentum það út ef þú vilt afhenda það sjálfur.",
   },
   {
     id: "gift-80645",
@@ -260,11 +320,13 @@ export const fallbackProducts: Product[] = [
     title: "Gjafabréf",
     subtitle: "Innleysanlegt í verslun og sérsaum",
     category: "gjafabref",
-    href: "/hafa-samband",
+    href: productHref("gjafabref-80645"),
     image: "/images/studio/gift-card.png",
     imageAlt: "Gjafabréf Tjé Tjé",
     price: "80.645 kr.",
     colors: [],
+    description:
+      "Gjafabréf sem nýtist bæði í tilbúnum fötum og sérsaum. Við sendum bréfið rafrænt — eða prentum það út ef þú vilt afhenda það sjálfur.",
   },
 ];
 
@@ -278,4 +340,16 @@ export async function getCatalogProducts(): Promise<Product[]> {
     // Password-protected stores and missing tokens fall back below.
   }
   return fallbackProducts;
+}
+
+export async function getCatalogProduct(handle: string): Promise<Product | null> {
+  try {
+    const { fetchShopifyProduct } = await import("./shopify");
+    const live = await fetchShopifyProduct(handle);
+    if (live) return live;
+  } catch {
+    // Fall through to the catalog / studio list.
+  }
+  const all = await getCatalogProducts();
+  return all.find((product) => product.handle === handle) ?? null;
 }
