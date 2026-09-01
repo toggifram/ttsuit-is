@@ -3,9 +3,10 @@
 import { Fragment } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Search, ShoppingBag } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 
 import { Logo } from "@/components/logo";
+import { CartButton } from "@/components/cart-drawer";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -143,19 +144,11 @@ export function SiteHeader() {
             >
               <Search className="size-4" />
             </Button>
-            <Button
-              nativeButton={false}
-              variant="ghost"
-              size="icon"
-              render={<Link href="/verslun" />}
-              className="text-white hover:bg-white/10 hover:text-white"
-              aria-label="Karfa"
-            >
-              <ShoppingBag className="size-4" />
-            </Button>
+            <CartButton />
           </div>
 
-          <div className="lg:hidden">
+          <div className="flex items-center gap-1 lg:hidden">
+            <CartButton className="md:hidden" />
             <Sheet>
               <SheetTrigger
                 render={

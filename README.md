@@ -28,30 +28,47 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 ## Shopify
 
-Online Store má vera **lokuð almenningi** (lykilorð á `tje-tje.myshopify.com`). Síðan sækir vörur með **Admin API**, ekki opinni vefverslun Shopify.
+Vörur, sending og greiðsla koma **ekki** allar með sama API.
 
-Smellur á vöru opnar `/verslun/vara/[handle]` hér. Nýjar vörur sem þú setur inn í Shopify birtast sjálfkrafa (síðan sækir listann upp á nýtt við hverja heimsókn). Kaup fara í gegnum **Hafa samband** á meðan Shopify-verslunin er lokuð.
+| Hvað | API | Þar sem þú stillir þetta |
+| --- | --- | --- |
+| Vörur, myndir, verð | Admin API (`read_products`) | Products í Shopify |
+| Karfa → kassi | Storefront Cart API | Custom app, Storefront |
+| Sending | Shopify Checkout | **Settings → Shipping** |
+| Greiðsla | Shopify Checkout | **Settings → Payments** |
 
-### Tengja Admin API
+Síðan sýnir vörurnar og körfuna. **Ganga frá kaupum** opnar Shopify-kassann, þar sem sendingarleiðir og kort (Shopify Payments o.s.frv.) eru þegar stillt.
 
-1. Í Shopify Admin: **Settings → Apps and sales channels → Develop apps**
-2. Leyfðu custom apps ef Shopify biður um það
-3. **Create an app** — t.d. „Tjé Tjé vefur“
-4. **Configure Admin API scopes** → hakaðu við `read_products` → Save
-5. **Install app**
-6. Afritaðu **Admin API access token** (byrjar á `shpat_`). Hann sýnist bara einu sinni.
-7. Settu í `.env.local`:
+### 1. Vörur — Admin API
+
+Online Store má vera lokuð á meðan við sækjum vörur.
+
+1. **Settings → Apps and sales channels → Develop apps**
+2. **Create an app** — t.d. „Tjé Tjé vefur“
+3. Admin API scopes: `read_products` (og `write_draft_orders` sem varaleið fyrir kassa)
+4. Install app og afritaðu **Admin API access token** (`shpat_…`)
 
 ```
 SHOPIFY_STORE_DOMAIN=tje-tje.myshopify.com
 SHOPIFY_ADMIN_ACCESS_TOKEN=shpat_…
 ```
 
-Endurræstu `npm run dev`. Vörur, myndir, verð og lýsing koma þá beint úr Shopify.
+### 2. Sending og greiðsla — Storefront kassi
 
-Án tókans notar síðan staðbundnar vörur úr ljósmyndum.
+1. Á sama app: opnaðu **Storefront API** og veittu `unauthenticated_read_product_listings`, `unauthenticated_read_checkouts` og `unauthenticated_write_checkouts` (eða `carts` ef Shopify sýnir það)
+2. Afritaðu **Storefront API access token**
+3. Stilltu sendingu og greiðslu í Shopify Admin eins og venjulega
+4. Settu í `.env.local`:
 
-Ef þú vilt síðar opna Shopify-verslunina og láta **Kaupa** fara þangað: settu `SHOPIFY_PUBLIC_CHECKOUT=true`.
+```
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=…
+```
+
+### 3. Lykilorð og kassi
+
+Shopify-kassinn opnast ekki á meðan Online Store er lykilorðslæst. Taktu lykilorðið af, og settu redirect í `theme.liquid` svo `tje-tje.myshopify.com` sendi fólk á [ttsuit.is](https://ttsuit.is) — kassinn sjálfur (`/checkouts`) verður áfram á Shopify.
+
+Án tókans notar síðan staðbundnar vörur og **Hafa samband** í stað kassa.
 
 ## Mailchimp
 
@@ -72,7 +89,7 @@ Formin á `/hafa-samband` og `/sersaumur` (bókun mælingar) senda póst á **tt
 
 ## Verslun
 
-`/verslun` er vöruyfirlit. Hver vara hefur síðu á `/verslun/vara/[handle]`. Með Admin-tóka koma vörur, myndir og verð beint úr Shopify — þótt Online Store sé lokuð.
+`/verslun` er vöruyfirlit. Hver vara hefur síðu á `/verslun/vara/[handle]`. Með Admin-tóka koma vörur úr Shopify. Með Storefront-tóka fer **Ganga frá kaupum** á Shopify-kassann (sending + greiðsla).
 
 ## Tæknin
 

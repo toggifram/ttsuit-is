@@ -4,8 +4,11 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { ProductCard } from "@/components/product-card";
+import { useCart } from "@/components/cart-provider";
 import {
   categoryLabel,
+  findProductVariant,
+  hasShopifyVariants,
   hrefForCategory,
   productImages,
   type Product,
@@ -22,10 +25,30 @@ export function ProductDetail({
   const gallery = productImages(product);
   const [active, setActive] = useState(0);
   const [size, setSize] = useState(product.sizes?.[0] ?? "");
+  const [added, setAdded] = useState(false);
+  const { addItem } = useCart();
   const inStock = product.available !== false;
   const buyHref = product.shopifyUrl;
   const contactHref = "/hafa-samband";
   const isGift = product.category === "gjafabref";
+  const shopifyBuy = hasShopifyVariants(product);
+  const variant = findProductVariant(product, size || undefined);
+  const variantAvailable = variant?.available !== false;
+
+  const addToCart = () => {
+    if (!variant) return;
+    addItem({
+      variantId: variant.id,
+      handle: product.handle,
+      title: product.title,
+      image: product.image,
+      href: product.href,
+      size: variant.size || size || undefined,
+      priceAmount: variant.priceAmount,
+    });
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1600);
+  };
 
   return (
     <article>
@@ -158,8 +181,16 @@ export function ProductDetail({
           ) : null}
 
           <div className="mt-10 flex flex-col gap-3">
-            {inStock ? (
-              buyHref ? (
+            {inStock && variantAvailable ? (
+              shopifyBuy && variant ? (
+                <button
+                  type="button"
+                  onClick={addToCart}
+                  className="inline-flex h-12 items-center justify-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
+                >
+                  {added ? "Bætt í körfu" : "Setja í körfu"}
+                </button>
+              ) : buyHref ? (
                 <a
                   href={buyHref}
                   target="_blank"
@@ -181,15 +212,20 @@ export function ProductDetail({
                 Uppselt
               </span>
             )}
-            {buyHref ? (
+            {shopifyBuy ? (
+              <p className="text-[12px] leading-relaxed text-ink/50">
+                Sending og greiðsla fara fram í Shopify-kassanum — með þeim
+                sendingarleiðum og kortum sem þú hefur sett upp þar.
+              </p>
+            ) : buyHref ? (
               <p className="text-[12px] leading-relaxed text-ink/50">
                 Greiðsla fer fram í Shopify-versluninni. Þú opnar vöruna þar og
                 klárar kaupin.
               </p>
             ) : (
               <p className="text-[12px] leading-relaxed text-ink/50">
-                Sendu okkur línu og við klárum pöntunina. Shopify-verslunin er
-                ekki opin almenningi — vörurnar eru sýndar hér.
+                Þegar Shopify-kassinn er tengdur fer sending og greiðsla í gegn
+                um Shopify. Þangað til sendum við pöntunina eftir línu.
               </p>
             )}
           </div>

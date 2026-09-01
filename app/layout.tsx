@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Geist_Mono, Great_Vibes, Outfit } from "next/font/google";
 
+import { CartDrawer } from "@/components/cart-drawer";
+import { CartProvider } from "@/components/cart-provider";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SiteOverlays } from "@/components/site-overlays";
@@ -52,10 +54,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${outfit.variable} ${cormorant.variable} ${greatVibes.variable} ${geistMono.variable} h-full`}
     >
       <body className="flex min-h-full flex-col">
-        <SiteHeader />
-        <main className="flex-1 bg-white">{children}</main>
-        <SiteFooter />
-        <SiteOverlays />
+        <CartProvider>
+          <SiteHeader />
+          <main className="flex-1 bg-white">{children}</main>
+          <SiteFooter />
+          <CartDrawer />
+          <SiteOverlays />
+        </CartProvider>
       </body>
     </html>
   );

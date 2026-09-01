@@ -6,6 +6,7 @@ import {
   type Product,
   type ProductCategory,
   type ProductColor,
+  type ProductVariant,
 } from "@/lib/product";
 
 const API_VERSION = "2025-01";
@@ -63,7 +64,17 @@ const PRODUCT_FIELDS = `
   }
   variants(first: 40) {
     nodes {
+      id
+      title
       availableForSale
+      price {
+        amount
+        currencyCode
+      }
+      selectedOptions {
+        name
+        value
+      }
     }
   }
 `;
@@ -100,13 +111,26 @@ type ShopifyProduct = {
   images?: { nodes: ShopifyImage[] };
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
   options: { name: string; values: string[] }[];
-  variants?: { nodes: { availableForSale: boolean }[] };
+  variants?: {
+    nodes: {
+      id?: string;
+      title?: string;
+      availableForSale: boolean;
+      price?: { amount: string; currencyCode: string };
+      selectedOptions?: { name: string; value: string }[];
+    }[];
+  };
 };
 
 type AdminImage = { src: string; alt: string | null };
 type AdminOption = { name: string; values: string[] };
 type AdminVariant = {
+  id: number;
+  title: string;
   price: string;
+  option1: string | null;
+  option2: string | null;
+  option3: string | null;
   inventory_management: string | null;
   inventory_quantity?: number | null;
 };
@@ -188,6 +212,33 @@ function optionValues(node: ShopifyProduct, pattern: RegExp) {
   return node.options.find((option) => pattern.test(option.name))?.values ?? [];
 }
 
+const SIZE_OPTION = /size|stærð|staerd|sterrd/i;
+const COLOR_OPTION = /color|colour|litur/i;
+
+function mapVariants(node: ShopifyProduct): ProductVariant[] {
+  const currency = node.priceRange.minVariantPrice.currencyCode;
+  return (node.variants?.nodes ?? [])
+    .map((variant) => {
+      const amount = variant.price?.amount ?? node.priceRange.minVariantPrice.amount;
+      const size = variant.selectedOptions?.find((option) =>
+        SIZE_OPTION.test(option.name)
+      )?.value;
+      const color = variant.selectedOptions?.find((option) =>
+        COLOR_OPTION.test(option.name)
+      )?.value;
+      return {
+        id: variant.id ?? "",
+        title: variant.title || size || "Sjálfgefin",
+        price: formatMoney(amount, variant.price?.currencyCode ?? currency),
+        priceAmount: Number(amount),
+        available: variant.availableForSale,
+        size,
+        color,
+      };
+    })
+    .filter((variant) => variant.id.includes("ProductVariant"));
+}
+
 function mapProduct(node: ShopifyProduct, domain: string): Product | null {
   const gallery = (node.images?.nodes ?? [])
     .map((image) => image.url)
@@ -195,12 +246,14 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
   const featured = node.featuredImage?.url ?? gallery[0];
   if (!featured) return null;
 
-  const colors: ProductColor[] = optionValues(node, /color|colour|litur/i)
+  const colors: ProductColor[] = optionValues(node, COLOR_OPTION)
     .slice(0, 8)
     .map((name) => ({ name, hex: colorHex(name) }));
-  const sizes = optionValues(node, /size|stærð|staerd|sterrd/i);
+  const sizes = optionValues(node, SIZE_OPTION);
+  const variants = mapVariants(node);
   const available =
-    node.variants?.nodes.some((variant) => variant.availableForSale) ?? true;
+    variants.some((variant) => variant.available) ||
+    (node.variants?.nodes.some((variant) => variant.availableForSale) ?? true);
   const extraImages = gallery.filter((url) => url !== featured);
   const shopifyUrl = publicCheckout()
     ? node.onlineStoreUrl || `https://${domain}/products/${node.handle}`
@@ -224,6 +277,7 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
     badge: badgeFromTags(node.tags),
     colors,
     sizes: sizes.length ? sizes : undefined,
+    variants: variants.length ? variants : undefined,
     category: categoryFrom(node),
     available,
   };
@@ -258,10 +312,26 @@ function fromAdminProduct(product: AdminProduct): ShopifyProduct {
       values: option.values,
     })),
     variants: {
-      nodes: (product.variants ?? []).map((variant) => ({
-        availableForSale:
-          !variant.inventory_management || (variant.inventory_quantity ?? 1) > 0,
-      })),
+      nodes: (product.variants ?? []).map((variant) => {
+        const optionNames = (product.options ?? []).map((option) => option.name);
+        const selectedOptions = [variant.option1, variant.option2, variant.option3]
+          .map((value, index) =>
+            value
+              ? { name: optionNames[index] ?? `Option${index + 1}`, value }
+              : null
+          )
+          .filter((option): option is { name: string; value: string } =>
+            Boolean(option)
+          );
+        return {
+          id: `gid://shopify/ProductVariant/${variant.id}`,
+          title: variant.title,
+          availableForSale:
+            !variant.inventory_management || (variant.inventory_quantity ?? 1) > 0,
+          price: { amount: variant.price, currencyCode: "ISK" },
+          selectedOptions,
+        };
+      }),
     },
   };
 }
@@ -338,9 +408,10 @@ type ShopifyJson<T> = {
 
 async function shopifyGraphql<T>(
   query: string,
-  variables?: Record<string, unknown>
+  variables?: Record<string, unknown>,
+  mutate = false
 ): Promise<T | null> {
-  const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+  const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN?.trim();
   const domain = storeDomain();
   if (!token) return null;
 
@@ -351,7 +422,7 @@ async function shopifyGraphql<T>(
       "X-Shopify-Storefront-Access-Token": token,
     },
     body: JSON.stringify({ query, variables }),
-    next: { revalidate: 60 },
+    ...(mutate ? { cache: "no-store" as const } : { next: { revalidate: 60 } }),
   });
   if (!res.ok) return null;
 
@@ -409,4 +480,113 @@ export async function getHomeProducts(limit = 18): Promise<Product[]> {
   const { getCatalogProducts } = await import("./catalog");
   const all = await getCatalogProducts();
   return uniqueByImage(shuffle(all)).slice(0, Math.min(limit, all.length));
+}
+
+const CART_CREATE = /* GraphQL */ `
+  mutation CartCreate($lines: [CartLineInput!]!) {
+    cartCreate(input: { lines: $lines }) {
+      cart {
+        checkoutUrl
+      }
+      userErrors {
+        message
+      }
+    }
+  }
+`;
+
+export function toVariantGid(id: string) {
+  if (id.startsWith("gid://")) return id;
+  return `gid://shopify/ProductVariant/${id}`;
+}
+
+function variantNumericId(id: string) {
+  const raw = id.startsWith("gid://") ? id.split("/").pop() : id;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : null;
+}
+
+async function createStorefrontCheckout(
+  lines: { variantId: string; quantity: number }[]
+) {
+  const data = await shopifyGraphql<{
+    cartCreate?: {
+      cart?: { checkoutUrl?: string | null } | null;
+      userErrors?: { message: string }[];
+    };
+  }>(
+    CART_CREATE,
+    {
+      lines: lines.map((line) => ({
+        merchandiseId: toVariantGid(line.variantId),
+        quantity: line.quantity,
+      })),
+    },
+    true
+  );
+  const checkoutUrl = data?.cartCreate?.cart?.checkoutUrl;
+  return checkoutUrl || null;
+}
+
+async function createDraftOrderCheckout(
+  lines: { variantId: string; quantity: number }[]
+) {
+  if (!adminToken()) return null;
+  const domain = storeDomain();
+  const lineItems = lines
+    .map((line) => {
+      const variant_id = variantNumericId(line.variantId);
+      if (!variant_id) return null;
+      return { variant_id, quantity: line.quantity };
+    })
+    .filter((item): item is { variant_id: number; quantity: number } =>
+      Boolean(item)
+    );
+  if (!lineItems.length) return null;
+
+  const res = await fetch(
+    `https://${domain}/admin/api/${API_VERSION}/draft_orders.json`,
+    {
+      method: "POST",
+      headers: {
+        "X-Shopify-Access-Token": adminToken(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ draft_order: { line_items: lineItems } }),
+      cache: "no-store",
+    }
+  );
+  if (!res.ok) {
+    console.error(`Shopify draft order ${res.status}`);
+    return null;
+  }
+  const json = (await res.json()) as {
+    draft_order?: { invoice_url?: string | null };
+  };
+  return json.draft_order?.invoice_url || null;
+}
+
+export async function createShopifyCheckout(
+  lines: { variantId: string; quantity: number }[]
+): Promise<{ url: string } | { error: string }> {
+  if (!lines.length) return { error: "Karfan er tóm." };
+
+  try {
+    const storefront = await createStorefrontCheckout(lines);
+    if (storefront) return { url: storefront };
+  } catch {
+    // Fall through to a draft-order invoice.
+  }
+
+  try {
+    const draft = await createDraftOrderCheckout(lines);
+    if (draft) return { url: draft };
+  } catch {
+    // No checkout method available.
+  }
+
+  return {
+    error:
+      "Shopify-kassinn er ekki tilbúinn. Bættu Storefront-tóka við (karfa/checkout) eða `write_draft_orders` á Admin-appinu, og taktu lykilorðið af Online Store svo kassinn opnist.",
+  };
 }

@@ -87,6 +87,16 @@ export function categoryLabel(id: ProductCategory) {
   return shopCategories.find((cat) => cat.id === id)?.label ?? "Verslun";
 }
 
+export type ProductVariant = {
+  id: string;
+  title: string;
+  price: string;
+  priceAmount: number;
+  available: boolean;
+  size?: string;
+  color?: string;
+};
+
 export type Product = {
   id: string;
   handle: string;
@@ -102,9 +112,31 @@ export type Product = {
   description?: string;
   images?: string[];
   sizes?: string[];
+  variants?: ProductVariant[];
   shopifyUrl?: string;
   available?: boolean;
 };
+
+export function hasShopifyVariants(product: Product) {
+  return (product.variants ?? []).some((variant) =>
+    variant.id.includes("ProductVariant")
+  );
+}
+
+export function findProductVariant(product: Product, size?: string) {
+  const variants = product.variants ?? [];
+  if (!variants.length) return undefined;
+  if (size) {
+    const match = variants.find(
+      (variant) =>
+        variant.size === size ||
+        variant.title === size ||
+        variant.title.split(" / ").includes(size)
+    );
+    if (match) return match;
+  }
+  return variants.find((variant) => variant.available) ?? variants[0];
+}
 
 export function productImages(product: Product): string[] {
   const urls = [product.image, ...(product.images ?? [])];
