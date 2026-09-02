@@ -61,10 +61,10 @@ Vörur, sending og greiðsla koma **ekki** allar með sama API.
 | --- | --- | --- |
 | Vörur, myndir, verð | Admin API (`read_products`) | Products í Shopify |
 | Karfa → kassi | Storefront Cart API | Custom app, Storefront |
-| Sending | Shopify Checkout | **Settings → Shipping** |
+| Sending | Okkar kassi á `/kassi` | Local leiðir núna; Drop API síðar |
 | Greiðsla | Shopify Checkout | **Settings → Payments** |
 
-Síðan sýnir vörurnar, körfuna og **kassa** á `/kassi`: heimilisfang, sendingarleiðir og afsláttarkóði koma úr Shopify. **Greiða** opnar Shopify-kassann fyrir kort — Shopify leyfir ekki að taka við kortanúmerum á utanaðkomandi síðu.
+Síðan sýnir vörurnar, körfuna og **kassa** á `/kassi`. Þegar heimilisfang er sett inn birtast sendingarleiðir í kremaða kassanum ofan við pöntunina. Fyrsta leiðin er **Sækja eftir samkomulagi (TT hefur samband)**. Drop-sendingar bætast við þegar API þeirra er tengt. **Greiða** opnar Shopify-kassann fyrir kort — Shopify leyfir ekki að taka við kortanúmerum á utanaðkomandi síðu.
 
 ### 1. Vörur — Admin API
 

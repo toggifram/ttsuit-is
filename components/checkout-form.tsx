@@ -7,22 +7,28 @@ import { useCart } from "@/components/cart-provider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatMoney } from "@/lib/product";
+import {
+  addressLooksComplete,
+  listShippingMethods,
+  shippingPriceText,
+} from "@/lib/shipping";
 import { cn } from "@/lib/utils";
-import type { CartQuote, DeliveryOption } from "@/lib/shopify-cart";
 
 const fieldClass =
   "h-12 rounded-none border-border bg-white text-[15px] md:text-[15px]";
 
+const shippingMethods = listShippingMethods();
+
 export function CheckoutForm() {
   const { items, totalAmount, clear, setOpen } = useCart();
-  const [pending, setPending] = useState<"quote" | "pay" | "">("");
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
-  const [quote, setQuote] = useState<CartQuote | null>(null);
-  const [shippingHandle, setShippingHandle] = useState("");
+  const [addressReady, setAddressReady] = useState(false);
+  const [shippingId, setShippingId] = useState(shippingMethods[0]?.id ?? "");
 
   const selected = useMemo(
-    () => quote?.shipping.find((row) => row.handle === shippingHandle) ?? null,
-    [quote, shippingHandle]
+    () => shippingMethods.find((row) => row.id === shippingId) ?? null,
+    [shippingId]
   );
 
   if (!items.length) {
@@ -45,15 +51,34 @@ export function CheckoutForm() {
     );
   }
 
-  async function quoteRates(form: HTMLFormElement) {
-    setPending("quote");
+  function syncAddress(form: HTMLFormElement) {
+    const data = new FormData(form);
+    const ready = addressLooksComplete({
+      name: String(data.get("name") ?? ""),
+      email: String(data.get("email") ?? ""),
+      address1: String(data.get("address1") ?? ""),
+      city: String(data.get("city") ?? ""),
+      zip: String(data.get("zip") ?? ""),
+    });
+    setAddressReady(ready);
+    if (ready && !shippingId && shippingMethods[0]) {
+      setShippingId(shippingMethods[0].id);
+    }
+  }
+
+  async function pay(form: HTMLFormElement) {
+    if (!selected) {
+      setError("Veldu sendingarleið.");
+      return;
+    }
+    setPending(true);
     setError("");
     const data = new FormData(form);
     const fullName = String(data.get("name") ?? "").trim();
     const [firstName, ...rest] = fullName.split(/\s+/);
     const lastName = rest.join(" ") || firstName;
     try {
-      const res = await fetch("/api/checkout/quote", {
+      const res = await fetch("/api/checkout/pay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -62,6 +87,7 @@ export function CheckoutForm() {
             quantity: item.quantity,
           })),
           discountCode: String(data.get("discount") ?? "").trim(),
+          shippingMethodId: selected.id,
           address: {
             email: String(data.get("email") ?? ""),
             phone: String(data.get("phone") ?? ""),
@@ -74,44 +100,6 @@ export function CheckoutForm() {
           },
         }),
       });
-      const json = (await res.json()) as CartQuote & { error?: string };
-      if (!res.ok) {
-        setQuote(null);
-        setError(json.error || "Gat ekki sótt sendingarleiðir.");
-        return;
-      }
-      setQuote(json);
-      setShippingHandle(json.shipping[0]?.handle ?? "");
-      if (!json.shipping.length) {
-        setError(
-          "Engar sendingarleiðir fundust. Athugaðu Settings → Shipping í Shopify, eða greiddu og veldu sendingu í kassanum."
-        );
-      }
-    } catch {
-      setError("Gat ekki sótt sendingarleiðir.");
-    } finally {
-      setPending("");
-    }
-  }
-
-  async function pay() {
-    if (!quote) {
-      setError("Sæktu sendingarleiðir áður en þú greiðir.");
-      return;
-    }
-    setPending("pay");
-    setError("");
-    try {
-      const shipping: DeliveryOption | undefined = selected ?? quote.shipping[0];
-      const res = await fetch("/api/checkout/pay", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cartId: quote.cartId,
-          groupId: shipping?.groupId,
-          handle: shipping?.handle,
-        }),
-      });
       const json = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !json.url) {
         setError(json.error || "Gat ekki opnað greiðslu.");
@@ -122,12 +110,21 @@ export function CheckoutForm() {
     } catch {
       setError("Gat ekki opnað greiðslu.");
     } finally {
-      setPending("");
+      setPending(false);
     }
   }
 
   return (
-    <section className="mx-auto grid max-w-[1440px] gap-10 px-5 py-12 md:grid-cols-12 md:px-10 md:py-20">
+    <form
+      className="mx-auto grid max-w-[1440px] gap-10 px-5 py-12 md:grid-cols-12 md:px-10 md:py-20"
+      onInput={(event) => syncAddress(event.currentTarget)}
+      onChange={(event) => syncAddress(event.currentTarget)}
+      onBlur={(event) => syncAddress(event.currentTarget)}
+      onSubmit={(event) => {
+        event.preventDefault();
+        void pay(event.currentTarget);
+      }}
+    >
       <div className="md:col-span-7">
         <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
           Kassi
@@ -136,18 +133,11 @@ export function CheckoutForm() {
           Sending og greiðsla
         </h1>
         <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-ink/65">
-          Heimilisfang og sendingarleiðir eru sótt hingað inn úr Shopify.
-          Kortagreiðsla fer fram á öruggum Shopify-kassa — pöntunin skráist
-          samt í þinni verslun.
+          Settu inn heimilisfang — þá birtast sendingarleiðir við pöntunina.
+          Kortagreiðsla fer fram á öruggum Shopify-kassa.
         </p>
 
-        <form
-          className="mt-10 space-y-5"
-          onSubmit={(event) => {
-            event.preventDefault();
-            void quoteRates(event.currentTarget);
-          }}
-        >
+        <div className="mt-10 space-y-5">
           <Field label="Nafn" htmlFor="kassi-name">
             <Input
               id="kassi-name"
@@ -222,59 +212,7 @@ export function CheckoutForm() {
               className={fieldClass}
             />
           </Field>
-
-          <button
-            type="submit"
-            disabled={pending === "quote"}
-            className="inline-flex h-12 items-center bg-forest px-7 text-sm text-white hover:bg-forest-mid disabled:opacity-60"
-          >
-            {pending === "quote" ? "Sæki sendingu…" : "Sækja sendingarleiðir"}
-          </button>
-        </form>
-
-        {quote?.shipping.length ? (
-          <fieldset className="mt-10">
-            <legend className="text-[11px] tracking-[0.18em] text-ink/50 uppercase">
-              Sending
-            </legend>
-            <div className="mt-3 space-y-2">
-              {quote.shipping.map((option) => (
-                <label
-                  key={option.handle}
-                  className={cn(
-                    "flex cursor-pointer items-start justify-between gap-4 border px-4 py-3",
-                    shippingHandle === option.handle
-                      ? "border-forest bg-cream"
-                      : "border-border bg-white"
-                  )}
-                >
-                  <span className="flex items-start gap-3">
-                    <input
-                      type="radio"
-                      name="shipping"
-                      className="mt-1"
-                      checked={shippingHandle === option.handle}
-                      onChange={() => setShippingHandle(option.handle)}
-                    />
-                    <span>
-                      <span className="block text-sm font-semibold text-ink">
-                        {option.title}
-                      </span>
-                      {option.description ? (
-                        <span className="mt-0.5 block text-[12px] text-ink/50">
-                          {option.description}
-                        </span>
-                      ) : null}
-                    </span>
-                  </span>
-                  <span className="shrink-0 text-sm font-semibold">
-                    {option.price}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-        ) : null}
+        </div>
 
         {error ? (
           <p className="mt-6 max-w-lg text-[13px] leading-relaxed text-red-800">
@@ -284,7 +222,56 @@ export function CheckoutForm() {
       </div>
 
       <aside className="bg-cream p-6 md:col-span-5 md:p-8">
-        <h2 className="font-serif text-2xl text-forest">Pöntun</h2>
+        <div>
+          <h2 className="font-serif text-2xl text-forest">Sending</h2>
+          {addressReady && shippingMethods.length ? (
+            <fieldset className="mt-4">
+              <legend className="sr-only">Sendingarleið</legend>
+              <div className="space-y-2">
+                {shippingMethods.map((option) => (
+                  <label
+                    key={option.id}
+                    className={cn(
+                      "flex cursor-pointer items-start justify-between gap-4 border px-4 py-3",
+                      shippingId === option.id
+                        ? "border-forest bg-white"
+                        : "border-border bg-white/70"
+                    )}
+                  >
+                    <span className="flex items-start gap-3">
+                      <input
+                        type="radio"
+                        name="shipping"
+                        className="mt-1 accent-forest"
+                        checked={shippingId === option.id}
+                        onChange={() => setShippingId(option.id)}
+                      />
+                      <span>
+                        <span className="block text-sm font-semibold text-ink">
+                          {option.title}
+                        </span>
+                        {option.description ? (
+                          <span className="mt-0.5 block text-[12px] text-ink/50">
+                            {option.description}
+                          </span>
+                        ) : null}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-sm font-semibold">
+                      {shippingPriceText(option)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ) : (
+            <p className="mt-3 text-[13px] leading-relaxed text-ink/50">
+              Settu inn heimilisfang til að sjá sendingarleiðir.
+            </p>
+          )}
+        </div>
+
+        <h2 className="mt-8 font-serif text-2xl text-forest">Pöntun</h2>
         <ul className="mt-6 space-y-4">
           {items.map((item) => (
             <li key={item.variantId} className="flex gap-3">
@@ -313,31 +300,30 @@ export function CheckoutForm() {
         <div className="mt-6 space-y-2 border-t border-border pt-4 text-sm">
           <div className="flex justify-between">
             <span className="text-ink/55">Vörur</span>
-            <span>{quote?.subtotal ?? formatMoney(totalAmount)}</span>
+            <span>{formatMoney(totalAmount)}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-4">
             <span className="text-ink/55">Sending</span>
-            <span>{selected ? selected.price : "—"}</span>
+            <span className="text-right">
+              {selected && addressReady ? shippingPriceText(selected) : "—"}
+            </span>
           </div>
           <div className="flex justify-between font-semibold">
             <span>Samtals</span>
             <span>
-              {selected && quote
-                ? formatMoney(quote.subtotalAmount + selected.priceAmount)
-                : (quote?.total ?? formatMoney(totalAmount))}
+              {formatMoney(totalAmount + (selected?.priceAmount ?? 0))}
             </span>
           </div>
         </div>
         <p className="mt-4 text-[12px] leading-relaxed text-ink/50">
-          Þú greiðir á Shopify. Sendingin sem þú velur hér fylgir með.
+          Þú greiðir á Shopify. Sendingin sem þú velur hér fylgir með pöntuninni.
         </p>
         <button
-          type="button"
-          onClick={() => void pay()}
-          disabled={pending === "pay" || !quote}
+          type="submit"
+          disabled={pending}
           className="mt-6 inline-flex h-12 w-full items-center justify-center bg-forest px-7 text-sm text-white hover:bg-forest-mid disabled:opacity-60"
         >
-          {pending === "pay" ? "Opna greiðslu…" : "Greiða"}
+          {pending ? "Opna greiðslu…" : "Greiða"}
         </button>
         <button
           type="button"
@@ -347,7 +333,7 @@ export function CheckoutForm() {
           Breyta körfu
         </button>
       </aside>
-    </section>
+    </form>
   );
 }
 

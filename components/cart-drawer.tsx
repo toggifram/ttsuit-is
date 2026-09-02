@@ -139,7 +139,7 @@ export function CartDrawer() {
                 </span>
               </div>
               <p className="mt-2 text-[12px] leading-relaxed text-ink/50">
-                Sendingarleiðir og heimilisfang fyllirðu út hér á síðunni.
+                Heimilisfang og sendingarleið fyllirðu út á kassanum.
                 Kortagreiðsla fer síðan um Shopify.
               </p>
               <Link

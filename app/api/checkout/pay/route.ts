@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
-import { payShopifyCart } from "@/lib/shopify-cart";
+import {
+  parseAddress,
+  parseCheckoutLines,
+  payCheckout,
+} from "@/lib/shopify-cart";
 
 export const dynamic = "force-dynamic";
 
@@ -14,19 +18,38 @@ export async function POST(request: Request) {
   if (!body || typeof body !== "object") {
     return NextResponse.json({ error: "Ógild beiðni." }, { status: 400 });
   }
+
   const data = body as Record<string, unknown>;
-  const cartId = typeof data.cartId === "string" ? data.cartId.trim() : "";
-  if (!cartId.startsWith("gid://shopify/Cart/")) {
-    return NextResponse.json({ error: "Karfa fannst ekki." }, { status: 400 });
+  const lines = parseCheckoutLines(data.lines);
+  const address = parseAddress(data.address);
+  const shippingMethodId =
+    typeof data.shippingMethodId === "string"
+      ? data.shippingMethodId.trim()
+      : "";
+  const discount =
+    typeof data.discountCode === "string" ? data.discountCode.trim() : "";
+
+  if (!lines) {
+    return NextResponse.json({ error: "Karfan er ógild." }, { status: 400 });
+  }
+  if (!address) {
+    return NextResponse.json(
+      { error: "Settu inn netfang, nafn, heimilisfang, póstnúmer og bæ." },
+      { status: 400 }
+    );
+  }
+  if (!shippingMethodId) {
+    return NextResponse.json(
+      { error: "Veldu sendingarleið." },
+      { status: 400 }
+    );
   }
 
-  const groupId =
-    typeof data.groupId === "string" ? data.groupId.trim() : "";
-  const handle = typeof data.handle === "string" ? data.handle.trim() : "";
-
-  const result = await payShopifyCart(
-    cartId,
-    groupId && handle ? { groupId, handle } : undefined
+  const result = await payCheckout(
+    lines,
+    address,
+    shippingMethodId,
+    discount || undefined
   );
   if ("error" in result) {
     return NextResponse.json({ error: result.error }, { status: 503 });
