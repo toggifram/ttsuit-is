@@ -297,8 +297,10 @@ export function CheckoutForm() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[13px] font-semibold">{item.title}</p>
-                {item.size ? (
-                  <p className="text-[12px] text-ink/50">{item.size}</p>
+                {item.color || item.size ? (
+                  <p className="text-[12px] text-ink/50">
+                    {[item.color, item.size].filter(Boolean).join(" · ")}
+                  </p>
                 ) : null}
                 <p className="text-[12px] text-ink/50">{item.quantity} stk.</p>
               </div>

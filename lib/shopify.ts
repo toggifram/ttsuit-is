@@ -20,8 +20,14 @@ const COLOR_HEX: Record<string, string> = {
   navy: "#1e3a5f",
   "navy blue": "#1e3a5f",
   blue: "#2c4a6e",
+  dökkblár: "#1a2744",
+  dokkblar: "#1a2744",
+  "dökk blár": "#1a2744",
+  "dokk blar": "#1a2744",
   brown: "#5c3d2e",
   "dark brown": "#4a2f24",
+  espressobrúnn: "#3b2a24",
+  espressobrunn: "#3b2a24",
   olive: "#5c5a3a",
   green: "#043034",
   forest: "#043034",
@@ -80,6 +86,9 @@ const PRODUCT_FIELDS = `
         name
         value
       }
+      image {
+        url(transform: { maxWidth: 1400 })
+      }
     }
   }
 `;
@@ -123,11 +132,12 @@ type ShopifyProduct = {
       availableForSale: boolean;
       price?: { amount: string; currencyCode: string };
       selectedOptions?: { name: string; value: string }[];
+      image?: { url: string } | null;
     }[];
   };
 };
 
-type AdminImage = { src: string; alt: string | null };
+type AdminImage = { id?: number; src: string; alt: string | null };
 type AdminOption = { name: string; values: string[] };
 type AdminVariant = {
   id: number;
@@ -136,6 +146,7 @@ type AdminVariant = {
   option1: string | null;
   option2: string | null;
   option3: string | null;
+  image_id?: number | null;
   inventory_management: string | null;
   inventory_quantity?: number | null;
 };
@@ -158,7 +169,29 @@ function publicCheckout() {
 
 function colorHex(name: string) {
   const key = name.trim().toLowerCase();
-  return COLOR_HEX[key] ?? "#8a8a8a";
+  const folded = foldKey(name);
+  return COLOR_HEX[key] ?? COLOR_HEX[folded] ?? "#8a8a8a";
+}
+
+function foldKey(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function imagesForColor(
+  images: ShopifyImage[],
+  colorName: string
+): string[] {
+  const key = foldKey(colorName);
+  if (!key) return [];
+  return images
+    .filter((image) => foldKey(image.altText ?? "").includes(key))
+    .map((image) => image.url)
+    .filter(Boolean);
 }
 
 function stripHtml(html: string) {
@@ -233,23 +266,34 @@ function mapVariants(node: ShopifyProduct): ProductVariant[] {
         available: variant.availableForSale,
         size,
         color,
+        image: variant.image?.url || undefined,
       };
     })
     .filter((variant) => variant.id.includes("ProductVariant"));
 }
 
 function mapProduct(node: ShopifyProduct, domain: string): Product | null {
-  const gallery = (node.images?.nodes ?? [])
-    .map((image) => image.url)
-    .filter(Boolean);
+  const galleryImages = node.images?.nodes ?? [];
+  const gallery = galleryImages.map((image) => image.url).filter(Boolean);
   const featured = node.featuredImage?.url ?? gallery[0];
   if (!featured) return null;
 
-  const colors: ProductColor[] = optionValues(node, COLOR_OPTION)
-    .slice(0, 8)
-    .map((name) => ({ name, hex: colorHex(name) }));
-  const sizes = optionValues(node, SIZE_OPTION);
   const variants = mapVariants(node);
+  const colorNames = optionValues(node, COLOR_OPTION).slice(0, 8);
+  const colors: ProductColor[] = colorNames.map((name) => {
+    const fromAlt = imagesForColor(galleryImages, name);
+    const fromVariant = variants.find(
+      (variant) => variant.color === name && variant.image
+    )?.image;
+    const unique = [...new Set([...fromAlt, fromVariant].filter(Boolean))] as string[];
+    return {
+      name,
+      hex: colorHex(name),
+      image: unique[0],
+      images: unique.length ? unique : undefined,
+    };
+  });
+  const sizes = optionValues(node, SIZE_OPTION);
   const available =
     variants.some((variant) => variant.available) ||
     (node.variants?.nodes.some((variant) => variant.availableForSale) ?? true);
@@ -329,6 +373,12 @@ function fromAdminProduct(product: AdminProduct): ShopifyProduct {
             !variant.inventory_management || (variant.inventory_quantity ?? 1) > 0,
           price: { amount: variant.price, currencyCode: "ISK" },
           selectedOptions,
+          image: (() => {
+            const src = (product.images ?? []).find(
+              (row) => row.id === variant.image_id
+            )?.src;
+            return src ? { url: src } : null;
+          })(),
         };
       }),
     },

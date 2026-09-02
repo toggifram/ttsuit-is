@@ -10,7 +10,7 @@ import {
   findProductVariant,
   hasShopifyVariants,
   hrefForCategory,
-  productImages,
+  imagesForSelectedColor,
   type Product,
 } from "@/lib/product";
 import { cn } from "@/lib/utils";
@@ -22,9 +22,9 @@ export function ProductDetail({
   product: Product;
   related: Product[];
 }) {
-  const gallery = productImages(product);
-  const [active, setActive] = useState(0);
+  const [color, setColor] = useState(product.colors[0]?.name ?? "");
   const [size, setSize] = useState(product.sizes?.[0] ?? "");
+  const [active, setActive] = useState(0);
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
   const inStock = product.available !== false;
@@ -32,8 +32,18 @@ export function ProductDetail({
   const contactHref = "/hafa-samband";
   const isGift = product.category === "gjafabref";
   const shopifyBuy = hasShopifyVariants(product);
-  const variant = findProductVariant(product, size || undefined);
+  const gallery = imagesForSelectedColor(product, color || undefined);
+  const variant = findProductVariant(
+    product,
+    size || undefined,
+    color || undefined
+  );
   const variantAvailable = variant?.available !== false;
+
+  const selectColor = (name: string) => {
+    setColor(name);
+    setActive(0);
+  };
 
   const addToCart = () => {
     if (!variant) return;
@@ -41,9 +51,10 @@ export function ProductDetail({
       variantId: variant.id,
       handle: product.handle,
       title: product.title,
-      image: product.image,
+      image: gallery[0] ?? variant.image ?? product.image,
       href: product.href,
       size: variant.size || size || undefined,
+      color: variant.color || color || undefined,
       priceAmount: variant.priceAmount,
     });
     setAdded(true);
@@ -136,21 +147,33 @@ export function ProductDetail({
             <div className="mt-8">
               <p className="text-[11px] tracking-[0.18em] text-ink/50 uppercase">
                 Litur
-              </p>
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                {product.colors.map((color) => (
-                  <span
-                    key={color.name}
-                    title={color.name}
-                    className="inline-flex items-center gap-2 text-[13px] text-ink/70"
-                  >
-                    <span
-                      className="size-4 border border-black/15"
-                      style={{ backgroundColor: color.hex }}
-                    />
-                    {color.name}
+                {color ? (
+                  <span className="ml-2 tracking-normal text-ink/70 normal-case">
+                    {color}
                   </span>
-                ))}
+                ) : null}
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                {product.colors.map((item) => {
+                  const selected = color === item.name;
+                  return (
+                    <button
+                      key={item.name}
+                      type="button"
+                      onClick={() => selectColor(item.name)}
+                      title={item.name}
+                      aria-label={item.name}
+                      aria-pressed={selected}
+                      className={cn(
+                        "size-8 border transition-shadow",
+                        selected
+                          ? "border-forest ring-1 ring-forest ring-offset-2"
+                          : "border-black/15 hover:border-forest/50"
+                      )}
+                      style={{ backgroundColor: item.hex }}
+                    />
+                  );
+                })}
               </div>
             </div>
           ) : null}

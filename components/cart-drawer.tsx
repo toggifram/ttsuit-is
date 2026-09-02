@@ -82,9 +82,9 @@ export function CartDrawer() {
                           >
                             {item.title}
                           </Link>
-                          {item.size ? (
+                          {item.color || item.size ? (
                             <p className="mt-0.5 text-[12px] text-ink/50">
-                              {item.size}
+                              {[item.color, item.size].filter(Boolean).join(" · ")}
                             </p>
                           ) : null}
                           <p className="mt-1 text-[13px] text-ink">

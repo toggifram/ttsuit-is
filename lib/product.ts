@@ -1,6 +1,8 @@
 export type ProductColor = {
   name: string;
   hex: string;
+  image?: string;
+  images?: string[];
 };
 
 export type ProductCategory =
@@ -95,6 +97,7 @@ export type ProductVariant = {
   available: boolean;
   size?: string;
   color?: string;
+  image?: string;
 };
 
 export type Product = {
@@ -123,19 +126,42 @@ export function hasShopifyVariants(product: Product) {
   );
 }
 
-export function findProductVariant(product: Product, size?: string) {
+export function findProductVariant(
+  product: Product,
+  size?: string,
+  color?: string
+) {
   const variants = product.variants ?? [];
   if (!variants.length) return undefined;
-  if (size) {
-    const match = variants.find(
-      (variant) =>
-        variant.size === size ||
-        variant.title === size ||
-        variant.title.split(" / ").includes(size)
-    );
-    if (match) return match;
+
+  const matches = variants.filter((variant) => {
+    const sizeOk =
+      !size ||
+      variant.size === size ||
+      variant.title === size ||
+      variant.title.split(" / ").includes(size);
+    const colorOk =
+      !color ||
+      variant.color === color ||
+      variant.title.split(" / ").includes(color);
+    return sizeOk && colorOk;
+  });
+
+  return (
+    matches.find((variant) => variant.available) ??
+    matches[0] ??
+    variants.find((variant) => variant.available) ??
+    variants[0]
+  );
+}
+
+export function imagesForSelectedColor(product: Product, color?: string) {
+  if (color) {
+    const match = product.colors.find((item) => item.name === color);
+    if (match?.images?.length) return match.images;
+    if (match?.image) return [match.image];
   }
-  return variants.find((variant) => variant.available) ?? variants[0];
+  return productImages(product);
 }
 
 export function productImages(product: Product): string[] {
