@@ -43,6 +43,8 @@ const COLOR_HEX: Record<string, string> = {
   gray: "#6b6b6b",
   charcoal: "#3d3d3d",
   taupe: "#8a7a6b",
+  sandur: "#c2ae93",
+  sand: "#c2ae93",
   beige: "#c4b49a",
   cream: "#f0e6d8",
   white: "#f4f1ea",
