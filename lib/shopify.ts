@@ -242,7 +242,7 @@ function categoryFrom(node: ShopifyProduct): ProductCategory {
     return "yfirhafnir";
   }
   if (
-    /accessor|fylgi|belt|scarf|pocket|cuff|bracelet|armband|axlabond|klút|klutur/.test(
+    /accessor|fylgi|belt|scarf|pocket|cuff|bracelet|armband|axlabond|klút|klutur|sokk|sock/.test(
       hay
     )
   ) {
