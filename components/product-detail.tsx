@@ -6,6 +6,12 @@ import { useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import { useCart } from "@/components/cart-provider";
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
   categoryLabel,
   findProductVariant,
   hasShopifyVariants,
@@ -14,6 +20,24 @@ import {
   type Product,
 } from "@/lib/product";
 import { cn } from "@/lib/utils";
+
+function productInfoRows(product: Product) {
+  const info =
+    product.description?.trim() ||
+    `${product.title} frá Tjé Tjé. ${product.subtitle}.`;
+  const sizeFit = product.sizes?.length
+    ? `Stærðir: ${product.sizes.join(", ")}. Fyrirmyndin á myndum er 1,89 m og klæðist L. Ef þú ert á milli stærða, veldu þá stærri.`
+    : "Ein stærð. Sjáðu mál á myndum eða sendu línu ef þú ert í vafa.";
+
+  return [
+    { title: "Vöruupplýsingar", body: info },
+    { title: "Stærð og snið", body: sizeFit },
+    {
+      title: "Sending og skil",
+      body: "Sending fer fram í gegnum Shopify-kassann. Þú getur skilað ónotaðri vöru í upprunalegum umbúðum. Hafðu samband á ttsuit@ttsuit.is.",
+    },
+  ];
+}
 
 export function ProductDetail({
   product,
@@ -26,6 +50,7 @@ export function ProductDetail({
   const [size, setSize] = useState(product.sizes?.[0] ?? "");
   const [active, setActive] = useState(0);
   const [added, setAdded] = useState(false);
+  const [sizeChartOpen, setSizeChartOpen] = useState(false);
   const { addItem } = useCart();
   const inStock = product.available !== false;
   const buyHref = product.shopifyUrl;
@@ -180,9 +205,18 @@ export function ProductDetail({
 
           {product.sizes?.length ? (
             <div className="mt-8">
-              <p className="text-[11px] tracking-[0.18em] text-ink/50 uppercase">
-                Stærð
-              </p>
+              <div className="flex items-baseline justify-between gap-4">
+                <p className="text-[11px] tracking-[0.18em] text-ink/50 uppercase">
+                  Stærð
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSizeChartOpen(true)}
+                  className="text-[12px] text-forest underline-offset-4 hover:underline"
+                >
+                  Stærðartafla
+                </button>
+              </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {product.sizes.map((value) => (
                   <button
@@ -253,13 +287,50 @@ export function ProductDetail({
             )}
           </div>
 
-          {product.description ? (
-            <p className="mt-10 max-w-md text-[15px] leading-relaxed text-ink/70">
-              {product.description}
-            </p>
-          ) : null}
+          <div className="mt-10 border-t border-forest/10">
+            {productInfoRows(product).map((row) => (
+              <details
+                key={row.title}
+                className="group border-b border-forest/10 py-4"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 marker:content-none [&::-webkit-details-marker]:hidden">
+                  <span className="text-[15px] font-semibold text-ink">
+                    {row.title}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="shrink-0 text-lg leading-none text-ink/40 transition group-open:rotate-45"
+                  >
+                    +
+                  </span>
+                </summary>
+                <div className="mt-3 max-w-md pr-8 text-[14px] leading-relaxed text-ink/70">
+                  {row.body}
+                </div>
+              </details>
+            ))}
+          </div>
         </div>
       </div>
+
+      <Sheet open={sizeChartOpen} onOpenChange={setSizeChartOpen}>
+        <SheetContent
+          side="right"
+          className="w-full gap-0 border-border bg-white sm:max-w-md"
+        >
+          <SheetHeader>
+            <SheetTitle className="font-serif text-2xl text-forest">
+              Stærðartafla
+            </SheetTitle>
+          </SheetHeader>
+          <div className="px-4 py-6 text-[15px] leading-relaxed text-ink/70">
+            <p>Stærðartaflan er ekki komin inn enn.</p>
+            <p className="mt-3">
+              Fyrirmyndin á myndum er 1,89 m og klæðist L. Stærðir eru S–2XL.
+            </p>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {related.length ? (
         <section className="border-t border-border bg-white">
