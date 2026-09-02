@@ -31,7 +31,9 @@ const COLOR_HEX: Record<string, string> = {
   olive: "#5c5a3a",
   ólífugrænn: "#5c5a3a",
   olifugraenn: "#5c5a3a",
-  green: "#043034",
+  green: "#2f3d32",
+  grænn: "#2f3d32",
+  graenn: "#2f3d32",
   forest: "#043034",
   black: "#1a1a1a",
   svart: "#1a1a1a",
@@ -62,7 +64,7 @@ const PRODUCT_FIELDS = `
     url(transform: { maxWidth: 1400 })
     altText
   }
-  images(first: 8) {
+  images(first: 16) {
     nodes {
       url(transform: { maxWidth: 1400 })
       altText
