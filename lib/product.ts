@@ -77,8 +77,10 @@ export function hrefForCategory(id: (typeof shopCategories)[number]["id"]) {
   return row?.slug ? `/verslun/${row.slug}` : "/verslun";
 }
 
-export function productHref(handle: string) {
-  return `/verslun/vara/${handle}`;
+export function productHref(handle: string, color?: string) {
+  const path = `/verslun/vara/${handle}`;
+  if (!color) return path;
+  return `${path}?litur=${encodeURIComponent(color)}`;
 }
 
 export function categoryFromSlug(slug: string) {
@@ -120,6 +122,26 @@ export type Product = {
   shopifyUrl?: string;
   available?: boolean;
 };
+
+export type CatalogListing = {
+  key: string;
+  product: Product;
+  color?: ProductColor;
+};
+
+/** One card per color so category pages show every colourway. */
+export function catalogListings(products: Product[]): CatalogListing[] {
+  return products.flatMap((product) => {
+    if (!product.colors.length) {
+      return [{ key: product.id, product }];
+    }
+    return product.colors.map((color) => ({
+      key: `${product.id}:${color.name}`,
+      product,
+      color,
+    }));
+  });
+}
 
 export function hasShopifyVariants(product: Product) {
   return (product.variants ?? []).some((variant) =>

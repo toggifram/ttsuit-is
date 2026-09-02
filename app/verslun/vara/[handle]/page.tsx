@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 import { ProductDetail } from "@/components/product-detail";
 import { getCatalogProduct, getCatalogProducts } from "@/lib/catalog";
 
-type Props = { params: Promise<{ handle: string }> };
+type Props = {
+  params: Promise<{ handle: string }>;
+  searchParams: Promise<{ litur?: string | string[] }>;
+};
 
 export const dynamic = "force-dynamic";
 
@@ -20,18 +23,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ProductPage({ params }: Props) {
+export default async function ProductPage({ params, searchParams }: Props) {
   const { handle } = await params;
+  const query = await searchParams;
   const product = await getCatalogProduct(handle);
   if (!product) notFound();
 
-  const catalog = await getCatalogProducts();
-  const related = catalog
-    .filter(
-      (item) =>
-        item.category === product.category && item.handle !== product.handle
-    )
-    .slice(0, 4);
+  const litur = Array.isArray(query.litur) ? query.litur[0] : query.litur;
 
-  return <ProductDetail product={product} related={related} />;
+  const catalog = await getCatalogProducts();
+  const related = catalog.filter(
+    (item) =>
+      item.category === product.category && item.handle !== product.handle
+  );
+
+  return (
+    <ProductDetail
+      key={`${product.handle}:${litur ?? ""}`}
+      product={product}
+      related={related}
+      initialColor={litur}
+    />
+  );
 }

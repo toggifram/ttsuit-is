@@ -12,6 +12,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
+  catalogListings,
   categoryLabel,
   findProductVariant,
   firstAvailableSize,
@@ -19,6 +20,7 @@ import {
   hrefForCategory,
   imagesForSelectedColor,
   isSizeInStock,
+  productHref,
   variantStock,
   type Product,
 } from "@/lib/product";
@@ -45,14 +47,18 @@ function productInfoRows(product: Product) {
 export function ProductDetail({
   product,
   related,
+  initialColor,
 }: {
   product: Product;
   related: Product[];
+  initialColor?: string;
 }) {
-  const [color, setColor] = useState(product.colors[0]?.name ?? "");
-  const [size, setSize] = useState(
-    firstAvailableSize(product, product.colors[0]?.name ?? "")
-  );
+  const startColor =
+    product.colors.find((item) => item.name === initialColor)?.name ??
+    product.colors[0]?.name ??
+    "";
+  const [color, setColor] = useState(startColor);
+  const [size, setSize] = useState(firstAvailableSize(product, startColor));
   const [active, setActive] = useState(0);
   const [added, setAdded] = useState(false);
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
@@ -82,6 +88,7 @@ export function ProductDetail({
         ? current
         : firstAvailableSize(product, name)
     );
+    window.history.replaceState(null, "", productHref(product.handle, name));
   };
 
   const addToCart = () => {
@@ -91,7 +98,7 @@ export function ProductDetail({
       handle: product.handle,
       title: product.title,
       image: gallery[0] ?? variant.image ?? product.image,
-      href: product.href,
+      href: productHref(product.handle, variant.color || color || undefined),
       size: variant.size || size || undefined,
       color: variant.color || color || undefined,
       priceAmount: variant.priceAmount,
@@ -367,8 +374,12 @@ export function ProductDetail({
             </h2>
           </div>
           <div className="grid grid-cols-2 gap-2 bg-white px-2 sm:px-3 md:grid-cols-4 lg:px-6">
-            {related.map((item) => (
-              <ProductCard key={item.id} product={item} />
+            {catalogListings(related).slice(0, 8).map((listing) => (
+              <ProductCard
+                key={listing.key}
+                product={listing.product}
+                color={listing.color}
+              />
             ))}
           </div>
         </section>

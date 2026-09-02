@@ -1,18 +1,27 @@
 import Link from "next/link";
 
-import type { Product } from "@/lib/product";
+import { productHref, type Product, type ProductColor } from "@/lib/product";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({
   product,
+  color,
   className,
 }: {
   product: Product;
+  color?: ProductColor;
   className?: string;
 }) {
+  const image = color?.images?.[0] || color?.image || product.image;
+  const imageAlt = color
+    ? `${product.title}, ${color.name}`
+    : product.imageAlt;
+  const href = productHref(product.handle, color?.name);
+  const subtitle = color?.name ?? product.subtitle;
+
   return (
     <article className={cn("bg-white", className)}>
-      <Link href={product.href} className="block">
+      <Link href={href} className="block">
         <div
           className={cn(
             "relative aspect-[3/4] overflow-hidden",
@@ -20,8 +29,8 @@ export function ProductCard({
           )}
         >
           <img
-            src={product.image}
-            alt={product.imageAlt}
+            src={image}
+            alt={imageAlt}
             className={
               product.category === "gjafabref"
                 ? "absolute inset-0 h-full w-full object-contain p-4"
@@ -43,15 +52,18 @@ export function ProductCard({
               {product.price}
             </p>
           </div>
-          <p className="mt-1 text-[12px] text-ink/55">{product.subtitle}</p>
+          <p className="mt-1 text-[12px] text-ink/55">{subtitle}</p>
           {product.colors.length ? (
             <div className="mt-3 flex flex-wrap items-center gap-1">
-              {product.colors.slice(0, 5).map((color) => (
+              {product.colors.slice(0, 5).map((swatch) => (
                 <span
-                  key={color.name}
-                  title={color.name}
-                  className="size-3.5 border border-black/15"
-                  style={{ backgroundColor: color.hex }}
+                  key={swatch.name}
+                  title={swatch.name}
+                  className={cn(
+                    "size-3.5 border border-black/15",
+                    color?.name === swatch.name && "outline outline-1 outline-offset-1 outline-ink"
+                  )}
+                  style={{ backgroundColor: swatch.hex }}
                 />
               ))}
               {product.colors.length > 5 ? (

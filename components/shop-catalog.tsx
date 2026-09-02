@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { ProductCard } from "@/components/product-card";
 import {
+  catalogListings,
   hrefForCategory,
   shopCategories,
   type Product,
@@ -44,8 +45,12 @@ export function ShopCatalog({
 
       {products.length ? (
         <div className="grid grid-cols-2 gap-2 bg-white px-2 sm:px-3 md:grid-cols-3 lg:grid-cols-4 lg:px-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {catalogListings(products).map((listing) => (
+            <ProductCard
+              key={listing.key}
+              product={listing.product}
+              color={listing.color}
+            />
           ))}
         </div>
       ) : (
