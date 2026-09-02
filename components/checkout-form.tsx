@@ -1,35 +1,74 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useCart } from "@/components/cart-provider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatMoney } from "@/lib/product";
-import {
-  addressLooksComplete,
-  listShippingMethods,
-  shippingPriceText,
-} from "@/lib/shipping";
+import type { CartQuote, DeliveryOption } from "@/lib/shopify-cart";
 import { cn } from "@/lib/utils";
 
 const fieldClass =
   "h-12 rounded-none border-border bg-white text-[15px] md:text-[15px]";
 
-const shippingMethods = listShippingMethods();
+function addressLooksComplete(data: FormData) {
+  const name = String(data.get("name") ?? "").trim();
+  const email = String(data.get("email") ?? "").trim();
+  const address1 = String(data.get("address1") ?? "").trim();
+  const city = String(data.get("city") ?? "").trim();
+  const zip = String(data.get("zip") ?? "").trim();
+  return (
+    name.length > 1 &&
+    email.includes("@") &&
+    address1.length >= 3 &&
+    city.length >= 2 &&
+    zip.length >= 3
+  );
+}
+
+function quoteKey(form: HTMLFormElement, variantKey: string) {
+  const data = new FormData(form);
+  return JSON.stringify({
+    variantKey,
+    name: String(data.get("name") ?? "").trim(),
+    email: String(data.get("email") ?? "").trim(),
+    phone: String(data.get("phone") ?? "").trim(),
+    address1: String(data.get("address1") ?? "").trim(),
+    address2: String(data.get("address2") ?? "").trim(),
+    city: String(data.get("city") ?? "").trim(),
+    zip: String(data.get("zip") ?? "").trim(),
+    discount: String(data.get("discount") ?? "").trim(),
+  });
+}
 
 export function CheckoutForm() {
   const { items, totalAmount, clear, setOpen } = useCart();
-  const [pending, setPending] = useState(false);
+  const [pending, setPending] = useState<"quote" | "pay" | "">("");
   const [error, setError] = useState("");
   const [addressReady, setAddressReady] = useState(false);
-  const [shippingId, setShippingId] = useState(shippingMethods[0]?.id ?? "");
+  const [quote, setQuote] = useState<CartQuote | null>(null);
+  const [shippingHandle, setShippingHandle] = useState("");
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const quoteGen = useRef(0);
+  const lastKey = useRef("");
+
+  const variantKey = useMemo(
+    () => items.map((item) => `${item.variantId}:${item.quantity}`).join("|"),
+    [items]
+  );
 
   const selected = useMemo(
-    () => shippingMethods.find((row) => row.id === shippingId) ?? null,
-    [shippingId]
+    () => quote?.shipping.find((row) => row.handle === shippingHandle) ?? null,
+    [quote, shippingHandle]
   );
+
+  useEffect(() => {
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, []);
 
   if (!items.length) {
     return (
@@ -51,34 +90,25 @@ export function CheckoutForm() {
     );
   }
 
-  function syncAddress(form: HTMLFormElement) {
+  async function quoteRates(form: HTMLFormElement) {
     const data = new FormData(form);
-    const ready = addressLooksComplete({
-      name: String(data.get("name") ?? ""),
-      email: String(data.get("email") ?? ""),
-      address1: String(data.get("address1") ?? ""),
-      city: String(data.get("city") ?? ""),
-      zip: String(data.get("zip") ?? ""),
-    });
-    setAddressReady(ready);
-    if (ready && !shippingId && shippingMethods[0]) {
-      setShippingId(shippingMethods[0].id);
-    }
-  }
-
-  async function pay(form: HTMLFormElement) {
-    if (!selected) {
-      setError("Veldu sendingarleið.");
+    if (!addressLooksComplete(data)) {
+      setAddressReady(false);
+      setQuote(null);
+      setShippingHandle("");
       return;
     }
-    setPending(true);
+    const key = quoteKey(form, variantKey);
+    if (key === lastKey.current) return;
+    lastKey.current = key;
+    const gen = ++quoteGen.current;
+    setPending("quote");
     setError("");
-    const data = new FormData(form);
     const fullName = String(data.get("name") ?? "").trim();
     const [firstName, ...rest] = fullName.split(/\s+/);
     const lastName = rest.join(" ") || firstName;
     try {
-      const res = await fetch("/api/checkout/pay", {
+      const res = await fetch("/api/checkout/quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -87,7 +117,6 @@ export function CheckoutForm() {
             quantity: item.quantity,
           })),
           discountCode: String(data.get("discount") ?? "").trim(),
-          shippingMethodId: selected.id,
           address: {
             email: String(data.get("email") ?? ""),
             phone: String(data.get("phone") ?? ""),
@@ -100,6 +129,76 @@ export function CheckoutForm() {
           },
         }),
       });
+      const json = (await res.json()) as CartQuote & { error?: string };
+      if (gen !== quoteGen.current) return;
+      if (!res.ok) {
+        lastKey.current = "";
+        setQuote(null);
+        setShippingHandle("");
+        setError(json.error || "Gat ekki sótt sendingarleiðir.");
+        return;
+      }
+      setQuote(json);
+      const stillThere = json.shipping.some(
+        (row) => row.handle === shippingHandle
+      );
+      setShippingHandle(
+        stillThere ? shippingHandle : (json.shipping[0]?.handle ?? "")
+      );
+      if (!json.shipping.length) {
+        setError(
+          "Engar sendingarleiðir fundust fyrir þetta heimilisfang. Athugaðu Settings → Shipping and delivery í Shopify."
+        );
+      }
+    } catch {
+      if (gen !== quoteGen.current) return;
+      lastKey.current = "";
+      setError("Gat ekki sótt sendingarleiðir.");
+    } finally {
+      if (gen === quoteGen.current) setPending("");
+    }
+  }
+
+  function syncAddress(form: HTMLFormElement) {
+    const ready = addressLooksComplete(new FormData(form));
+    setAddressReady(ready);
+    if (!ready) {
+      quoteGen.current += 1;
+      lastKey.current = "";
+      setQuote(null);
+      setShippingHandle("");
+      setError("");
+      if (timer.current) clearTimeout(timer.current);
+      return;
+    }
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      void quoteRates(form);
+    }, 400);
+  }
+
+  async function pay() {
+    if (!quote) {
+      setError("Settu inn heimilisfang svo sendingarleiðir birtist.");
+      return;
+    }
+    const shipping: DeliveryOption | undefined = selected ?? quote.shipping[0];
+    if (!shipping) {
+      setError("Veldu sendingarleið.");
+      return;
+    }
+    setPending("pay");
+    setError("");
+    try {
+      const res = await fetch("/api/checkout/pay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cartId: quote.cartId,
+          groupId: shipping.groupId,
+          handle: shipping.handle,
+        }),
+      });
       const json = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !json.url) {
         setError(json.error || "Gat ekki opnað greiðslu.");
@@ -110,7 +209,7 @@ export function CheckoutForm() {
     } catch {
       setError("Gat ekki opnað greiðslu.");
     } finally {
-      setPending(false);
+      setPending("");
     }
   }
 
@@ -122,7 +221,7 @@ export function CheckoutForm() {
       onBlur={(event) => syncAddress(event.currentTarget)}
       onSubmit={(event) => {
         event.preventDefault();
-        void pay(event.currentTarget);
+        void pay();
       }}
     >
       <div className="md:col-span-7">
@@ -133,8 +232,8 @@ export function CheckoutForm() {
           Sending og greiðsla
         </h1>
         <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-ink/65">
-          Settu inn heimilisfang — þá birtast sendingarleiðir við pöntunina.
-          Kortagreiðsla fer fram á öruggum Shopify-kassa.
+          Settu inn heimilisfang — þá birtast sendingarleiðir úr Shopify eftir
+          zone. Kortagreiðsla fer fram á öruggum Shopify-kassa.
         </p>
 
         <div className="mt-10 space-y-5">
@@ -224,16 +323,24 @@ export function CheckoutForm() {
       <aside className="bg-cream p-6 md:col-span-5 md:p-8">
         <div>
           <h2 className="font-serif text-2xl text-forest">Sending</h2>
-          {addressReady && shippingMethods.length ? (
+          {!addressReady ? (
+            <p className="mt-3 text-[13px] leading-relaxed text-ink/50">
+              Settu inn heimilisfang til að sjá sendingarleiðir.
+            </p>
+          ) : pending === "quote" && !quote?.shipping.length ? (
+            <p className="mt-3 text-[13px] leading-relaxed text-ink/50">
+              Sæki sendingarleiðir…
+            </p>
+          ) : quote?.shipping.length ? (
             <fieldset className="mt-4">
               <legend className="sr-only">Sendingarleið</legend>
               <div className="space-y-2">
-                {shippingMethods.map((option) => (
+                {quote.shipping.map((option) => (
                   <label
-                    key={option.id}
+                    key={option.handle}
                     className={cn(
                       "flex cursor-pointer items-start justify-between gap-4 border px-4 py-3",
-                      shippingId === option.id
+                      shippingHandle === option.handle
                         ? "border-forest bg-white"
                         : "border-border bg-white/70"
                     )}
@@ -243,8 +350,8 @@ export function CheckoutForm() {
                         type="radio"
                         name="shipping"
                         className="mt-1 accent-forest"
-                        checked={shippingId === option.id}
-                        onChange={() => setShippingId(option.id)}
+                        checked={shippingHandle === option.handle}
+                        onChange={() => setShippingHandle(option.handle)}
                       />
                       <span>
                         <span className="block text-sm font-semibold text-ink">
@@ -258,7 +365,7 @@ export function CheckoutForm() {
                       </span>
                     </span>
                     <span className="shrink-0 text-sm font-semibold">
-                      {shippingPriceText(option)}
+                      {option.priceAmount === 0 ? "Ókeypis" : option.price}
                     </span>
                   </label>
                 ))}
@@ -266,7 +373,7 @@ export function CheckoutForm() {
             </fieldset>
           ) : (
             <p className="mt-3 text-[13px] leading-relaxed text-ink/50">
-              Settu inn heimilisfang til að sjá sendingarleiðir.
+              Engar sendingarleiðir fundust fyrir þetta heimilisfang.
             </p>
           )}
         </div>
@@ -300,18 +407,24 @@ export function CheckoutForm() {
         <div className="mt-6 space-y-2 border-t border-border pt-4 text-sm">
           <div className="flex justify-between">
             <span className="text-ink/55">Vörur</span>
-            <span>{formatMoney(totalAmount)}</span>
+            <span>{quote?.subtotal ?? formatMoney(totalAmount)}</span>
           </div>
           <div className="flex justify-between gap-4">
             <span className="text-ink/55">Sending</span>
             <span className="text-right">
-              {selected && addressReady ? shippingPriceText(selected) : "—"}
+              {selected
+                ? selected.priceAmount === 0
+                  ? "Ókeypis"
+                  : selected.price
+                : "—"}
             </span>
           </div>
           <div className="flex justify-between font-semibold">
             <span>Samtals</span>
             <span>
-              {formatMoney(totalAmount + (selected?.priceAmount ?? 0))}
+              {selected && quote
+                ? formatMoney(quote.subtotalAmount + selected.priceAmount)
+                : (quote?.total ?? formatMoney(totalAmount))}
             </span>
           </div>
         </div>
@@ -320,10 +433,14 @@ export function CheckoutForm() {
         </p>
         <button
           type="submit"
-          disabled={pending}
+          disabled={pending === "pay" || pending === "quote" || !selected}
           className="mt-6 inline-flex h-12 w-full items-center justify-center bg-forest px-7 text-sm text-white hover:bg-forest-mid disabled:opacity-60"
         >
-          {pending ? "Opna greiðslu…" : "Greiða"}
+          {pending === "pay"
+            ? "Opna greiðslu…"
+            : pending === "quote"
+              ? "Sæki sendingu…"
+              : "Greiða"}
         </button>
         <button
           type="button"
