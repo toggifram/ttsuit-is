@@ -92,6 +92,32 @@ export function SersaumurFerlid() {
   );
 }
 
+export function SersaumurPoki() {
+  return (
+    <section aria-label="Fatapoki" className="grid items-stretch bg-white md:grid-cols-2">
+      <div className="relative min-h-[420px] overflow-hidden bg-[#ebe6dc] md:min-h-[640px]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/studio/fatapoki-ber.jpg"
+          alt="Sérsaumuð jakkaföt í fatapoka Tjé Tjé"
+          className="absolute inset-0 h-full w-full object-cover object-top"
+        />
+      </div>
+      <div className="flex flex-col justify-end px-6 py-12 md:px-14 md:py-16 lg:px-20">
+        <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
+          Að lokum
+        </p>
+        <h2 className="mt-3 font-serif text-4xl text-forest md:text-5xl">
+          Þú gengur út með fötin.
+        </h2>
+        <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ink/70">
+          Sérsaumuð jakkaföt, tilbúin. Við pökkum í poka — þú ferð.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export function SersaumurEfnin() {
   return (
     <section
@@ -114,6 +140,19 @@ export function SersaumurEfnin() {
           Tyrklandi. Hundruð efnis — ull, hör, flannel, tweed og skyrtuefni. Þú
           velur. Ef þú spyrð hvað mér finnst, svara ég eins og mér finnst.
         </p>
+        <figure className="mt-12">
+          <div className="relative aspect-[3/2] overflow-hidden bg-[#ebe6dc]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/studio/dino-filarte-baekur.jpg"
+              alt="Dino Filarte efnabækur, Super 110's ull"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+          </div>
+          <figcaption className="mt-3 text-[13px] text-ink/50">
+            Dino Filarte — Super 110&apos;s ull, fjögurra árstíða.
+          </figcaption>
+        </figure>
         <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {fabrics.map((fabric) => (
             <article key={fabric.name} className="bg-cream">
