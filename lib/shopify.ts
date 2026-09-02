@@ -306,6 +306,12 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
       images: unique.length ? unique : undefined,
     };
   });
+  const featuredColor = colors.find(
+    (color) => color.images?.[0] === featured || color.image === featured
+  );
+  if (featuredColor) {
+    colors.sort((a, b) => Number(b === featuredColor) - Number(a === featuredColor));
+  }
   const sizes = optionValues(node, SIZE_OPTION);
   const available =
     variants.some((variant) => variant.available) ||
