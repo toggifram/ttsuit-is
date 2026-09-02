@@ -116,9 +116,13 @@ export function CartDrawer() {
                         </span>
                         <button
                           type="button"
-                          className="flex size-8 items-center justify-center text-ink/70 hover:bg-cream"
+                          className="flex size-8 items-center justify-center text-ink/70 hover:bg-cream disabled:opacity-30"
                           onClick={() =>
                             setQuantity(item.variantId, item.quantity + 1)
+                          }
+                          disabled={
+                            item.quantity >=
+                            Math.min(20, item.quantityAvailable ?? 20)
                           }
                           aria-label="Fjölga"
                         >

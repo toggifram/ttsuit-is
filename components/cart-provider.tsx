@@ -57,14 +57,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     (item: Omit<CartItem, "quantity">, quantity = 1) => {
       setItems((current) => {
         const existing = current.find((row) => row.variantId === item.variantId);
+        const max = Math.min(
+          20,
+          item.quantityAvailable ?? existing?.quantityAvailable ?? 20
+        );
+        if (max < 1) return current;
         if (existing) {
           return current.map((row) =>
             row.variantId === item.variantId
-              ? { ...row, quantity: Math.min(20, row.quantity + quantity) }
+              ? {
+                  ...row,
+                  ...item,
+                  quantity: Math.min(max, row.quantity + quantity),
+                }
               : row
           );
         }
-        return [...current, { ...item, quantity }];
+        return [
+          ...current,
+          { ...item, quantity: Math.min(max, quantity) },
+        ];
       });
       setOpen(true);
     },
@@ -74,11 +86,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const setQuantity = useCallback((variantId: string, quantity: number) => {
     setItems((current) => {
       if (quantity < 1) return current.filter((row) => row.variantId !== variantId);
-      return current.map((row) =>
-        row.variantId === variantId
-          ? { ...row, quantity: Math.min(20, quantity) }
-          : row
-      );
+      return current.map((row) => {
+        if (row.variantId !== variantId) return row;
+        const max = Math.min(20, row.quantityAvailable ?? 20);
+        return { ...row, quantity: Math.min(max, quantity) };
+      });
     });
   }, []);
 

@@ -95,6 +95,7 @@ export type ProductVariant = {
   price: string;
   priceAmount: number;
   available: boolean;
+  quantityAvailable?: number;
   size?: string;
   color?: string;
   image?: string;
@@ -147,12 +148,28 @@ export function findProductVariant(
     return sizeOk && colorOk;
   });
 
-  return (
-    matches.find((variant) => variant.available) ??
-    matches[0] ??
-    variants.find((variant) => variant.available) ??
-    variants[0]
-  );
+  return matches[0];
+}
+
+export function firstAvailableSize(product: Product, color?: string) {
+  for (const size of product.sizes ?? []) {
+    if (isSizeInStock(product, size, color)) return size;
+  }
+  return product.sizes?.[0] ?? "";
+}
+
+export function isSizeInStock(product: Product, size: string, color?: string) {
+  if (!hasShopifyVariants(product)) return true;
+  const variant = findProductVariant(product, size, color);
+  return Boolean(variant?.available);
+}
+
+export function variantStock(variant?: ProductVariant) {
+  if (!variant) return 0;
+  if (typeof variant.quantityAvailable === "number") {
+    return Math.max(0, variant.quantityAvailable);
+  }
+  return variant.available ? 20 : 0;
 }
 
 export function imagesForSelectedColor(product: Product, color?: string) {

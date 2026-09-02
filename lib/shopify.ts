@@ -78,6 +78,7 @@ const PRODUCT_FIELDS = `
       id
       title
       availableForSale
+      quantityAvailable
       price {
         amount
         currencyCode
@@ -130,6 +131,7 @@ type ShopifyProduct = {
       id?: string;
       title?: string;
       availableForSale: boolean;
+      quantityAvailable?: number | null;
       price?: { amount: string; currencyCode: string };
       selectedOptions?: { name: string; value: string }[];
       image?: { url: string } | null;
@@ -264,6 +266,10 @@ function mapVariants(node: ShopifyProduct): ProductVariant[] {
         price: formatMoney(amount, variant.price?.currencyCode ?? currency),
         priceAmount: Number(amount),
         available: variant.availableForSale,
+        quantityAvailable:
+          typeof variant.quantityAvailable === "number"
+            ? variant.quantityAvailable
+            : undefined,
         size,
         color,
         image: variant.image?.url || undefined,
@@ -369,8 +375,12 @@ function fromAdminProduct(product: AdminProduct): ShopifyProduct {
         return {
           id: `gid://shopify/ProductVariant/${variant.id}`,
           title: variant.title,
-          availableForSale:
-            !variant.inventory_management || (variant.inventory_quantity ?? 1) > 0,
+          availableForSale: variant.inventory_management
+            ? (variant.inventory_quantity ?? 0) > 0
+            : true,
+          quantityAvailable: variant.inventory_management
+            ? (variant.inventory_quantity ?? 0)
+            : undefined,
           price: { amount: variant.price, currencyCode: "ISK" },
           selectedOptions,
           image: (() => {

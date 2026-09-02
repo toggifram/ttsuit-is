@@ -63,8 +63,11 @@ Vörur, sending og greiðsla koma **ekki** allar með sama API.
 | Karfa → kassi | Storefront Cart API | Custom app, Storefront |
 | Sending | Shopify Checkout | **Settings → Shipping and delivery** (zone) |
 | Greiðsla | Shopify Checkout | **Settings → Payments** |
+| Birgðir | Admin API | **Products → Inventory** á hverju afbrigði |
 
 Síðan sýnir vörurnar, körfuna og **kassa** á `/kassi`. Þegar heimilisfang er sett inn birtast sendingarleiðir í kremaða kassanum ofan við pöntunina — þær koma úr Shopify eftir zone (t.d. Domestic á Íslandi). **Greiða** opnar Shopify-kassann fyrir kort — Shopify leyfir ekki að taka við kortanúmerum á utanaðkomandi síðu.
+
+Birgðir eru lesnar úr Shopify. Þegar afbrigði (t.d. Dökkblár / L) er komið niður í 0 er stærðin uppseld og ekki hægt að setja hana í körfu. Shopify dregur svo úr lagerinu við pöntun.
 
 ### 1. Vörur — Admin API
 

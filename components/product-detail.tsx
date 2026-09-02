@@ -14,9 +14,12 @@ import {
 import {
   categoryLabel,
   findProductVariant,
+  firstAvailableSize,
   hasShopifyVariants,
   hrefForCategory,
   imagesForSelectedColor,
+  isSizeInStock,
+  variantStock,
   type Product,
 } from "@/lib/product";
 import { cn } from "@/lib/utils";
@@ -47,7 +50,9 @@ export function ProductDetail({
   related: Product[];
 }) {
   const [color, setColor] = useState(product.colors[0]?.name ?? "");
-  const [size, setSize] = useState(product.sizes?.[0] ?? "");
+  const [size, setSize] = useState(
+    firstAvailableSize(product, product.colors[0]?.name ?? "")
+  );
   const [active, setActive] = useState(0);
   const [added, setAdded] = useState(false);
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
@@ -63,15 +68,24 @@ export function ProductDetail({
     size || undefined,
     color || undefined
   );
-  const variantAvailable = variant?.available !== false;
+  const variantAvailable = Boolean(variant?.available);
+  const canAdd =
+    shopifyBuy && variant
+      ? variantAvailable && variantStock(variant) > 0
+      : inStock;
 
   const selectColor = (name: string) => {
     setColor(name);
     setActive(0);
+    setSize((current) =>
+      isSizeInStock(product, current, name)
+        ? current
+        : firstAvailableSize(product, name)
+    );
   };
 
   const addToCart = () => {
-    if (!variant) return;
+    if (!variant || !canAdd) return;
     addItem({
       variantId: variant.id,
       handle: product.handle,
@@ -81,6 +95,7 @@ export function ProductDetail({
       size: variant.size || size || undefined,
       color: variant.color || color || undefined,
       priceAmount: variant.priceAmount,
+      quantityAvailable: variantStock(variant),
     });
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1600);
@@ -218,27 +233,38 @@ export function ProductDetail({
                 </button>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
-                {product.sizes.map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setSize(value)}
-                    className={cn(
-                      "min-w-12 px-3 py-2 text-[13px] transition-colors",
-                      size === value
-                        ? "bg-forest text-white"
-                        : "bg-cream text-ink hover:bg-forest/10"
-                    )}
-                  >
-                    {value}
-                  </button>
-                ))}
+                {product.sizes.map((value) => {
+                  const inStockSize = isSizeInStock(product, value, color || undefined);
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => {
+                        if (inStockSize) setSize(value);
+                      }}
+                      disabled={!inStockSize}
+                      aria-label={
+                        inStockSize ? value : `${value}, uppselt`
+                      }
+                      className={cn(
+                        "min-w-12 px-3 py-2 text-[13px] transition-colors",
+                        !inStockSize
+                          ? "cursor-not-allowed bg-cream text-ink/30 line-through"
+                          : size === value
+                            ? "bg-forest text-white"
+                            : "bg-cream text-ink hover:bg-forest/10"
+                      )}
+                    >
+                      {value}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ) : null}
 
           <div className="mt-10 flex flex-col gap-3">
-            {inStock && variantAvailable ? (
+            {canAdd ? (
               shopifyBuy && variant ? (
                 <button
                   type="button"
