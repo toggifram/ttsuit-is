@@ -6,7 +6,6 @@ import {
   SersaumurEfnin,
   SersaumurFerlid,
   SersaumurHero,
-  SersaumurPoki,
   SersaumurSpurningar,
   SersaumurVerdskra,
 } from "@/components/sersaumur-sections";
@@ -24,7 +23,6 @@ export default function SersaumurPage() {
       <SersaumurHero />
       <SersaumurFerlid />
       <SersaumurEfnin />
-      <SersaumurPoki />
       <SersaumurVerdskra />
       <SersaumurBoka />
       <SersaumurSpurningar />
