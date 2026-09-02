@@ -60,7 +60,7 @@ export function ProductRail({ products }: { products: Product[] }) {
               <Link href={product.href} className="block">
                 <div
                   className={cn(
-                    "relative aspect-[4/5] overflow-hidden",
+                    "relative aspect-[3/4] overflow-hidden",
                     product.category === "gjafabref"
                       ? "bg-[#1a1a1a]"
                       : "bg-[#ebe6dc]"

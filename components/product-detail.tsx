@@ -366,7 +366,7 @@ export function ProductDetail({
               Meira í sama flokki
             </h2>
           </div>
-          <div className="grid grid-cols-2 gap-2 bg-white md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 bg-white px-2 sm:px-3 md:grid-cols-4 lg:px-6">
             {related.map((item) => (
               <ProductCard key={item.id} product={item} />
             ))}
