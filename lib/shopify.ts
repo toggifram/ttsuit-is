@@ -37,6 +37,7 @@ const COLOR_HEX: Record<string, string> = {
   forest: "#043034",
   black: "#1a1a1a",
   svart: "#1a1a1a",
+  svartur: "#1a1a1a",
   brúnn: "#5c3d2e",
   brunn: "#5c3d2e",
   grey: "#6b6b6b",
