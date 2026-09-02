@@ -29,7 +29,7 @@ function productInfoRows(product: Product) {
     product.description?.trim() ||
     `${product.title} frá Tjé Tjé. ${product.subtitle}.`;
   const sizeFit = product.sizes?.length
-    ? `Stærðir: ${product.sizes.join(", ")}. Fyrirmyndin á myndum er 1,89 m og klæðist L. Ef þú ert á milli stærða, veldu þá stærri.`
+    ? `Stærðir: ${product.sizes.join(", ")}. Sjáðu vöruupplýsingar um fyrirmynd og snið. Ef þú ert á milli stærða, veldu þá stærri.`
     : "Ein stærð. Sjáðu mál á myndum eða sendu línu ef þú ert í vafa.";
 
   return [
@@ -352,7 +352,8 @@ export function ProductDetail({
           <div className="px-4 py-6 text-[15px] leading-relaxed text-ink/70">
             <p>Stærðartaflan er ekki komin inn enn.</p>
             <p className="mt-3">
-              Fyrirmyndin á myndum er 1,89 m og klæðist L. Stærðir eru S–2XL.
+              Stærðir eru S–2XL. Sjáðu vöruupplýsingar um hæð fyrirmynda og hvaða
+              stærð þær klæðast.
             </p>
           </div>
         </SheetContent>
