@@ -175,6 +175,39 @@ export const prices = [
   },
 ];
 
+export const packages = [
+  {
+    name: "Eitt sett",
+    from: "89.990 kr.",
+    items: "Þetta klassíska: jakki og buxur sem virka fyrir öll betri tilefni.",
+  },
+  {
+    name: "Heilög þrenna",
+    from: "116.980 kr.",
+    items: "Jakki, buxur og vesti. Gott að eiga vestið þó það sé ekki alltaf nauðsyn.",
+  },
+  {
+    name: "Klár í slaginn",
+    from: "139.970 kr.",
+    items: "Jakki, buxur, vesti og skyrta. Þú ert klár í slaginn.",
+  },
+  {
+    name: "Allur pakkinn",
+    from: "159.990 kr.",
+    items: "Fyrir þá sem nenna ekki að flækja hlutina: jakki, buxur, vesti, skyrta, bindi, klútur og armband.",
+  },
+  {
+    name: "Smáatriði",
+    from: "10.000 kr.",
+    items: "Velur þrjá fylgihluti og færð þá á 20% afslætti.",
+  },
+  {
+    name: "Sex(ý) skyrtum",
+    from: "99.950 kr.",
+    items: "Fáðu sex skyrtur á verði fimm.",
+  },
+];
+
 export const giftCards = [
   { name: "Gjafabréf", price: "4.032 kr." },
   { name: "Gjafabréf", price: "8.065 kr." },
