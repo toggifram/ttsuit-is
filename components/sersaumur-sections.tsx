@@ -1,7 +1,8 @@
 import { HashLink } from "@/components/hash-link";
 import { InquiryForm } from "@/components/inquiry-form";
 import { PriceList } from "@/components/price-list";
-import { brand, fabrics, faqs, processSteps, sersaumurMenu } from "@/lib/site";
+import { ProcessSteps } from "@/components/process-steps";
+import { brand, fabrics, faqs, sersaumurMenu } from "@/lib/site";
 
 const sectionClass = "scroll-mt-36";
 
@@ -63,24 +64,7 @@ export function SersaumurFerlid() {
         >
           Fimm skref. Ekkert flókið.
         </h2>
-        <ol className="mt-8 grid gap-8 md:grid-cols-5 md:gap-6">
-          {processSteps.map((step) => (
-            <li
-              key={step.n}
-              className="border-b border-forest/10 pb-8 last:border-b-0 last:pb-0 md:border-b-0 md:pb-0"
-            >
-              <p className="font-serif text-2xl text-forest/35 md:text-xl">
-                {step.n}
-              </p>
-              <h3 className="mt-1.5 font-serif text-2xl text-forest md:text-xl">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-ink/70 md:text-[13px] md:leading-snug">
-                {step.text}
-              </p>
-            </li>
-          ))}
-        </ol>
+        <ProcessSteps />
       </div>
     </section>
   );
