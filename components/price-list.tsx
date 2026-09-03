@@ -1,3 +1,4 @@
+import { PackageCalculator } from "@/components/package-calculator";
 import {
   accessoryPrices,
   garmentPrices,
@@ -40,6 +41,8 @@ export function PriceList() {
           </div>
         ))}
       </div>
+
+      <PackageCalculator />
 
       <h3 className="mt-16 font-serif text-3xl text-forest">Efnisflokkar</h3>
       <p className="mt-3 max-w-xl text-sm text-ink/65">

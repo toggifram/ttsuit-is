@@ -22,7 +22,7 @@ Við breytum **alltaf local fyrst**. Þegar þú ert sáttur biðurðu um að se
 | Slóð | Hvað |
 | --- | --- |
 | `/` | Forsíða |
-| `/sersaumur` | Sérsaumur (einn síða). Drop-down fer á akkeri: `#ferlid` `#efnin` `#verdskra` `#boka-tima` `#spurningar` |
+| `/sersaumur` | Sérsaumur (einn síða). Drop-down fer á akkeri: `#ferlid` `#efnin` `#verdskra` `#reiknivel` `#boka-tima` `#spurningar` |
 | `/verslun` | Allar vörur |
 | `/verslun/peysur` · `/bindi` · `/yfirhafnir` · `/fylgihluti` · `/gjafabref` | Flokkar |
 | `/verslun/vara/[handle]` | Vörusíða |

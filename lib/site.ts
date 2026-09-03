@@ -30,6 +30,7 @@ export const sersaumurMenu = [
   { href: "/sersaumur#ferlid", hash: "ferlid", label: "Ferlið" },
   { href: "/sersaumur#efnin", hash: "efnin", label: "Efnin" },
   { href: "/sersaumur#verdskra", hash: "verdskra", label: "Verðskrá" },
+  { href: "/sersaumur#reiknivel", hash: "reiknivel", label: "Reiknivél" },
   { href: "/sersaumur#boka-tima", hash: "boka-tima", label: "Bóka tíma" },
   {
     href: "/sersaumur#spurningar",
