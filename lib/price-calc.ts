@@ -3,7 +3,6 @@ import { accessoryPrices, garmentPrices } from "@/lib/site";
 export type GarmentKey = "jakki" | "buxur" | "vesti";
 export type ExtraKey =
   | "skyrta"
-  | "sex-skyrtur"
   | "axlabond"
   | "bindi"
   | "slaufa"
@@ -41,7 +40,6 @@ export const garmentOptions: { key: GarmentKey; label: string }[] = [
 
 export const extraOptions: { key: ExtraKey; label: string }[] = [
   { key: "skyrta", label: "Skyrta" },
-  { key: "sex-skyrtur", label: "Sex skyrtur" },
   { key: "bindi", label: "Bindi" },
   { key: "slaufa", label: "Slaufa" },
   { key: "klutur", label: "Klútur" },
@@ -107,20 +105,9 @@ export function estimatePackage(input: CalcInput): CalcResult {
     }
   }
 
-  const extras = input.extras.filter((key) => {
-    if (key === "skyrta" && has(input.extras, "sex-skyrtur")) return false;
-    return true;
-  });
-
+  const extras = input.extras;
   const accessoryLines: CalcLine[] = [];
   for (const key of extras) {
-    if (key === "sex-skyrtur") {
-      accessoryLines.push({
-        label: "Sex skyrtur á verði fimm",
-        amount: rowAmount(accessoryPrices, "Skyrta", tier) * 5,
-      });
-      continue;
-    }
     const name = extraOptions.find((item) => item.key === key)?.label ?? key;
     const tableName = key === "skyrta" ? "Skyrta" : name;
     accessoryLines.push({
@@ -130,9 +117,7 @@ export function estimatePackage(input: CalcInput): CalcResult {
   }
   lines.push(...accessoryLines);
 
-  const bundleCandidates = accessoryLines.filter(
-    (line) => line.label !== "Skyrta" && line.label !== "Sex skyrtur á verði fimm"
-  );
+  const bundleCandidates = accessoryLines.filter((line) => line.label !== "Skyrta");
   const accessoryOnly = g.length === 0;
   if (accessoryOnly && bundleCandidates.length >= ACCESSORY_BUNDLE_COUNT) {
     const discount = Math.round(

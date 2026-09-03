@@ -59,12 +59,7 @@ export function PackageCalculator() {
   const hasJacket = garments.includes("jakki");
 
   function toggleExtra(key: ExtraKey) {
-    setExtras((current) => {
-      let next = toggle(current, key);
-      if (key === "skyrta") next = next.filter((item) => item !== "sex-skyrtur");
-      if (key === "sex-skyrtur") next = next.filter((item) => item !== "skyrta");
-      return next;
-    });
+    setExtras((current) => toggle(current, key));
   }
 
   return (
