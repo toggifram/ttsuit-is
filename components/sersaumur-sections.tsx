@@ -53,35 +53,32 @@ export function SersaumurFerlid() {
       aria-labelledby="ferlid-heading"
       className={`${sectionClass} bg-cream`}
     >
-      <div className="mx-auto grid max-w-[1440px] gap-12 px-5 pt-8 pb-16 md:grid-cols-12 md:px-8 md:pt-10 md:pb-24">
-        <div className="md:col-span-4">
-          <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
-            Ferlið
-          </p>
+      <div className="mx-auto max-w-[1440px] px-5 py-10 md:px-8 md:py-12">
+        <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
+          Ferlið
+        </p>
+        <div className="mt-2 flex flex-col gap-2 md:flex-row md:items-end md:justify-between md:gap-8">
           <h2
             id="ferlid-heading"
-            className="mt-3 font-serif text-4xl text-forest md:text-5xl"
+            className="font-serif text-3xl text-forest md:text-4xl"
           >
             Fimm skref. Ekkert flókið.
           </h2>
-          <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-ink/70">
+          <p className="max-w-md text-sm leading-relaxed text-ink/70">
             Frá fyrstu línu til fata sem sitja eins og þau eiga að sitja. Við
             förum hægt yfir valin — og hreint út ef eitthvað hentar þér illa.
           </p>
         </div>
-        <ol className="md:col-span-8">
+        <ol className="mt-8 flex gap-5 overflow-x-auto pb-1 md:grid md:grid-cols-5 md:gap-6 md:overflow-visible md:pb-0">
           {processSteps.map((step) => (
-            <li
-              key={step.n}
-              className="grid gap-4 border-t border-forest/10 py-8 first:border-t-0 first:pt-0 md:grid-cols-[4.5rem_1fr] md:gap-8"
-            >
-              <p className="font-serif text-3xl text-forest/35">{step.n}</p>
-              <div>
-                <h3 className="font-serif text-2xl text-forest">{step.title}</h3>
-                <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-ink/70">
-                  {step.text}
-                </p>
-              </div>
+            <li key={step.n} className="min-w-[12rem] shrink-0 md:min-w-0">
+              <p className="font-serif text-xl text-forest/35">{step.n}</p>
+              <h3 className="mt-1.5 font-serif text-xl text-forest">
+                {step.title}
+              </h3>
+              <p className="mt-2 text-[13px] leading-snug text-ink/70">
+                {step.text}
+              </p>
             </li>
           ))}
         </ol>
