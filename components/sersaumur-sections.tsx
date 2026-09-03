@@ -1,7 +1,8 @@
 import { HashLink } from "@/components/hash-link";
 import { InquiryForm } from "@/components/inquiry-form";
 import { PriceList } from "@/components/price-list";
-import { brand, fabrics, faqs, processSteps } from "@/lib/site";
+import { brand, fabrics, faqs, processSteps, sersaumurMenu } from "@/lib/site";
+import { cn } from "@/lib/utils";
 
 const sectionClass = "scroll-mt-36";
 
@@ -9,31 +10,35 @@ export function SersaumurHero() {
   return (
     <section className="grid items-end bg-white md:grid-cols-2">
       <div className="flex flex-col justify-end px-6 pb-8 pt-12 md:px-14 md:pb-10 md:pt-16 lg:px-20">
-        <p className="text-[11px] font-semibold tracking-[0.22em] text-forest/55 uppercase">
-          Custom made · 4–6 vikur
+        <p className="text-[11px] font-semibold tracking-[0.18em] text-forest/55">
+          CUSTOM MADE fyrir kjéllinn
         </p>
         <h1 className="mt-4 font-serif text-5xl leading-[0.95] text-forest italic md:text-6xl lg:text-7xl">
           Saumað eftir þér.
         </h1>
         <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink/70">
-          Jakkaföt, jakkar og skyrtur eftir líkama þínum — ekki hillunni. Þú
-          velur efni, snið og smáatriði. Við tökum mælinguna og saumum.
+          Jakkaföt, jakkar og skyrtur eftir líkamanum þínum — ekki úr hillunni.
+          Þú velur efni, snið og smáatriði. Við tökum mælinguna og saumum.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <HashLink
-            hash="boka-tima"
-            href="/sersaumur#boka-tima"
-            className="inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
-          >
-            Bóka tíma
-          </HashLink>
-          <HashLink
-            hash="ferlid"
-            href="/sersaumur#ferlid"
-            className="inline-flex h-12 items-center border border-forest/20 px-7 text-sm text-forest transition-colors hover:border-forest hover:bg-forest hover:text-white"
-          >
-            Sjá ferlið
-          </HashLink>
+          {sersaumurMenu.map((item) => {
+            const primary = item.hash === "boka-tima";
+            return (
+              <HashLink
+                key={item.hash}
+                hash={item.hash}
+                href={item.href}
+                className={cn(
+                  "inline-flex h-12 items-center px-7 text-sm transition-colors",
+                  primary
+                    ? "bg-forest text-white hover:bg-forest-mid"
+                    : "border border-forest/20 text-forest hover:border-forest hover:bg-forest hover:text-white"
+                )}
+              >
+                {item.label}
+              </HashLink>
+            );
+          })}
         </div>
       </div>
       <div className="flex items-end justify-center bg-white px-5 pt-4 md:px-8 md:pt-8">
