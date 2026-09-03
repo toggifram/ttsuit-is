@@ -67,7 +67,7 @@ export const processSteps = [
   {
     n: "02",
     title: "Mæling",
-    text: "Við tökum nákvæmar mælingar og ræðum hvernig þú vilt að fötin sitji: þétt að, klassískt eða með meira rými.",
+    text: "Við tökum nákvæmar mælingar og ræðum hvernig þú vilt hafa fittið. Þétt að, klassískt eða með meira rými.",
   },
   {
     n: "03",
@@ -82,7 +82,7 @@ export const processSteps = [
   {
     n: "05",
     title: "Bingó",
-    text: "Þú klæðist fötum sem voru gerð fyrir þig. Frá mælingu eru það venjulega 4–6 vikur.",
+    text: "Þú klæðist fötum sem voru gerð fyrir þig. Ef þú ert ánægður, segðu öllum. Ef þú ert óánægður, segðu mér!",
   },
 ];
 
