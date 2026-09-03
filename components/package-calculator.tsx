@@ -4,12 +4,10 @@ import { useMemo, useState } from "react";
 
 import { HashLink } from "@/components/hash-link";
 import {
-  calcPresets,
   estimatePackage,
   extraOptions,
   formatIsk,
   garmentOptions,
-  matchingPreset,
   type Canvas,
   type ExtraKey,
   type GarmentKey,
@@ -48,7 +46,7 @@ function toggle<T extends string>(list: T[], key: T) {
 }
 
 export function PackageCalculator() {
-  const [garments, setGarments] = useState<GarmentKey[]>(["jakki", "buxur"]);
+  const [garments, setGarments] = useState<GarmentKey[]>([]);
   const [extras, setExtras] = useState<ExtraKey[]>([]);
   const [tier, setTier] = useState(0);
   const [canvas, setCanvas] = useState<Canvas>("none");
@@ -58,15 +56,7 @@ export function PackageCalculator() {
     () => estimatePackage({ garments, extras, tier, canvas, rush }),
     [garments, extras, tier, canvas, rush]
   );
-  const activePreset = matchingPreset({ garments, extras, tier, canvas, rush });
   const hasJacket = garments.includes("jakki");
-
-  function applyPreset(id: string) {
-    const preset = calcPresets.find((item) => item.id === id);
-    if (!preset) return;
-    setGarments(preset.garments);
-    setExtras(preset.extras);
-  }
 
   function toggleExtra(key: ExtraKey) {
     setExtras((current) => {
@@ -94,21 +84,6 @@ export function PackageCalculator() {
             Veldu flíkur og efnisflokk. Þetta er áætlun út frá verðskránni —
             lokaorðið ræðst þegar þú velur efni í mælingu.
           </p>
-
-          <p className="mt-8 text-[11px] tracking-[0.16em] text-forest/55 uppercase">
-            Byrja á pakka
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {calcPresets.map((preset) => (
-              <Chip
-                key={preset.id}
-                selected={activePreset === preset.id}
-                onClick={() => applyPreset(preset.id)}
-              >
-                {preset.label}
-              </Chip>
-            ))}
-          </div>
 
           <p className="mt-8 text-[11px] tracking-[0.16em] text-forest/55 uppercase">
             Flíkur

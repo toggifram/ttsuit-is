@@ -50,38 +50,6 @@ export const extraOptions: { key: ExtraKey; label: string }[] = [
   { key: "armbond", label: "Armbönd" },
 ];
 
-export const calcPresets: {
-  id: string;
-  label: string;
-  garments: GarmentKey[];
-  extras: ExtraKey[];
-}[] = [
-  {
-    id: "eitt-sett",
-    label: "Eitt sett",
-    garments: ["jakki", "buxur"],
-    extras: [],
-  },
-  {
-    id: "heilog-threnna",
-    label: "Heilög þrenna",
-    garments: ["jakki", "buxur", "vesti"],
-    extras: [],
-  },
-  {
-    id: "klar",
-    label: "Klár í slaginn",
-    garments: ["jakki", "buxur", "vesti"],
-    extras: ["skyrta"],
-  },
-  {
-    id: "allur",
-    label: "Allur pakkinn",
-    garments: ["jakki", "buxur", "vesti"],
-    extras: ["skyrta", "bindi", "klutur", "armbond"],
-  },
-];
-
 function rowAmount(
   rows: readonly { name: string; amounts: readonly number[] }[],
   name: string,
@@ -94,20 +62,6 @@ function rowAmount(
 
 function has(list: readonly string[], key: string) {
   return list.includes(key);
-}
-
-function sortedKeys<T extends string>(keys: readonly T[]) {
-  return [...keys].sort().join(",");
-}
-
-export function matchingPreset(input: CalcInput) {
-  return (
-    calcPresets.find(
-      (preset) =>
-        sortedKeys(preset.garments) === sortedKeys(input.garments) &&
-        sortedKeys(preset.extras) === sortedKeys(input.extras)
-    )?.id ?? null
-  );
 }
 
 export function formatIsk(amount: number) {
