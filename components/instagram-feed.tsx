@@ -61,7 +61,7 @@ export async function FooterInstagram() {
         {handle}
       </a>
       <p className="mt-1.5 text-[12px] leading-snug text-white/55">
-        Nýjar línur, mælingar og baksvið — beint af Instagram.
+        Nýtt úr vinnustofunni.
       </p>
       <div className="mt-3 grid grid-cols-3 gap-1">
         {posts.map((post) => (

@@ -3,7 +3,8 @@ import Link from "next/link";
 import { FooterInstagram } from "@/components/instagram-feed";
 import { HashLink } from "@/components/hash-link";
 import { NewsletterForm } from "@/components/newsletter-form";
-import { brand, footerNav, footerWe, socialLinks } from "@/lib/site";
+import { hrefForCategory, shopCategories } from "@/lib/product";
+import { brand, footerWe, sersaumurMenu, socialLinks } from "@/lib/site";
 
 export async function SiteFooter() {
   return (
@@ -31,48 +32,34 @@ export async function SiteFooter() {
         <div className="md:col-span-6">
           <div className="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
             <div>
-              <p className="text-[11px] text-white/45">Verslun</p>
+              <p className="text-[11px] text-white/45">Vefverslun</p>
               <ul className="mt-2.5 space-y-1 text-[13px] text-white/80">
-                {footerNav.map((item) => (
-                  <li key={item.label}>
-                    <Link href={item.href} className="hover:text-white">
-                      {item.label}
+                {shopCategories.map((cat) => (
+                  <li key={cat.id}>
+                    <Link
+                      href={hrefForCategory(cat.id)}
+                      className="hover:text-white"
+                    >
+                      {cat.label}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <p className="text-[11px] text-white/45">Þjónusta</p>
+              <p className="text-[11px] text-white/45">Sérsaumur</p>
               <ul className="mt-2.5 space-y-1 text-[13px] text-white/80">
-                <li>
-                  <Link href="/sersaumur" className="hover:text-white">
-                    Custom made
-                  </Link>
-                </li>
-                <li>
-                  <HashLink
-                    hash="verdskra"
-                    href="/sersaumur#verdskra"
-                    className="hover:text-white"
-                  >
-                    Verðskrá
-                  </HashLink>
-                </li>
-                <li>
-                  <HashLink
-                    hash="boka-tima"
-                    href="/sersaumur#boka-tima"
-                    className="hover:text-white"
-                  >
-                    Mæling og mátun
-                  </HashLink>
-                </li>
-                <li>
-                  <a href={`mailto:${brand.email}`} className="hover:text-white">
-                    {brand.email}
-                  </a>
-                </li>
+                {sersaumurMenu.map((item) => (
+                  <li key={item.hash}>
+                    <HashLink
+                      hash={item.hash}
+                      href={item.href}
+                      className="hover:text-white"
+                    >
+                      {item.label}
+                    </HashLink>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
@@ -85,6 +72,11 @@ export async function SiteFooter() {
                     </Link>
                   </li>
                 ))}
+                <li>
+                  <a href={`mailto:${brand.email}`} className="hover:text-white">
+                    {brand.email}
+                  </a>
+                </li>
               </ul>
             </div>
             <div>

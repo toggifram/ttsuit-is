@@ -51,12 +51,6 @@ export const socialLinks = [
 
 export const nav = [...navLeft, ...navRight];
 
-export const footerNav = [
-  { href: "/sersaumur", label: "Sérsaumur" },
-  { href: "/verslun", label: "Vefverslun" },
-  { href: "/sersaumur#boka-tima", label: "Bóka mælingu" },
-] as const;
-
 export const footerWe = [
   { href: "/um-okkur", label: "Um TT" },
   { href: "/hafa-samband", label: "Hafa samband" },
