@@ -28,9 +28,8 @@ Við breytum **alltaf local fyrst**. Þegar þú ert sáttur biðurðu um að se
 | `/verslun/vara/[handle]` | Vörusíða |
 | `/kassi` | Sending og greiðsla |
 | `/hafa-samband` | Hafa samband |
-| `/um-okkur` | Um okkur |
+| `/um-okkur` | Um TT |
 | `/skilmalar` | Skilmálar |
-| `/vafrakokur` | Vafrakökur |
 
 ## GitHub og Netlify
 
@@ -43,7 +42,7 @@ Shopify og Mailchimp eru stillt sem environment variables á Netlify-site-inu. L
 - Forsíða með sérsaum og tilbúnum fötum
 - Sérsaumur: ferli, efni, verðskrá og bókun
 - Verslun með vörusíðum (`/verslun/vara/[handle]`), sóttum úr Shopify Admin API
-- Um okkur og hafa samband / bóka mælingu
+- Um TT, hafa samband og skilmálar í footer-dálkinum Við; bókun mælingar
 - Póstlisti tengdur Mailchimp (listinn „TT suit“)
 
 ## Litir og merki

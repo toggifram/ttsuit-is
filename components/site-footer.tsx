@@ -3,13 +3,13 @@ import Link from "next/link";
 import { FooterInstagram } from "@/components/instagram-feed";
 import { HashLink } from "@/components/hash-link";
 import { NewsletterForm } from "@/components/newsletter-form";
-import { brand, footerNav, socialLinks } from "@/lib/site";
+import { brand, footerNav, footerWe, socialLinks } from "@/lib/site";
 
 export async function SiteFooter() {
   return (
     <footer className="bg-forest text-white">
-      <div className="mx-auto grid max-w-[1440px] items-start gap-8 px-5 py-10 md:grid-cols-3 md:gap-6 md:px-8 md:py-12">
-        <div id="postlisti">
+      <div className="mx-auto grid max-w-[1440px] items-start gap-8 px-5 py-10 md:grid-cols-12 md:gap-6 md:px-8 md:py-12">
+        <div id="postlisti" className="md:col-span-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/brand/logo-tl.png"
@@ -28,8 +28,8 @@ export async function SiteFooter() {
           </div>
         </div>
 
-        <div className="flex md:justify-center">
-          <div className="grid grid-cols-3 gap-x-8 gap-y-6">
+        <div className="md:col-span-6">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
             <div>
               <p className="text-[11px] text-white/45">Verslun</p>
               <ul className="mt-2.5 space-y-1 text-[13px] text-white/80">
@@ -73,16 +73,18 @@ export async function SiteFooter() {
                     {brand.email}
                   </a>
                 </li>
-                <li>
-                  <Link href="/skilmalar" className="hover:text-white">
-                    Skilmálar
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/vafrakokur" className="hover:text-white">
-                    Vafrakökur
-                  </Link>
-                </li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-[11px] text-white/45">Við</p>
+              <ul className="mt-2.5 space-y-1 text-[13px] text-white/80">
+                {footerWe.map((item) => (
+                  <li key={item.label}>
+                    <Link href={item.href} className="hover:text-white">
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
@@ -105,7 +107,7 @@ export async function SiteFooter() {
           </div>
         </div>
 
-        <div className="md:flex md:justify-end">
+        <div className="md:col-span-3 md:flex md:justify-end">
           <FooterInstagram />
         </div>
       </div>

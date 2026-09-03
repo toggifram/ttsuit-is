@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Um okkur",
+  title: "Um TT",
   description:
     "Sagan á bak við Tjé Tjé — Toggi Tuttugu og sérsaumaður herrafatnaður á Íslandi.",
 };
@@ -31,7 +31,7 @@ export default function AboutPage() {
   return (
     <>
       <section className="mx-auto max-w-7xl px-5 py-16 md:px-8 md:py-24">
-        <p className="text-sm text-ink/50">Um okkur</p>
+        <p className="text-sm text-ink/50">Um TT</p>
         <h1 className="mt-2 max-w-3xl text-4xl font-medium tracking-tight md:text-6xl">
           Sagan á bak við nafnið
         </h1>
