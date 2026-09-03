@@ -2,7 +2,6 @@ import { HashLink } from "@/components/hash-link";
 import { InquiryForm } from "@/components/inquiry-form";
 import { PriceList } from "@/components/price-list";
 import { brand, fabrics, faqs, processSteps, sersaumurMenu } from "@/lib/site";
-import { cn } from "@/lib/utils";
 
 const sectionClass = "scroll-mt-36";
 
@@ -17,28 +16,22 @@ export function SersaumurHero() {
           Saumað eftir þér.
         </h1>
         <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink/70">
-          Jakkaföt, jakkar og skyrtur eftir líkamanum þínum — ekki úr hillunni.
+          Jakkaföt, jakkar og skyrtur eftir líkamanum þínum — Ekki af rekka!
           Þú velur efni, snið og smáatriði. Við tökum mælinguna og saumum.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          {sersaumurMenu.map((item) => {
-            const primary = item.hash === "boka-tima";
-            return (
+          {sersaumurMenu
+            .filter((item) => item.hash !== "reiknivel")
+            .map((item) => (
               <HashLink
                 key={item.hash}
                 hash={item.hash}
                 href={item.href}
-                className={cn(
-                  "inline-flex h-12 items-center px-7 text-sm transition-colors",
-                  primary
-                    ? "bg-forest text-white hover:bg-forest-mid"
-                    : "border border-forest/20 text-forest hover:border-forest hover:bg-forest hover:text-white"
-                )}
+                className="inline-flex h-12 items-center border border-forest/20 px-7 text-sm text-forest transition-colors hover:border-forest hover:bg-forest hover:text-white"
               >
                 {item.label}
               </HashLink>
-            );
-          })}
+            ))}
         </div>
       </div>
       <div className="flex items-end justify-center bg-white px-5 pt-4 md:px-8 md:pt-8">
