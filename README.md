@@ -42,7 +42,7 @@ Shopify og Mailchimp eru stillt sem environment variables á Netlify-site-inu. L
 - Forsíða með sérsaum og tilbúnum fötum
 - Sérsaumur: ferli, efni, verðskrá og bókun
 - Verslun með vörusíðum (`/verslun/vara/[handle]`), sóttum úr Shopify Admin API
-- Um TT, hafa samband og skilmálar í footer-dálkinum Við; bókun mælingar
+- Footer: Vefverslun (flokkar), Sérsaumur (undirsíður), Við (Um TT, hafa samband, skilmálar, netfang)
 - Póstlisti tengdur Mailchimp (listinn „TT suit“)
 
 ## Litir og merki
