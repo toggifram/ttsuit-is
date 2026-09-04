@@ -137,7 +137,7 @@ export function SersaumurVerdskra() {
           id="verdskra-heading"
           className="mt-3 max-w-3xl font-serif text-4xl text-forest md:text-5xl"
         >
-          Fötin eru kannski ekki ókeypis. Verðin gætu samt komið þér á óvart.
+          Verðin gætu komið þér á óvart.
         </h2>
         <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-ink/70">
           Allar flíkur eru sérsaumaðar eftir líkamsbyggingu kaupanda. Hér
