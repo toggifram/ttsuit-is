@@ -6,6 +6,8 @@ import {
   priceTiers,
 } from "@/lib/site";
 
+const priceRows = [...garmentPrices, ...accessoryPrices];
+
 function isk(amount: number) {
   return new Intl.NumberFormat("is-IS").format(amount);
 }
@@ -25,6 +27,33 @@ function AmountCells({ amounts }: { amounts: readonly number[] }) {
   );
 }
 
+function MobilePriceCards() {
+  return (
+    <div className="mt-8 space-y-3 md:hidden">
+      {priceRows.map((row) => (
+        <article key={row.name} className="bg-white px-5 py-5">
+          <h4 className="font-serif text-xl text-forest">{row.name}</h4>
+          <dl className="mt-3 divide-y divide-forest/10">
+            {priceTiers.map((tier, i) =>
+              row.amounts[i] != null ? (
+                <div
+                  key={tier}
+                  className="flex items-baseline justify-between gap-4 py-2 text-sm"
+                >
+                  <dt className="text-ink/55">{tier}</dt>
+                  <dd className="font-serif text-[15px] text-forest tabular-nums">
+                    {isk(row.amounts[i]!)}
+                  </dd>
+                </div>
+              ) : null
+            )}
+          </dl>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 export function PriceList() {
   return (
     <>
@@ -34,7 +63,9 @@ export function PriceList() {
         fínni dúkur frá öðrum framleiðendum.
       </p>
 
-      <div className="mt-8 overflow-x-auto bg-white">
+      <MobilePriceCards />
+
+      <div className="mt-8 hidden overflow-x-auto bg-white md:block">
         <table className="w-full min-w-[44rem] border-collapse">
           <thead>
             <tr className="border-b border-forest/15">
