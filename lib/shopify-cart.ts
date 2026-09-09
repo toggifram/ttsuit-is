@@ -4,7 +4,11 @@ import {
   getStorefrontAccessToken,
   storeDomain,
 } from "@/lib/shopify-auth";
-import { toVariantGid } from "@/lib/shopify";
+import {
+  getCheckoutVariantStates,
+  publishOnlineStoreProducts,
+  toVariantGid,
+} from "@/lib/shopify";
 
 const API_VERSION = "2025-01";
 
@@ -422,12 +426,43 @@ export function parseAddress(raw: unknown): CheckoutAddress | null {
   };
 }
 
-export async function quoteShopifyCart(
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function merchandiseIds(cart: StorefrontCart) {
+  return new Set(
+    (cart.lines?.nodes ?? [])
+      .map((node) => node.merchandise?.id)
+      .filter((id): id is string => Boolean(id))
+  );
+}
+
+function missingCheckoutLines(cart: StorefrontCart | null | undefined, lines: CheckoutLine[]) {
+  if (!cart) return lines;
+  const have = merchandiseIds(cart);
+  return lines.filter((line) => !have.has(line.variantId));
+}
+
+async function missingLinesError(missing: CheckoutLine[]) {
+  const states = await getCheckoutVariantStates(
+    missing.map((line) => line.variantId)
+  );
+  if (states.some((row) => !row.purchasable)) {
+    return "Ein eða fleiri vörur í körfunni eru uppseldar. Taktu þær úr körfunni eða veldu aðra stærð.";
+  }
+  if (states.some((row) => row.status !== "active" || !row.published)) {
+    return "Varan náðist ekki inn í Shopify-kassann. Hún er líklega óútgefin eða ekki sýnileg í Online Store.";
+  }
+  return "Varan náðist ekki inn í Shopify-kassann. Taktu hana úr körfunni og settu hana aftur inn.";
+}
+
+async function createQuoteCart(
   lines: CheckoutLine[],
   address: CheckoutAddress,
   discountCode?: string
-): Promise<CartQuote | { error: string }> {
-  const { data, error } = await storefrontGraphql<{
+) {
+  return storefrontGraphql<{
     cartCreate?: {
       cart?: StorefrontCart | null;
       userErrors?: { message: string }[];
@@ -468,22 +503,52 @@ export async function quoteShopifyCart(
       },
     }
   );
+}
 
-  const userError = data?.cartCreate?.userErrors?.[0]?.message;
+export async function quoteShopifyCart(
+  lines: CheckoutLine[],
+  address: CheckoutAddress,
+  discountCode?: string
+): Promise<CartQuote | { error: string }> {
+  let created = await createQuoteCart(lines, address, discountCode);
+  let cart = created.data?.cartCreate?.cart;
+  const userError = created.data?.cartCreate?.userErrors?.[0]?.message;
   if (userError) return { error: userError };
-  if (error && !data?.cartCreate?.cart) return { error };
-  const cart = data?.cartCreate?.cart;
+  if (created.error && !cart) return { error: created.error };
+
+  let missing = missingCheckoutLines(cart, lines);
+  if (missing.length) {
+    const states = await getCheckoutVariantStates(
+      missing.map((line) => line.variantId)
+    );
+    const toPublish = [
+      ...new Set(
+        states
+          .filter((row) => row.status === "active" && !row.published)
+          .map((row) => row.productId)
+      ),
+    ];
+    if (toPublish.length) {
+      await publishOnlineStoreProducts(toPublish);
+      for (let attempt = 0; attempt < 4; attempt++) {
+        await wait(700);
+        created = await createQuoteCart(lines, address, discountCode);
+        cart = created.data?.cartCreate?.cart;
+        missing = missingCheckoutLines(cart, lines);
+        if (!missing.length) break;
+      }
+    }
+  }
+
   if (!cart?.checkoutUrl) {
     return {
       error:
+        created.error ||
         "Gat ekki búið til körfu í Shopify. Athugaðu sendingarstillingar og að Online Store sé ekki lykilorðslæst fyrir kassa.",
     };
   }
-  if (!cart.totalQuantity) {
-    return {
-      error:
-        "Varan náðist ekki inn í Shopify-kassann. Hún er líklega óútgefin eða ekki sýnileg í Online Store.",
-    };
+  if (missing.length) {
+    return { error: await missingLinesError(missing) };
   }
 
   const added = await addCartDeliveryAddress(cart.id, address);
@@ -507,8 +572,8 @@ export async function quoteShopifyCart(
   const fromProfile = fallback.data?.cart ? mapCart(fallback.data.cart) : null;
   if (fromProfile?.shipping.length) return fromProfile;
 
-  const created = mapCart(cart);
-  if (created.shipping.length) return created;
+  const quoted = mapCart(cart);
+  if (quoted.shipping.length) return quoted;
 
   return {
     error:

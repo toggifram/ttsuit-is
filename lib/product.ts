@@ -170,7 +170,7 @@ export function findProductVariant(
     return sizeOk && colorOk;
   });
 
-  return matches[0];
+  return matches.find((variant) => variant.available) ?? matches[0];
 }
 
 export function firstAvailableSize(product: Product, color?: string) {
@@ -187,11 +187,11 @@ export function isSizeInStock(product: Product, size: string, color?: string) {
 }
 
 export function variantStock(variant?: ProductVariant) {
-  if (!variant) return 0;
-  if (typeof variant.quantityAvailable === "number") {
-    return Math.max(0, variant.quantityAvailable);
+  if (!variant?.available) return 0;
+  if (typeof variant.quantityAvailable === "number" && variant.quantityAvailable > 0) {
+    return variant.quantityAvailable;
   }
-  return variant.available ? 20 : 0;
+  return 20;
 }
 
 export function imagesForSelectedColor(product: Product, color?: string) {

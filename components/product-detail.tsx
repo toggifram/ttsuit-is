@@ -76,9 +76,7 @@ export function ProductDetail({
   );
   const variantAvailable = Boolean(variant?.available);
   const canAdd =
-    shopifyBuy && variant
-      ? variantAvailable && variantStock(variant) > 0
-      : inStock;
+    shopifyBuy && variant ? variantAvailable : inStock;
 
   const selectColor = (name: string) => {
     setColor(name);

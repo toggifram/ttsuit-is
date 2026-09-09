@@ -88,7 +88,6 @@ const PRODUCT_FIELDS = `
       id
       title
       availableForSale
-      quantityAvailable
       price {
         amount
         currencyCode
@@ -160,6 +159,7 @@ type AdminVariant = {
   option3: string | null;
   image_id?: number | null;
   inventory_management: string | null;
+  inventory_policy?: string | null;
   inventory_quantity?: number | null;
 };
 
@@ -170,9 +170,21 @@ type AdminProduct = {
   body_html: string | null;
   product_type: string | null;
   tags: string;
+  published_at?: string | null;
+  status?: string;
   images: AdminImage[];
   options: AdminOption[];
   variants: AdminVariant[];
+};
+
+export type CheckoutVariantState = {
+  variantId: string;
+  productId: number;
+  handle: string;
+  title: string;
+  status: string;
+  published: boolean;
+  purchasable: boolean;
 };
 
 function publicCheckout() {
@@ -391,9 +403,7 @@ function fromAdminProduct(product: AdminProduct): ShopifyProduct {
         return {
           id: `gid://shopify/ProductVariant/${variant.id}`,
           title: variant.title,
-          availableForSale: variant.inventory_management
-            ? (variant.inventory_quantity ?? 0) > 0
-            : true,
+          availableForSale: variantIsPurchasable(variant),
           quantityAvailable: variant.inventory_management
             ? (variant.inventory_quantity ?? 0)
             : undefined,
@@ -409,6 +419,14 @@ function fromAdminProduct(product: AdminProduct): ShopifyProduct {
       }),
     },
   };
+}
+
+function variantIsPurchasable(variant: AdminVariant) {
+  if (!variant.inventory_management) return true;
+  if ((variant.inventory_policy ?? "deny").toLowerCase() === "continue") {
+    return true;
+  }
+  return (variant.inventory_quantity ?? 0) > 0;
 }
 
 function nextLink(header: string | null) {
@@ -435,6 +453,107 @@ async function adminFetch(url: string) {
   return res;
 }
 
+async function adminPut(url: string, body: unknown) {
+  const token = await getAdminAccessToken();
+  if (!token) return null;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "X-Shopify-Access-Token": token,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    console.error(
+      `Shopify Admin API ${res.status} PUT ${url.replace(/https?:\/\/[^/]+/, "")}`
+    );
+    return null;
+  }
+  return res;
+}
+
+async function publishUnlistedProducts(products: AdminProduct[]) {
+  const domain = storeDomain();
+  for (const product of products) {
+    if (product.published_at) continue;
+    const res = await adminPut(
+      `https://${domain}/admin/api/${API_VERSION}/products/${product.id}.json`,
+      {
+        product: {
+          id: product.id,
+          published: true,
+          published_scope: "global",
+        },
+      }
+    );
+    if (res) product.published_at = new Date().toISOString();
+  }
+}
+
+export async function publishOnlineStoreProducts(productIds: number[]) {
+  const unique = [...new Set(productIds.filter((id) => Number.isFinite(id)))];
+  if (!unique.length) return 0;
+  const domain = storeDomain();
+  let published = 0;
+  for (const id of unique) {
+    const res = await adminPut(
+      `https://${domain}/admin/api/${API_VERSION}/products/${id}.json`,
+      { product: { id, published: true, published_scope: "global" } }
+    );
+    if (res) published += 1;
+  }
+  return published;
+}
+
+export async function getCheckoutVariantStates(
+  variantIds: string[]
+): Promise<CheckoutVariantState[]> {
+  const domain = storeDomain();
+  const products = new Map<number, AdminProduct>();
+  const states: CheckoutVariantState[] = [];
+
+  for (const variantId of variantIds) {
+    const id = variantNumericId(variantId);
+    if (!id) continue;
+    const variantRes = await adminFetch(
+      `https://${domain}/admin/api/${API_VERSION}/variants/${id}.json`
+    );
+    if (!variantRes) continue;
+    const variantJson = (await variantRes.json()) as {
+      variant?: AdminVariant & { product_id?: number };
+    };
+    const variant = variantJson.variant;
+    const productId = variant?.product_id;
+    if (!variant || !productId) continue;
+
+    let product = products.get(productId);
+    if (!product) {
+      const productRes = await adminFetch(
+        `https://${domain}/admin/api/${API_VERSION}/products/${productId}.json`
+      );
+      if (!productRes) continue;
+      const productJson = (await productRes.json()) as { product?: AdminProduct };
+      product = productJson.product;
+      if (!product) continue;
+      products.set(productId, product);
+    }
+
+    states.push({
+      variantId: toVariantGid(String(variant.id)),
+      productId,
+      handle: product.handle,
+      title: product.title,
+      status: product.status || "active",
+      published: Boolean(product.published_at),
+      purchasable: variantIsPurchasable(variant),
+    });
+  }
+
+  return states;
+}
+
 async function fetchAdminProducts(): Promise<Product[] | null> {
   if (!(await getAdminAccessToken())) return null;
 
@@ -453,6 +572,7 @@ async function fetchAdminProducts(): Promise<Product[] | null> {
     pages += 1;
   }
 
+  await publishUnlistedProducts(collected);
   return mapAdminList(collected, domain);
 }
 
@@ -466,6 +586,7 @@ async function fetchAdminProduct(handle: string): Promise<Product | null> {
   const json = (await res.json()) as { products?: AdminProduct[] };
   const product = json.products?.[0];
   if (!product) return null;
+  await publishUnlistedProducts([product]);
   return mapProduct(fromAdminProduct(product), domain);
 }
 
