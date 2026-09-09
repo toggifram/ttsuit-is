@@ -144,7 +144,7 @@ export function CartDrawer() {
               </div>
               <p className="mt-2 text-[12px] leading-relaxed text-ink/50">
                 Heimilisfang og sendingarleið fyllirðu út á kassanum.
-                Kortagreiðsla fer síðan um Shopify.
+                Kortagreiðsla fer um Teya.
               </p>
               <Link
                 href="/kassi"
@@ -160,8 +160,8 @@ export function CartDrawer() {
             <ShoppingBag className="size-8 text-forest/30" />
             <p className="mt-4 font-serif text-2xl text-forest">Karfan er tóm</p>
             <p className="mt-2 max-w-xs text-sm text-ink/55">
-              Settu vöru í körfu. Þegar Shopify er tengt gengur þú frá kaupum
-              þar — sending og greiðsla innifalin.
+              Settu vöru í körfu og gakktu frá kaupum á kassanum. Sending fer um
+              Shopify, greiðsla um Teya.
             </p>
             <Link
               href="/verslun"

@@ -39,7 +39,7 @@ function productInfoRows(product: Product) {
     { title: "Stærð og snið", body: sizeFit },
     {
       title: "Sending og skil",
-      body: "Sending fer fram í gegnum Shopify-kassann. Þú getur skilað ónotaðri vöru í upprunalegum umbúðum. Hafðu samband á ttsuit@ttsuit.is.",
+      body: "Sendingarleið velurðu á kassanum. Kortagreiðsla fer um Teya. Þú getur skilað ónotaðri vöru í upprunalegum umbúðum. Hafðu samband á ttsuit@ttsuit.is.",
     },
   ];
 }
@@ -304,18 +304,17 @@ export function ProductDetail({
             )}
             {shopifyBuy ? (
               <p className="text-[12px] leading-relaxed text-ink/50">
-                Sending og greiðsla fara fram í Shopify-kassanum — með þeim
-                sendingarleiðum og kortum sem þú hefur sett upp þar.
+                Sendingarleið velurðu á kassanum. Kortagreiðsla fer um Teya —
+                Visa, Mastercard, Apple Pay og Google Pay.
               </p>
             ) : buyHref ? (
               <p className="text-[12px] leading-relaxed text-ink/50">
-                Greiðsla fer fram í Shopify-versluninni. Þú opnar vöruna þar og
-                klárar kaupin.
+                Greiðsla fer um Teya í Shopify-kassanum.
               </p>
             ) : (
               <p className="text-[12px] leading-relaxed text-ink/50">
-                Þegar Shopify-kassinn er tengdur fer sending og greiðsla í gegn
-                um Shopify. Þangað til sendum við pöntunina eftir línu.
+                Þegar kassinn er tengdur fer sending um Shopify og greiðsla um
+                Teya. Þangað til sendum við pöntunina eftir línu.
               </p>
             )}
           </div>

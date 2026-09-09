@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useCart } from "@/components/cart-provider";
+import { PaymentMethods } from "@/components/payment-methods";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatMoney } from "@/lib/product";
@@ -177,7 +178,7 @@ export function CheckoutForm() {
     }, 400);
   }
 
-  async function pay() {
+  async function pay(form: HTMLFormElement) {
     if (!quote) {
       setError("Settu inn heimilisfang svo sendingarleiðir birtist.");
       return;
@@ -187,6 +188,10 @@ export function CheckoutForm() {
       setError("Veldu sendingarleið.");
       return;
     }
+    const data = new FormData(form);
+    const fullName = String(data.get("name") ?? "").trim();
+    const [firstName, ...rest] = fullName.split(/\s+/);
+    const lastName = rest.join(" ") || firstName;
     setPending("pay");
     setError("");
     try {
@@ -197,6 +202,23 @@ export function CheckoutForm() {
           cartId: quote.cartId,
           groupId: shipping.groupId,
           handle: shipping.handle,
+          title: shipping.title,
+          priceAmount: shipping.priceAmount,
+          discountCode: String(data.get("discount") ?? "").trim(),
+          lines: items.map((item) => ({
+            variantId: item.variantId,
+            quantity: item.quantity,
+          })),
+          address: {
+            email: String(data.get("email") ?? ""),
+            phone: String(data.get("phone") ?? ""),
+            firstName,
+            lastName,
+            address1: String(data.get("address1") ?? ""),
+            address2: String(data.get("address2") ?? ""),
+            city: String(data.get("city") ?? ""),
+            zip: String(data.get("zip") ?? ""),
+          },
         }),
       });
       const json = (await res.json()) as { url?: string; error?: string };
@@ -221,7 +243,7 @@ export function CheckoutForm() {
       onBlur={(event) => syncAddress(event.currentTarget)}
       onSubmit={(event) => {
         event.preventDefault();
-        void pay();
+        void pay(event.currentTarget);
       }}
     >
       <div className="md:col-span-7">
@@ -232,8 +254,9 @@ export function CheckoutForm() {
           Sending og greiðsla
         </h1>
         <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-ink/65">
-          Settu inn heimilisfang — þá birtast sendingarleiðir úr Shopify eftir
-          zone. Kortagreiðsla fer fram á öruggum Shopify-kassa.
+          Settu inn heimilisfang — þá birtast sendingarleiðir. Kortagreiðsla fer
+          um Teya á öruggum Shopify-kassa (Visa, Mastercard, Apple Pay og Google
+          Pay).
         </p>
 
         <div className="mt-10 space-y-5">
@@ -428,19 +451,19 @@ export function CheckoutForm() {
             </span>
           </div>
         </div>
-        <p className="mt-4 text-[12px] leading-relaxed text-ink/50">
-          Þú greiðir á Shopify. Sendingin sem þú velur hér fylgir með pöntuninni.
-        </p>
+        <div className="mt-6 border-t border-border pt-5">
+          <PaymentMethods />
+        </div>
         <button
           type="submit"
           disabled={pending === "pay" || pending === "quote" || !selected}
           className="mt-6 inline-flex h-12 w-full items-center justify-center bg-forest px-7 text-sm text-white hover:bg-forest-mid disabled:opacity-60"
         >
           {pending === "pay"
-            ? "Opna greiðslu…"
+            ? "Opna Teya…"
             : pending === "quote"
               ? "Sæki sendingu…"
-              : "Greiða"}
+              : "Greiða með Teya"}
         </button>
         <button
           type="button"

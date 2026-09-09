@@ -1,5 +1,9 @@
 import { formatMoney } from "@/lib/product";
-import { getStorefrontAccessToken, storeDomain } from "@/lib/shopify-auth";
+import {
+  getAdminAccessToken,
+  getStorefrontAccessToken,
+  storeDomain,
+} from "@/lib/shopify-auth";
 import { toVariantGid } from "@/lib/shopify";
 
 const API_VERSION = "2025-01";
@@ -459,11 +463,154 @@ export async function quoteShopifyCart(
   return mapCart(cart);
 }
 
-export async function payShopifyCart(
-  cartId: string,
-  shipping?: { groupId: string; handle: string }
-): Promise<{ url: string } | { error: string }> {
-  if (shipping?.groupId && shipping.handle) {
+export type PayShipping = {
+  groupId: string;
+  handle: string;
+  title: string;
+  priceAmount: number;
+};
+
+function shopifyPhone(raw: string) {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length === 7) return `+354${digits}`;
+  if (digits.length === 10 && digits.startsWith("354")) return `+${digits}`;
+  if (digits.length >= 10 && raw.trim().startsWith("+")) return `+${digits}`;
+  return "";
+}
+
+function mailingAddress(address: CheckoutAddress) {
+  const phone = shopifyPhone(address.phone);
+  return {
+    firstName: address.firstName,
+    lastName: address.lastName,
+    address1: address.address1,
+    address2: address.address2 || undefined,
+    city: address.city,
+    zip: address.zip,
+    countryCode: "IS" as const,
+    phone: phone || undefined,
+  };
+}
+
+async function checkoutUrlReachesShopify(url: string) {
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      redirect: "manual",
+      cache: "no-store",
+      signal: AbortSignal.timeout(8_000),
+    });
+    const location = res.headers.get("location") ?? "";
+    if (/\/password(\/|\?|$)/i.test(location) || /\/password(\/|\?|$)/i.test(url)) {
+      return false;
+    }
+    if (res.status >= 300 && res.status < 400) {
+      return /\/checkouts\//i.test(location) || /checkout\.shopify\.com/i.test(location);
+    }
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function adminGraphql<T>(
+  query: string,
+  variables?: Record<string, unknown>
+): Promise<{ data: T | null; error?: string }> {
+  const token = await getAdminAccessToken();
+  if (!token) return { data: null, error: "Shopify Admin er ekki tengt." };
+  const res = await fetch(
+    `https://${storeDomain()}/admin/api/${API_VERSION}/graphql.json`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": token,
+      },
+      body: JSON.stringify({ query, variables }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(20_000),
+    }
+  );
+  if (!res.ok) return { data: null, error: "Shopify svaraði ekki." };
+  const json = (await res.json()) as GqlJson<T>;
+  if (json.errors?.length) {
+    return {
+      data: json.data ?? null,
+      error: json.errors.map((err) => err.message).filter(Boolean).join(" "),
+    };
+  }
+  return { data: json.data ?? null };
+}
+
+async function createTeyaCheckoutInvoice(input: {
+  lines: CheckoutLine[];
+  address: CheckoutAddress;
+  shipping: PayShipping;
+  discountCode?: string;
+}): Promise<{ url: string } | { error: string }> {
+  const phone = shopifyPhone(input.address.phone);
+  const address = mailingAddress(input.address);
+  const created = await adminGraphql<{
+    draftOrderCreate?: {
+      draftOrder?: { invoiceUrl?: string | null } | null;
+      userErrors?: { field?: string[]; message: string }[];
+    };
+  }>(
+    `mutation CreatePayDraft($input: DraftOrderInput!) {
+      draftOrderCreate(input: $input) {
+        draftOrder { invoiceUrl }
+        userErrors { field message }
+      }
+    }`,
+    {
+      input: {
+        email: input.address.email,
+        phone: phone || undefined,
+        note: "Pöntun af ttsuit.is",
+        tags: ["ttsuit.is", "teya"],
+        sourceName: "ttsuit.is",
+        visibleToCustomer: true,
+        allowDiscountCodesInCheckout: true,
+        discountCodes: input.discountCode ? [input.discountCode] : undefined,
+        lineItems: input.lines.map((line) => ({
+          variantId: line.variantId,
+          quantity: line.quantity,
+        })),
+        shippingAddress: address,
+        billingAddress: address,
+        shippingLine: {
+          title: input.shipping.title,
+          priceWithCurrency: {
+            amount: String(input.shipping.priceAmount),
+            currencyCode: "ISK",
+          },
+        },
+      },
+    }
+  );
+  const userError = created.data?.draftOrderCreate?.userErrors?.[0]?.message;
+  if (userError) return { error: userError };
+  const url = created.data?.draftOrderCreate?.draftOrder?.invoiceUrl;
+  if (!url) {
+    return {
+      error:
+        created.error ||
+        "Gat ekki opnað Teya-greiðslu. Reyndu aftur eða sendu línu á ttsuit@ttsuit.is.",
+    };
+  }
+  return { url };
+}
+
+export async function payShopifyCart(input: {
+  cartId: string;
+  shipping?: PayShipping;
+  lines?: CheckoutLine[];
+  address?: CheckoutAddress;
+  discountCode?: string;
+}): Promise<{ url: string } | { error: string }> {
+  let cartUrl = "";
+  if (input.shipping?.groupId && input.shipping.handle) {
     const selected = await storefrontGraphql<{
       cartSelectedDeliveryOptionsUpdate?: {
         cart?: StorefrontCart | null;
@@ -480,11 +627,11 @@ export async function payShopifyCart(
         }
       }`,
       {
-        cartId,
+        cartId: input.cartId,
         selectedDeliveryOptions: [
           {
-            deliveryGroupId: shipping.groupId,
-            deliveryOptionHandle: shipping.handle,
+            deliveryGroupId: input.shipping.groupId,
+            deliveryOptionHandle: input.shipping.handle,
           },
         ],
       }
@@ -493,18 +640,36 @@ export async function payShopifyCart(
       selected.data?.cartSelectedDeliveryOptionsUpdate?.userErrors?.[0]
         ?.message;
     if (userError) return { error: userError };
-    const url =
-      selected.data?.cartSelectedDeliveryOptionsUpdate?.cart?.checkoutUrl;
-    if (url) return { url };
+    cartUrl =
+      selected.data?.cartSelectedDeliveryOptionsUpdate?.cart?.checkoutUrl ?? "";
   }
 
-  const queried = await storefrontGraphql<{ cart?: StorefrontCart | null }>(
-    `query CartPay($id: ID!) { cart(id: $id) { ${CART_FIELDS} } }`,
-    { id: cartId }
-  );
-  const url = queried.data?.cart?.checkoutUrl;
-  if (!url) {
-    return { error: queried.error || "Gat ekki opnað greiðslu." };
+  if (!cartUrl) {
+    const queried = await storefrontGraphql<{ cart?: StorefrontCart | null }>(
+      `query CartPay($id: ID!) { cart(id: $id) { ${CART_FIELDS} } }`,
+      { id: input.cartId }
+    );
+    cartUrl = queried.data?.cart?.checkoutUrl ?? "";
+    if (!cartUrl) {
+      return { error: queried.error || "Gat ekki opnað greiðslu." };
+    }
   }
-  return { url };
+
+  if (await checkoutUrlReachesShopify(cartUrl)) {
+    return { url: cartUrl };
+  }
+
+  if (input.lines?.length && input.address && input.shipping) {
+    return createTeyaCheckoutInvoice({
+      lines: input.lines,
+      address: input.address,
+      shipping: input.shipping,
+      discountCode: input.discountCode,
+    });
+  }
+
+  return {
+    error:
+      "Shopify-kassinn er lykilorðslæstur. Teya-greiðsla opnast þegar Online Store er opin, eða þegar heimilisfang fylgir pöntuninni.",
+  };
 }

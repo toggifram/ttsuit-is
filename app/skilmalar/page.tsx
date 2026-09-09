@@ -43,11 +43,12 @@ export default function TermsPage() {
             Greiðsluupplýsingar og sendingarmáti
           </h2>
           <p className="mt-3">
-            Viðskiptavinir geta greitt með greiðslukorti í gegnum vefsíðu{" "}
-            {brand.legalName}, {brand.domain}. Öll verð á vefsíðunni eru
-            gefin upp með virðisaukaskatti. Sendingarkostnaður bætist við —
-            nákvæmar sendingarleiðir og verð birtast í kassanum þegar
-            heimilisfang er sett inn.
+            Viðskiptavinir greiða með greiðslukorti, Apple Pay eða Google Pay
+            í gegnum Teya. Greiðslan fer fram á öruggum Shopify-kassa frá{" "}
+            {brand.domain}. Öll verð á vefsíðunni eru gefin upp með
+            virðisaukaskatti. Sendingarkostnaður bætist við — nákvæmar
+            sendingarleiðir og verð birtast í kassanum þegar heimilisfang er
+            sett inn.
           </p>
         </section>
 

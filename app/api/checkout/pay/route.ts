@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
-import { payShopifyCart } from "@/lib/shopify-cart";
+import {
+  parseAddress,
+  parseCheckoutLines,
+  payShopifyCart,
+} from "@/lib/shopify-cart";
 
 export const dynamic = "force-dynamic";
 
@@ -23,11 +27,28 @@ export async function POST(request: Request) {
   const groupId =
     typeof data.groupId === "string" ? data.groupId.trim() : "";
   const handle = typeof data.handle === "string" ? data.handle.trim() : "";
+  const title = typeof data.title === "string" ? data.title.trim() : "";
+  const priceAmount = Number(data.priceAmount);
+  const discountCode =
+    typeof data.discountCode === "string" ? data.discountCode.trim() : "";
+  const lines = parseCheckoutLines(data.lines) ?? undefined;
+  const address = parseAddress(data.address) ?? undefined;
 
-  const result = await payShopifyCart(
+  const result = await payShopifyCart({
     cartId,
-    groupId && handle ? { groupId, handle } : undefined
-  );
+    shipping:
+      groupId && handle
+        ? {
+            groupId,
+            handle,
+            title: title || "Sending",
+            priceAmount: Number.isFinite(priceAmount) ? priceAmount : 0,
+          }
+        : undefined,
+    lines,
+    address,
+    discountCode: discountCode || undefined,
+  });
   if ("error" in result) {
     return NextResponse.json({ error: result.error }, { status: 503 });
   }

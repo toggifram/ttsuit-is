@@ -61,10 +61,10 @@ Vörur, sending og greiðsla koma **ekki** allar með sama API.
 | Vörur, myndir, verð | Admin API (`read_products`) | Products í Shopify |
 | Karfa → kassi | Storefront Cart API | Custom app, Storefront |
 | Sending | Shopify Checkout | **Settings → Shipping and delivery** (zone) |
-| Greiðsla | Shopify Checkout | **Settings → Payments** |
+| Greiðsla | Shopify Checkout → **Teya** | **Settings → Payments** (Teya Payments) |
 | Birgðir | Admin API | **Products → Inventory** á hverju afbrigði |
 
-Síðan sýnir vörurnar, körfuna og **kassa** á `/kassi`. Þegar heimilisfang er sett inn birtast sendingarleiðir í kremaða kassanum ofan við pöntunina — þær koma úr Shopify eftir zone (t.d. Domestic á Íslandi). **Greiða** opnar Shopify-kassann fyrir kort — Shopify leyfir ekki að taka við kortanúmerum á utanaðkomandi síðu.
+Síðan sýnir vörurnar, körfuna og **kassa** á `/kassi`. Þegar heimilisfang er sett inn birtast sendingarleiðir í kremaða kassanum ofan við pöntunina — þær koma úr Shopify eftir zone (t.d. Domestic á Íslandi). **Greiða með Teya** opnar Shopify-kassann, þar sem Teya tekur við Visa, Mastercard, Apple Pay og Google Pay. Shopify leyfir ekki að taka við kortanúmerum á utanaðkomandi síðu. Ef Online Store er lykilorðslæst opnar kassinn Teya í gegnum Shopify-reikning (draft invoice) svo greiðslan nái samt í gegn.
 
 Birgðir eru lesnar úr Shopify. Þegar afbrigði (t.d. Dökkblár / L) er komið niður í 0 er stærðin uppseld og ekki hægt að setja hana í körfu. Shopify dregur svo úr lagerinu við pöntun.
 
