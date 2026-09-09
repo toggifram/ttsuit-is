@@ -93,9 +93,16 @@ SHOPIFY_ADMIN_ACCESS_TOKEN=shpat_…
 SHOPIFY_STOREFRONT_ACCESS_TOKEN=…
 ```
 
-### 3. Lykilorð og kassi
+### 3. Lykilorð, kassi og redirect
 
-Shopify-kassinn opnast ekki á meðan Online Store er lykilorðslæst. Taktu lykilorðið af, og settu redirect í `theme.liquid` svo `tje-tje.myshopify.com` sendi fólk á [ttsuit.is](https://ttsuit.is) — kassinn sjálfur (`/checkouts`) verður áfram á Shopify.
+Shopify-kassinn (`/cart/c/…`) opnast **ekki** á meðan Online Store er lykilorðslæst — slóðin fer á **Opening soon**. Shopify leyfir heldur ekki að breyta **Halda áfram að versla** á þakkar-síðunni beint; slóðin er verslunin á `tje-tje.myshopify.com`.
+
+Lausnin er tvö skref í Shopify Admin (API-ið getur hvorki slökkt á lykilorði né skrifað þema án `write_themes`):
+
+1. [Online Store → Preferences](https://admin.shopify.com/store/tje-tje/online_store/preferences) — taktu hakið af **Restrict store access with a password** → Save.
+2. [Online Store → Themes](https://admin.shopify.com/store/tje-tje/themes) — **Add theme** → **Upload zip file** → `shopify/ttsuit-redirect-theme.zip` → **Publish**.
+
+Þá fer `tje-tje.myshopify.com` og **Halda áfram að versla** á [www.ttsuit.is](https://www.ttsuit.is). Greiðslan á `/checkouts/…` verður áfram á Shopify. Nánar í `shopify/README.md`.
 
 Án tókans notar síðan staðbundnar vörur og **Hafa samband** í stað kassa.
 

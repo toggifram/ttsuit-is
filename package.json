@@ -6,7 +6,9 @@
     "dev": "next dev --hostname 127.0.0.1 --port 4318",
     "build": "next build",
     "start": "next start --hostname 127.0.0.1 --port 4318",
-    "lint": "eslint"
+    "lint": "eslint",
+    "shopify:pack-redirect": "python3 scripts/pack-redirect-theme.py",
+    "shopify:publish-redirect": "node scripts/shopify-publish-redirect.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

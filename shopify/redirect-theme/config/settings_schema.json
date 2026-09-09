@@ -1,0 +1,21 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "TT suit redirect",
+    "theme_author": "Tjé Tjé",
+    "theme_version": "1.0.0",
+    "theme_documentation_url": "https://www.ttsuit.is"
+  },
+  {
+    "name": "Storefront",
+    "settings": [
+      {
+        "type": "text",
+        "id": "storefront_hostname",
+        "label": "Hostname",
+        "info": "Án https:// — t.d. www.ttsuit.is",
+        "default": "www.ttsuit.is"
+      }
+    ]
+  }
+]

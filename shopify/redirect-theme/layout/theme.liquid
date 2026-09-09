@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <meta name="robots" content="noindex">
+    {%- assign storefront_host = settings.storefront_hostname | default: 'www.ttsuit.is' | strip -%}
+    {%- assign storefront_url = 'https://' | append: storefront_host | append: '/' -%}
+    <title>TT suit</title>
+    <link rel="canonical" href="{{ storefront_url }}">
+    <meta http-equiv="refresh" content="0;url={{ storefront_url }}">
+
+    {{ content_for_header }}
+
+    {% comment %}
+      Redirect Online Store pages to ttsuit.is.
+      Checkout (/checkouts) does not use this layout.
+    {% endcomment %}
+    {%- assign should_redirect = template != blank -%}
+
+    {%- if should_redirect -%}
+      <script>
+        function getCookie(name) {
+          name = name + '=';
+          var decodedCookie = decodeURIComponent(document.cookie);
+          var cookies = decodedCookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.indexOf(name) == 0) {
+              return cookie.substring(name.length, cookie.length);
+            }
+          }
+        }
+
+        function deleteCookie(name) {
+          document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
+
+        if (
+          !window.Shopify.designMode &&
+          window.location.pathname !== '/checkpoint' &&
+          window.location.pathname !== '/throttle/queue' &&
+          window.location.pathname !== '/challenge'
+        ) {
+          var redirectUrl = new URL({{ storefront_url | json }});
+          var discountCode = getCookie('discount_code');
+          if (discountCode) {
+            redirectUrl.searchParams.append('discount', discountCode);
+            deleteCookie('discount_code');
+          }
+          window.storefrontRedirectUrl = redirectUrl.toString();
+          window.location.replace(redirectUrl);
+        }
+      </script>
+    {%- endif -%}
+
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        box-sizing: border-box;
+        padding: clamp(1em, 5vw, 5em);
+        min-height: 100vh;
+        line-height: 1.5;
+        color: #043034;
+        background: #f4f1ea;
+      }
+      a { color: #043034; }
+    </style>
+  </head>
+  <body>
+    {%- if should_redirect -%}
+      <p>
+        <a id="redirect-link" href="{{ storefront_url }}">Halda áfram á ttsuit.is</a>
+        ef síðan færir þig ekki sjálfkrafa.
+      </p>
+      <script>
+        if (!window.Shopify.designMode && window.storefrontRedirectUrl) {
+          document.getElementById('redirect-link').href = window.storefrontRedirectUrl;
+        }
+      </script>
+    {%- endif -%}
+    {{ content_for_layout }}
+  </body>
+</html>
