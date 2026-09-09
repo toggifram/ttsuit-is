@@ -430,18 +430,20 @@ function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function merchandiseIds(cart: StorefrontCart) {
-  return new Set(
-    (cart.lines?.nodes ?? [])
-      .map((node) => node.merchandise?.id)
-      .filter((id): id is string => Boolean(id))
-  );
+function cartQuantities(cart: StorefrontCart) {
+  const qty = new Map<string, number>();
+  for (const node of cart.lines?.nodes ?? []) {
+    const id = node.merchandise?.id;
+    if (!id) continue;
+    qty.set(id, (qty.get(id) ?? 0) + (node.quantity || 0));
+  }
+  return qty;
 }
 
 function missingCheckoutLines(cart: StorefrontCart | null | undefined, lines: CheckoutLine[]) {
   if (!cart) return lines;
-  const have = merchandiseIds(cart);
-  return lines.filter((line) => !have.has(line.variantId));
+  const have = cartQuantities(cart);
+  return lines.filter((line) => (have.get(line.variantId) ?? 0) < 1);
 }
 
 async function missingLinesError(missing: CheckoutLine[]) {
