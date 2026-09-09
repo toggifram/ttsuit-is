@@ -293,6 +293,15 @@ async function cartWithCarrierRates(cartId: string) {
   return last;
 }
 
+function cleanShippingCopy(text: string) {
+  return text
+    .replace(/🌱\s*/g, "")
+    .replace(/Sent með rafmagnsbíl/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .trim();
+}
+
 function deliveryNodes(cart: StorefrontCart) {
   if (cart.deliveryGroups?.nodes?.length) return cart.deliveryGroups.nodes;
   return cart.deliveryGroups?.edges?.map((edge) => edge.node) ?? [];
@@ -307,8 +316,8 @@ function mapCart(cart: StorefrontCart): CartQuote {
       shipping.push({
         groupId: group.id,
         handle: option.handle,
-        title: option.title,
-        description: option.description?.trim() || "",
+        title: cleanShippingCopy(option.title),
+        description: cleanShippingCopy(option.description?.trim() || ""),
         price: formatMoney(cost.amount, cost.currencyCode),
         priceAmount: Number(cost.amount),
       });
