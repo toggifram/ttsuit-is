@@ -184,7 +184,7 @@ function mergeGraphqlPayloads<T>(raw: string, contentType: string): GqlJson<T> {
     }
   }
   return {
-    data: (Object.keys(data).length ? data : null) as T | null,
+    data: (Object.keys(data).length ? data : undefined) as T | undefined,
     errors: errors.length ? errors : undefined,
   };
 }
