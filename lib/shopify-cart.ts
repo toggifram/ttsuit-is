@@ -549,8 +549,31 @@ async function createTeyaCheckoutInvoice(input: {
   shipping: PayShipping;
   discountCode?: string;
 }): Promise<{ url: string } | { error: string }> {
-  const phone = shopifyPhone(input.address.phone);
   const address = mailingAddress(input.address);
+  const draftInput = {
+    email: input.address.email,
+    phone: address.phone,
+    note: "Pöntun af ttsuit.is",
+    tags: ["ttsuit.is", "teya"],
+    sourceName: "ttsuit.is",
+    visibleToCustomer: true,
+    allowDiscountCodesInCheckout: true,
+    discountCodes: input.discountCode ? [input.discountCode] : undefined,
+    lineItems: input.lines.map((line) => ({
+      variantId: line.variantId,
+      quantity: line.quantity,
+    })),
+    shippingAddress: address,
+    billingAddress: address,
+    shippingLine: {
+      title: input.shipping.title,
+      priceWithCurrency: {
+        amount: String(input.shipping.priceAmount),
+        currencyCode: "ISK",
+      },
+    },
+  };
+
   const created = await adminGraphql<{
     draftOrderCreate?: {
       draftOrder?: { invoiceUrl?: string | null } | null;
@@ -563,35 +586,41 @@ async function createTeyaCheckoutInvoice(input: {
         userErrors { field message }
       }
     }`,
-    {
-      input: {
-        email: input.address.email,
-        phone: phone || undefined,
-        note: "Pöntun af ttsuit.is",
-        tags: ["ttsuit.is", "teya"],
-        sourceName: "ttsuit.is",
-        visibleToCustomer: true,
-        allowDiscountCodesInCheckout: true,
-        discountCodes: input.discountCode ? [input.discountCode] : undefined,
-        lineItems: input.lines.map((line) => ({
-          variantId: line.variantId,
-          quantity: line.quantity,
-        })),
-        shippingAddress: address,
-        billingAddress: address,
-        shippingLine: {
-          title: input.shipping.title,
-          priceWithCurrency: {
-            amount: String(input.shipping.priceAmount),
-            currencyCode: "ISK",
-          },
-        },
-      },
-    }
+    { input: draftInput }
   );
-  const userError = created.data?.draftOrderCreate?.userErrors?.[0]?.message;
+
+  let payload = created.data?.draftOrderCreate;
+  const phoneError = payload?.userErrors?.some((err) =>
+    /phone/i.test(`${err.field?.join(" ") ?? ""} ${err.message}`)
+  );
+  if (phoneError) {
+    const retry = await adminGraphql<{
+      draftOrderCreate?: {
+        draftOrder?: { invoiceUrl?: string | null } | null;
+        userErrors?: { field?: string[]; message: string }[];
+      };
+    }>(
+      `mutation CreatePayDraft($input: DraftOrderInput!) {
+        draftOrderCreate(input: $input) {
+          draftOrder { invoiceUrl }
+          userErrors { field message }
+        }
+      }`,
+      {
+        input: {
+          ...draftInput,
+          phone: undefined,
+          shippingAddress: { ...address, phone: undefined },
+          billingAddress: { ...address, phone: undefined },
+        },
+      }
+    );
+    payload = retry.data?.draftOrderCreate ?? payload;
+  }
+
+  const userError = payload?.userErrors?.[0]?.message;
   if (userError) return { error: userError };
-  const url = created.data?.draftOrderCreate?.draftOrder?.invoiceUrl;
+  const url = payload?.draftOrder?.invoiceUrl;
   if (!url) {
     return {
       error:
@@ -609,6 +638,19 @@ export async function payShopifyCart(input: {
   address?: CheckoutAddress;
   discountCode?: string;
 }): Promise<{ url: string } | { error: string }> {
+  // /cart/c/ permalinks hit the Online Store password page. Draft invoices
+  // open /checkouts/do/… where Teya can take the card.
+  if (input.lines?.length && input.address && input.shipping) {
+    const invoice = await createTeyaCheckoutInvoice({
+      lines: input.lines,
+      address: input.address,
+      shipping: input.shipping,
+      discountCode: input.discountCode,
+    });
+    if (!("error" in invoice)) return invoice;
+    console.error(`Teya invoice: ${invoice.error}`);
+  }
+
   let cartUrl = "";
   if (input.shipping?.groupId && input.shipping.handle) {
     const selected = await storefrontGraphql<{
@@ -659,17 +701,8 @@ export async function payShopifyCart(input: {
     return { url: cartUrl };
   }
 
-  if (input.lines?.length && input.address && input.shipping) {
-    return createTeyaCheckoutInvoice({
-      lines: input.lines,
-      address: input.address,
-      shipping: input.shipping,
-      discountCode: input.discountCode,
-    });
-  }
-
   return {
     error:
-      "Shopify-kassinn er lykilorðslæstur. Teya-greiðsla opnast þegar Online Store er opin, eða þegar heimilisfang fylgir pöntuninni.",
+      "Gat ekki opnað Teya-greiðslu. Reyndu aftur eða sendu línu á ttsuit@ttsuit.is.",
   };
 }
