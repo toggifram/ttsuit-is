@@ -88,12 +88,12 @@ function HeroFrame({
         className={
           fit === "contain"
             ? "object-contain object-center p-8 md:p-14"
-            : "object-cover object-[center_38%]"
+            : "object-cover object-[center_38%] brightness-[1.06]"
         }
         sizes="(min-width:768px) 50vw, 100vw"
       />
       {fit === "cover" ? (
-        <div className="absolute inset-0 z-10 bg-black/25" aria-hidden />
+        <div className="absolute inset-0 z-10 bg-black/10" aria-hidden />
       ) : null}
       <div className="absolute inset-0 z-20 flex items-center justify-center px-6">
         <div className="flex flex-col items-center text-center">
