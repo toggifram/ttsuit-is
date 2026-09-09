@@ -17,12 +17,12 @@ export default async function HomePage() {
       <section className="grid md:grid-cols-2">
         <HeroFrame
           href="/sersaumur"
-          image="/images/studio/suit-bag.png"
+          image="/images/studio/sersaumur-hero.png"
           alt="Sérsaumur hjá Tjé Tjé"
           eyebrow="Sérsaumur á 4–6 vikum"
           headline="Saumað fyrir þig"
           cta="Sérsaumur"
-          fit="contain"
+          fit="cover"
           priority
         />
         <HeroFrame
@@ -88,10 +88,13 @@ function HeroFrame({
         className={
           fit === "contain"
             ? "object-contain object-center p-8 md:p-14"
-            : "object-cover object-[center_12%]"
+            : "object-cover object-[center_38%]"
         }
         sizes="(min-width:768px) 50vw, 100vw"
       />
+      {fit === "cover" ? (
+        <div className="absolute inset-0 z-10 bg-black/25" aria-hidden />
+      ) : null}
       <div className="absolute inset-0 z-20 flex items-center justify-center px-6">
         <div className="flex flex-col items-center text-center">
           <p className="text-[11px] font-semibold tracking-[0.22em] text-white uppercase drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)] md:text-xs">
