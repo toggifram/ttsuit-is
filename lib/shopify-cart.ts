@@ -43,9 +43,16 @@ export type CartQuote = {
 const CART_CORE_FIELDS = `
   id
   checkoutUrl
+  totalQuantity
   cost {
     subtotalAmount { amount currencyCode }
     totalAmount { amount currencyCode }
+  }
+  lines(first: 50) {
+    nodes {
+      quantity
+      merchandise { ... on ProductVariant { id } }
+    }
   }
 `;
 
@@ -81,7 +88,11 @@ type DeliveryGroup = {
 type StorefrontCart = {
   id: string;
   checkoutUrl: string;
+  totalQuantity?: number;
   cost: { subtotalAmount: Money; totalAmount: Money };
+  lines?: {
+    nodes?: { quantity: number; merchandise?: { id?: string } | null }[];
+  };
   deliveryGroups?: {
     nodes?: DeliveryGroup[];
     edges?: { node: DeliveryGroup }[];
@@ -232,7 +243,16 @@ async function storefrontGraphql<T>(
   return { data: json.data ?? null };
 }
 
+function shopifyPhone(raw: string) {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length === 7) return `+354${digits}`;
+  if (digits.length === 10 && digits.startsWith("354")) return `+${digits}`;
+  if (digits.length >= 10 && raw.trim().startsWith("+")) return `+${digits}`;
+  return "";
+}
+
 async function addCartDeliveryAddress(cartId: string, address: CheckoutAddress) {
+  const phone = shopifyPhone(address.phone);
   return storefrontGraphql<{
     cartDeliveryAddressesAdd?: {
       cart?: StorefrontCart | null;
@@ -259,7 +279,7 @@ async function addCartDeliveryAddress(cartId: string, address: CheckoutAddress) 
               city: address.city,
               zip: address.zip,
               countryCode: "IS",
-              phone: address.phone || undefined,
+              phone: phone || undefined,
             },
           },
         },
@@ -284,17 +304,28 @@ async function cartWithCarrierRates(cartId: string) {
   let last = await storefrontGraphql<{ cart?: StorefrontCart | null }>(query, {
     id: cartId,
   });
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 5; attempt++) {
     const cart = last.data?.cart;
     if (cart && deliveryNodes(cart).some((group) => group.deliveryOptions?.length)) {
       return last;
     }
-    await new Promise((resolve) => setTimeout(resolve, 700));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     last = await storefrontGraphql<{ cart?: StorefrontCart | null }>(query, {
       id: cartId,
     });
   }
   return last;
+}
+
+async function cartProfileRates(cartId: string) {
+  return storefrontGraphql<{ cart?: StorefrontCart | null }>(
+    `query CartProfileRates($id: ID!) {
+      cart(id: $id) {
+        ${CART_FIELDS}
+      }
+    }`,
+    { id: cartId }
+  );
 }
 
 function cleanShippingCopy(text: string) {
@@ -313,17 +344,20 @@ function deliveryNodes(cart: StorefrontCart) {
 
 function mapCart(cart: StorefrontCart): CartQuote {
   const shipping: DeliveryOption[] = [];
+  const seen = new Set<string>();
   for (const group of deliveryNodes(cart)) {
     for (const option of group.deliveryOptions ?? []) {
-      const cost = option.estimatedCost;
-      if (!option.handle || !cost) continue;
+      if (!option.handle || seen.has(option.handle)) continue;
+      const amount = Number(option.estimatedCost?.amount ?? 0);
+      if (!Number.isFinite(amount)) continue;
+      seen.add(option.handle);
       shipping.push({
         groupId: group.id,
         handle: option.handle,
         title: cleanShippingCopy(option.title),
         description: cleanShippingCopy(option.description?.trim() || ""),
-        price: formatMoney(cost.amount, cost.currencyCode),
-        priceAmount: Number(cost.amount),
+        price: formatMoney(amount, option.estimatedCost?.currencyCode ?? "ISK"),
+        priceAmount: amount,
       });
     }
   }
@@ -414,7 +448,7 @@ export async function quoteShopifyCart(
         discountCodes: discountCode ? [discountCode] : undefined,
         buyerIdentity: {
           email: address.email,
-          phone: address.phone || undefined,
+          phone: shopifyPhone(address.phone) || undefined,
           countryCode: "IS",
           deliveryAddressPreferences: [
             {
@@ -426,7 +460,7 @@ export async function quoteShopifyCart(
                 city: address.city,
                 zip: address.zip,
                 country: "IS",
-                phone: address.phone || undefined,
+                phone: shopifyPhone(address.phone) || undefined,
               },
             },
           ],
@@ -445,6 +479,12 @@ export async function quoteShopifyCart(
         "Gat ekki búið til körfu í Shopify. Athugaðu sendingarstillingar og að Online Store sé ekki lykilorðslæst fyrir kassa.",
     };
   }
+  if (!cart.totalQuantity) {
+    return {
+      error:
+        "Varan náðist ekki inn í Shopify-kassann. Hún er líklega óútgefin eða ekki sýnileg í Online Store.",
+    };
+  }
 
   const added = await addCartDeliveryAddress(cart.id, address);
   if (added.error) {
@@ -455,12 +495,25 @@ export async function quoteShopifyCart(
   if (rates.error) {
     console.error(`Shopify carrier rates: ${rates.error}`);
   }
-  const rated = rates.data?.cart;
-  if (rated?.id) {
-    const mapped = mapCart(rated);
-    if (mapped.shipping.length) return mapped;
-  }
-  return mapCart(cart);
+  const fromCarrier = rates.data?.cart ? mapCart(rates.data.cart) : null;
+  if (fromCarrier?.shipping.length) return fromCarrier;
+
+  const profile = added.data?.cartDeliveryAddressesAdd?.cart
+    ? mapCart(added.data.cartDeliveryAddressesAdd.cart)
+    : null;
+  if (profile?.shipping.length) return profile;
+
+  const fallback = await cartProfileRates(cart.id);
+  const fromProfile = fallback.data?.cart ? mapCart(fallback.data.cart) : null;
+  if (fromProfile?.shipping.length) return fromProfile;
+
+  const created = mapCart(cart);
+  if (created.shipping.length) return created;
+
+  return {
+    error:
+      "Engar sendingarleiðir fundust fyrir þetta heimilisfang. Athugaðu Settings → Shipping and delivery í Shopify.",
+  };
 }
 
 export type PayShipping = {
@@ -469,14 +522,6 @@ export type PayShipping = {
   title: string;
   priceAmount: number;
 };
-
-function shopifyPhone(raw: string) {
-  const digits = raw.replace(/\D/g, "");
-  if (digits.length === 7) return `+354${digits}`;
-  if (digits.length === 10 && digits.startsWith("354")) return `+${digits}`;
-  if (digits.length >= 10 && raw.trim().startsWith("+")) return `+${digits}`;
-  return "";
-}
 
 function mailingAddress(address: CheckoutAddress) {
   const phone = shopifyPhone(address.phone);
