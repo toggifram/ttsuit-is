@@ -655,6 +655,103 @@ async function adminGraphql<T>(
   return { data: json.data ?? null };
 }
 
+type CalculatedShippingRate = {
+  title: string;
+  handle: string;
+  price?: { amount: string; currencyCode: string } | null;
+};
+
+function shippingTitleKey(text: string) {
+  return cleanShippingCopy(text).toLowerCase();
+}
+
+function matchShippingRate(
+  rates: CalculatedShippingRate[],
+  shipping: PayShipping
+) {
+  const wantTitle = shippingTitleKey(shipping.title);
+  const wantPrice = Math.round(shipping.priceAmount);
+  if (!rates.length) return null;
+
+  const exact = rates.find((rate) => shippingTitleKey(rate.title) === wantTitle);
+  if (exact) return exact;
+
+  const contained = rates.find((rate) => {
+    const title = shippingTitleKey(rate.title);
+    return Boolean(wantTitle) && (title.includes(wantTitle) || wantTitle.includes(title));
+  });
+  if (contained) return contained;
+
+  const prefix = wantTitle.slice(0, 18);
+  return (
+    rates.find((rate) => {
+      const title = shippingTitleKey(rate.title);
+      const price = Math.round(Number(rate.price?.amount ?? 0));
+      return price === wantPrice && prefix.length > 4 && title.startsWith(prefix);
+    }) ?? null
+  );
+}
+
+async function shopifyShippingLine(
+  lines: CheckoutLine[],
+  address: ReturnType<typeof mailingAddress>,
+  shipping: PayShipping
+) {
+  const input = {
+    lineItems: lines.map((line) => ({
+      variantId: line.variantId,
+      quantity: line.quantity,
+    })),
+    shippingAddress: address,
+  };
+
+  let rates: CalculatedShippingRate[] = [];
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const calculated = await adminGraphql<{
+      draftOrderCalculate?: {
+        calculatedDraftOrder?: {
+          availableShippingRates?: CalculatedShippingRate[] | null;
+        } | null;
+        userErrors?: { message: string }[];
+      };
+    }>(
+      `mutation QuoteDraftRates($input: DraftOrderInput!) {
+        draftOrderCalculate(input: $input) {
+          calculatedDraftOrder {
+            availableShippingRates { title handle price { amount currencyCode } }
+          }
+          userErrors { message }
+        }
+      }`,
+      { input }
+    );
+    rates =
+      calculated.data?.draftOrderCalculate?.calculatedDraftOrder
+        ?.availableShippingRates ?? [];
+    const wantsDropp = /dropp/i.test(shipping.title);
+    const hasDropp = rates.some((rate) => /dropp/i.test(rate.title));
+    if (wantsDropp && !hasDropp) {
+      await wait(700);
+      continue;
+    }
+    const match = matchShippingRate(rates, shipping);
+    if (match?.handle) {
+      return {
+        shippingRateHandle: match.handle,
+        title: match.title,
+      };
+    }
+    await wait(700);
+  }
+
+  const match = matchShippingRate(rates, shipping);
+  if (!match?.handle) return undefined;
+  return {
+    shippingRateHandle: match.handle,
+    title: match.title,
+  };
+}
+
 async function createTeyaCheckoutInvoice(input: {
   lines: CheckoutLine[];
   address: CheckoutAddress;
@@ -662,6 +759,9 @@ async function createTeyaCheckoutInvoice(input: {
   discountCode?: string;
 }): Promise<{ url: string } | { error: string }> {
   const address = mailingAddress(input.address);
+  const shippingLine = input.shipping
+    ? await shopifyShippingLine(input.lines, address, input.shipping)
+    : undefined;
   const shippingNote = input.shipping
     ? `Sending valin á ttsuit.is: ${input.shipping.title} (${input.shipping.priceAmount} kr.)`
     : "";
@@ -680,6 +780,7 @@ async function createTeyaCheckoutInvoice(input: {
     })),
     shippingAddress: address,
     billingAddress: address,
+    shippingLine,
   };
 
   const created = await adminGraphql<{
