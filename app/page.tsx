@@ -27,7 +27,7 @@ export default async function HomePage() {
         />
         <HeroFrame
           href="/verslun"
-          image="/images/studio/shop-trio.jpg"
+          image="/images/studio/shop-hero.jpg"
           alt="Vefverslun Tjé Tjé"
           eyebrow="Tilbúin föt og fylgihlutir"
           headline="Nýja línan"
