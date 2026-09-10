@@ -658,14 +658,17 @@ async function adminGraphql<T>(
 async function createTeyaCheckoutInvoice(input: {
   lines: CheckoutLine[];
   address: CheckoutAddress;
-  shipping: PayShipping;
+  shipping?: PayShipping;
   discountCode?: string;
 }): Promise<{ url: string } | { error: string }> {
   const address = mailingAddress(input.address);
+  const shippingNote = input.shipping
+    ? `Sending valin á ttsuit.is: ${input.shipping.title} (${input.shipping.priceAmount} kr.)`
+    : "";
   const draftInput = {
     email: input.address.email,
     phone: address.phone,
-    note: "Pöntun af ttsuit.is",
+    note: ["Pöntun af ttsuit.is", shippingNote].filter(Boolean).join("\n"),
     tags: ["ttsuit.is", "teya"],
     sourceName: "ttsuit.is",
     visibleToCustomer: true,
@@ -677,13 +680,6 @@ async function createTeyaCheckoutInvoice(input: {
     })),
     shippingAddress: address,
     billingAddress: address,
-    shippingLine: {
-      title: input.shipping.title,
-      priceWithCurrency: {
-        amount: String(input.shipping.priceAmount),
-        currencyCode: "ISK",
-      },
-    },
   };
 
   const created = await adminGraphql<{
@@ -750,19 +746,10 @@ export async function payShopifyCart(input: {
   address?: CheckoutAddress;
   discountCode?: string;
 }): Promise<{ url: string } | { error: string }> {
-  // /cart/c/ permalinks hit the Online Store password page. Draft invoices
-  // open /checkouts/do/… where Teya can take the card.
-  if (input.lines?.length && input.address && input.shipping) {
-    const invoice = await createTeyaCheckoutInvoice({
-      lines: input.lines,
-      address: input.address,
-      shipping: input.shipping,
-      discountCode: input.discountCode,
-    });
-    if (!("error" in invoice)) return invoice;
-    console.error(`Teya invoice: ${invoice.error}`);
-  }
-
+  // Prefer the Storefront cart checkout (/checkouts/cn/…). Draft invoices
+  // lock shipping ("pre-arranged shipping information") which Shopify then
+  // shows as two warning banners. Only fall back to an invoice if the cart
+  // permalink is missing or still hits the Online Store password page.
   let cartUrl = "";
   if (input.shipping?.groupId && input.shipping.handle) {
     const selected = await storefrontGraphql<{
@@ -804,13 +791,21 @@ export async function payShopifyCart(input: {
       { id: input.cartId }
     );
     cartUrl = queried.data?.cart?.checkoutUrl ?? "";
-    if (!cartUrl) {
-      return { error: queried.error || "Gat ekki opnað greiðslu." };
-    }
   }
 
-  if (await checkoutUrlReachesShopify(cartUrl)) {
+  if (cartUrl && (await checkoutUrlReachesShopify(cartUrl))) {
     return { url: cartUrl };
+  }
+
+  if (input.lines?.length && input.address) {
+    const invoice = await createTeyaCheckoutInvoice({
+      lines: input.lines,
+      address: input.address,
+      shipping: input.shipping,
+      discountCode: input.discountCode,
+    });
+    if (!("error" in invoice)) return invoice;
+    console.error(`Teya invoice: ${invoice.error}`);
   }
 
   return {
