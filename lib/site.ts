@@ -238,7 +238,7 @@ export const fabrics = [
     name: "Skyrtuefni",
     note: "Bómull, lín og blöndur",
     text: "Hundruð lita og mynstra. Þú velur kraga, manséttur og hvort nafnið þitt fari undir kragann.",
-    image: "/images/studio/navy-logo.jpg",
+    image: "/images/studio/skyrtuefni.jpg",
   },
 ] as const;
 
