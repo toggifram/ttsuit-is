@@ -40,11 +40,12 @@ export default function AboutPage() {
       <section className="grid md:grid-cols-2">
         <div className="relative min-h-[420px] bg-white md:min-h-[720px]">
           <Image
-            src="/images/studio/group.jpg"
-            alt="Tjé Tjé"
+            src="/images/studio/toggi-pokinn.jpg"
+            alt="Þorgrímur Smári Ólafsson með Tjé Tjé fatapoka"
             fill
-            className="object-contain p-8"
+            className="object-contain object-bottom p-6 md:p-10"
             sizes="(min-width:768px) 50vw, 100vw"
+            priority
           />
         </div>
         <div className="flex flex-col justify-center bg-cream px-5 py-16 md:px-16">
@@ -61,19 +62,21 @@ export default function AboutPage() {
             </p>
             <p>
               Mér hefur alltaf fundist gaman að fylgjast með tísku og flottum
-              fötum. Eftir samband við efnisframleiðendur út í heimi byrjuðu
-              hjólin að snúast. Í dag er verslað með efni meðal annars frá
-              Ítalíu, Bretlandi, Þýskalandi, Tyrklandi og víðar.
+              fötum. Eftir samband við framleiðendur út í heimi byrjuðu hjólin
+              að snúast. Í dag koma efni, jakkaföt og aðrar tilbúnar vörur frá
+              Kína, Ítalíu, Bretlandi og Tyrklandi.
             </p>
             <p>
-              Til að byrja með ætlaði ég að mæla mig og vini mína. Síðan fóru
-              fleiri að hafa samband. Ég segi stundum að ég sé frístundaskraddari
-              — áhugamál með rekstrarlegu ívafi. Tilfinningin að sjá aðra í
-              fötum sem þeir mótuðu sjálfir er geggjuð.
+              Til að byrja með ætlaði ég að mæla mig og vini mína fyrir
+              jakkafötum. Síðan fóru fleiri að hafa samband. Ég segi stundum að
+              ég sé frístundaskraddari — áhugamál með rekstrarlegu ívafi.
+              Tilfinningin að sjá aðra í fötum sem þeir mótuðu sjálfir er
+              geggjuð. Ofan á sérsaum ákvað ég að byrja framleiða tilbúin
+              föt/vörulínur undir merkjum Tjé Tjé.
             </p>
             <p>
-              Skammstöfunin TT stóð fyrir Toggi Tuttugu — á handboltavellinum
-              var ég alltaf númer 20. Tjé Tjé er það sama, sagt upphátt.
+              Skammstöfunin TT stendur fyrir Toggi Tuttugu en á
+              handboltavellinum var ég alltaf númer 20. Tjé Tjé er það sama!
             </p>
           </div>
         </div>
