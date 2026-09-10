@@ -85,12 +85,14 @@ export function SersaumurEfnin() {
           id="efnin-heading"
           className="mt-3 max-w-2xl font-serif text-4xl text-forest md:text-5xl"
         >
-          Þú snertir dúkinn áður en við klippum.
+          Þú snertir efnin áður en við klippum.
         </h2>
         <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-ink/70">
-          Við verslum meðal annars frá Ítalíu, Bretlandi, Þýskalandi og
-          Tyrklandi. Hundruð efnis — ull, hör, flannel, tweed og skyrtuefni. Þú
-          velur. Ef þú spyrð hvað mér finnst, svara ég eins og mér finnst.
+          Starfsemi TT teygir anga sína vítt og breytt um heiminn. Efni og vörur
+          frá okkur koma meðal annars frá Ítalíu, Bretlandi, Þýskalandi og
+          Tyrklandi. Hundruð efna eins og merino ull, hör, flannel, tweed og
+          bambus. Þú velur það sem þér finnst passa best við og ef þú ert í
+          vandræðum get ég hjálpað!
         </p>
         <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {fabrics.map((fabric) => (
