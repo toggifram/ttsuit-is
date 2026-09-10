@@ -40,8 +40,8 @@ export default function AboutPage() {
       <section className="grid md:grid-cols-2">
         <div className="relative min-h-[420px] bg-white md:min-h-[720px]">
           <Image
-            src="/images/studio/toggi-pokinn.jpg"
-            alt="Þorgrímur Smári Ólafsson með Tjé Tjé fatapoka"
+            src="/images/studio/toggi.jpg"
+            alt="Þorgrímur Smári Ólafsson"
             fill
             className="object-contain object-bottom p-6 md:p-10"
             sizes="(min-width:768px) 50vw, 100vw"
