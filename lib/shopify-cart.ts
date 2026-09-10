@@ -739,6 +739,19 @@ async function createTeyaCheckoutInvoice(input: {
   return { url };
 }
 
+function cartCheckoutUrl(url: string) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.pathname.includes("/cart/c/")) {
+      parsed.pathname = parsed.pathname.replace("/cart/c/", "/checkouts/cn/");
+      return parsed.toString();
+    }
+  } catch {
+    // Keep the original permalink.
+  }
+  return url;
+}
+
 export async function payShopifyCart(input: {
   cartId: string;
   shipping?: PayShipping;
@@ -746,10 +759,22 @@ export async function payShopifyCart(input: {
   address?: CheckoutAddress;
   discountCode?: string;
 }): Promise<{ url: string } | { error: string }> {
-  // Prefer the Storefront cart checkout (/checkouts/cn/…). Draft invoices
-  // lock shipping ("pre-arranged shipping information") which Shopify then
-  // shows as two warning banners. Only fall back to an invoice if the cart
-  // permalink is missing or still hits the Online Store password page.
+  // /cart/c/ permalinks still hit Online Store password in a real browser.
+  // Draft invoices with a shipping line lock the address and show Shopify's
+  // "pre-arranged shipping" banners. Invoice without a shipping line opens
+  // /checkouts/do/… (works with password) and lets the customer keep/adjust
+  // the address without those warnings.
+  if (input.lines?.length && input.address) {
+    const invoice = await createTeyaCheckoutInvoice({
+      lines: input.lines,
+      address: input.address,
+      shipping: input.shipping,
+      discountCode: input.discountCode,
+    });
+    if (!("error" in invoice)) return invoice;
+    console.error(`Teya invoice: ${invoice.error}`);
+  }
+
   let cartUrl = "";
   if (input.shipping?.groupId && input.shipping.handle) {
     const selected = await storefrontGraphql<{
@@ -793,19 +818,10 @@ export async function payShopifyCart(input: {
     cartUrl = queried.data?.cart?.checkoutUrl ?? "";
   }
 
-  if (cartUrl && (await checkoutUrlReachesShopify(cartUrl))) {
-    return { url: cartUrl };
-  }
-
-  if (input.lines?.length && input.address) {
-    const invoice = await createTeyaCheckoutInvoice({
-      lines: input.lines,
-      address: input.address,
-      shipping: input.shipping,
-      discountCode: input.discountCode,
-    });
-    if (!("error" in invoice)) return invoice;
-    console.error(`Teya invoice: ${invoice.error}`);
+  if (cartUrl) {
+    const checkout = cartCheckoutUrl(cartUrl);
+    if (await checkoutUrlReachesShopify(checkout)) return { url: checkout };
+    if (await checkoutUrlReachesShopify(cartUrl)) return { url: cartUrl };
   }
 
   return {
