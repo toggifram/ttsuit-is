@@ -11,8 +11,10 @@ import {
 
 import {
   CART_STORAGE_KEY,
+  CHECKOUT_CART_BACKUP_KEY,
   cartCount,
   cartTotal,
+  parseCartItems,
   type CartItem,
 } from "@/lib/cart";
 
@@ -36,16 +38,29 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(CART_STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as CartItem[];
-        if (Array.isArray(parsed)) setItems(parsed);
+    const restore = () => {
+      try {
+        const stored = parseCartItems(window.localStorage.getItem(CART_STORAGE_KEY));
+        if (stored.length) {
+          setItems(stored);
+          return;
+        }
+        const backup = parseCartItems(
+          window.sessionStorage.getItem(CHECKOUT_CART_BACKUP_KEY)
+        );
+        if (backup.length) {
+          setItems(backup);
+          window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(backup));
+        }
+      } catch {
+        // Ignore broken storage.
       }
-    } catch {
-      // Ignore broken localStorage.
-    }
+    };
+
+    restore();
     setReady(true);
+    window.addEventListener("pageshow", restore);
+    return () => window.removeEventListener("pageshow", restore);
   }, []);
 
   useEffect(() => {

@@ -7,6 +7,7 @@ import { useCart } from "@/components/cart-provider";
 import { PaymentMethods } from "@/components/payment-methods";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CHECKOUT_CART_BACKUP_KEY } from "@/lib/cart";
 import { formatMoney } from "@/lib/product";
 import type { CartQuote, DeliveryOption } from "@/lib/shopify-cart";
 import { cn } from "@/lib/utils";
@@ -45,7 +46,7 @@ function quoteKey(form: HTMLFormElement, variantKey: string) {
 }
 
 export function CheckoutForm() {
-  const { items, totalAmount, clear, setOpen } = useCart();
+  const { items, totalAmount, setOpen } = useCart();
   const [pending, setPending] = useState<"quote" | "pay" | "">("");
   const [error, setError] = useState("");
   const [addressReady, setAddressReady] = useState(false);
@@ -226,8 +227,16 @@ export function CheckoutForm() {
         setError(json.error || "Gat ekki opnað greiðslu.");
         return;
       }
-      clear();
-      window.location.href = json.url;
+      try {
+        window.sessionStorage.setItem(
+          CHECKOUT_CART_BACKUP_KEY,
+          JSON.stringify(items)
+        );
+      } catch {
+        // Keep going even if sessionStorage is blocked.
+      }
+      setOpen(false);
+      window.location.assign(json.url);
     } catch {
       setError("Gat ekki opnað greiðslu.");
     } finally {

@@ -12,6 +12,17 @@ export type CartItem = {
 };
 
 export const CART_STORAGE_KEY = "tjetje-cart";
+export const CHECKOUT_CART_BACKUP_KEY = `${CART_STORAGE_KEY}-pending-checkout`;
+
+export function parseCartItems(raw: string | null): CartItem[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as CartItem[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
 export function cartCount(items: CartItem[]) {
   return items.reduce((sum, item) => sum + item.quantity, 0);
