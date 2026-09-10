@@ -144,8 +144,14 @@ export function CheckoutForm() {
       const stillThere = json.shipping.some(
         (row) => row.handle === shippingHandle
       );
+      const preferred =
+        json.shipping.find(
+          (row) => /dropp/i.test(row.title) && row.priceAmount > 0
+        ) ??
+        json.shipping.find((row) => row.priceAmount > 0) ??
+        json.shipping[0];
       setShippingHandle(
-        stillThere ? shippingHandle : (json.shipping[0]?.handle ?? "")
+        stillThere ? shippingHandle : (preferred?.handle ?? "")
       );
       if (!json.shipping.length) {
         setError(

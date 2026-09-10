@@ -308,17 +308,30 @@ async function cartWithCarrierRates(cartId: string) {
   let last = await storefrontGraphql<{ cart?: StorefrontCart | null }>(query, {
     id: cartId,
   });
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const cart = last.data?.cart;
-    if (cart && deliveryNodes(cart).some((group) => group.deliveryOptions?.length)) {
+  for (let attempt = 0; attempt < 8; attempt++) {
+    if (carrierRatesReady(last.data?.cart, attempt >= 6)) {
       return last;
     }
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await wait(600);
     last = await storefrontGraphql<{ cart?: StorefrontCart | null }>(query, {
       id: cartId,
     });
   }
   return last;
+}
+
+function optionAmount(option: { estimatedCost?: Money | null }) {
+  return Number(option.estimatedCost?.amount ?? 0);
+}
+
+function carrierRatesReady(cart: StorefrontCart | null | undefined, lastChance: boolean) {
+  if (!cart) return false;
+  const options = deliveryNodes(cart).flatMap((group) => group.deliveryOptions ?? []);
+  if (!options.length) return false;
+  const dropp = options.filter((option) => /dropp/i.test(option.title ?? ""));
+  if (dropp.some((option) => optionAmount(option) > 0)) return true;
+  if (dropp.length && !lastChance) return false;
+  return lastChance;
 }
 
 async function cartProfileRates(cartId: string) {
@@ -563,24 +576,47 @@ export async function quoteShopifyCart(
     console.error(`Shopify carrier rates: ${rates.error}`);
   }
   const fromCarrier = rates.data?.cart ? mapCart(rates.data.cart) : null;
-  if (fromCarrier?.shipping.length) return fromCarrier;
-
   const profile = added.data?.cartDeliveryAddressesAdd?.cart
     ? mapCart(added.data.cartDeliveryAddressesAdd.cart)
     : null;
-  if (profile?.shipping.length) return profile;
-
   const fallback = await cartProfileRates(cart.id);
   const fromProfile = fallback.data?.cart ? mapCart(fallback.data.cart) : null;
-  if (fromProfile?.shipping.length) return fromProfile;
+  const quoted =
+    pickRichestQuote(fromCarrier, profile, fromProfile, mapCart(cart)) ??
+    mapCart(cart);
 
-  const quoted = mapCart(cart);
-  if (quoted.shipping.length) return quoted;
+  if (!quoted.shipping.length) {
+    return {
+      error:
+        "Engar sendingarleiðir fundust fyrir þetta heimilisfang. Athugaðu Settings → Shipping and delivery í Shopify.",
+    };
+  }
 
-  return {
-    error:
-      "Engar sendingarleiðir fundust fyrir þetta heimilisfang. Athugaðu Settings → Shipping and delivery í Shopify.",
-  };
+  const adminRates = await fetchAdminShippingRates(
+    lines,
+    mailingAddress(address)
+  );
+  return mergeAdminShippingPrices(quoted, adminRates);
+}
+
+function pickRichestQuote(...quotes: (CartQuote | null)[]) {
+  const scored = quotes.filter((quote): quote is CartQuote =>
+    Boolean(quote?.shipping.length)
+  );
+  if (!scored.length) return null;
+  return scored.sort((a, b) => {
+    const droppPrice = (quote: CartQuote) =>
+      quote.shipping
+        .filter((row) => /dropp/i.test(row.title))
+        .reduce((sum, row) => sum + row.priceAmount, 0);
+    const priced = (quote: CartQuote) =>
+      quote.shipping.filter((row) => row.priceAmount > 0).length;
+    return (
+      droppPrice(b) - droppPrice(a) ||
+      priced(b) - priced(a) ||
+      b.shipping.length - a.shipping.length
+    );
+  })[0];
 }
 
 export type PayShipping = {
@@ -692,10 +728,9 @@ function matchShippingRate(
   );
 }
 
-async function shopifyShippingLine(
+async function fetchAdminShippingRates(
   lines: CheckoutLine[],
-  address: ReturnType<typeof mailingAddress>,
-  shipping: PayShipping
+  address: ReturnType<typeof mailingAddress>
 ) {
   const input = {
     lineItems: lines.map((line) => ({
@@ -706,7 +741,7 @@ async function shopifyShippingLine(
   };
 
   let rates: CalculatedShippingRate[] = [];
-  for (let attempt = 0; attempt < 4; attempt++) {
+  for (let attempt = 0; attempt < 5; attempt++) {
     const calculated = await adminGraphql<{
       draftOrderCalculate?: {
         calculatedDraftOrder?: {
@@ -728,22 +763,81 @@ async function shopifyShippingLine(
     rates =
       calculated.data?.draftOrderCalculate?.calculatedDraftOrder
         ?.availableShippingRates ?? [];
-    const wantsDropp = /dropp/i.test(shipping.title);
-    const hasDropp = rates.some((rate) => /dropp/i.test(rate.title));
-    if (wantsDropp && !hasDropp) {
-      await wait(700);
-      continue;
-    }
-    const match = matchShippingRate(rates, shipping);
-    if (match?.handle) {
-      return {
-        shippingRateHandle: match.handle,
-        title: match.title,
-      };
+    const pricedDropp = rates.some(
+      (rate) => /dropp/i.test(rate.title) && Number(rate.price?.amount ?? 0) > 0
+    );
+    if (pricedDropp) return rates;
+    if (rates.length && attempt >= 2 && !rates.some((rate) => /dropp/i.test(rate.title))) {
+      return rates;
     }
     await wait(700);
   }
+  return rates;
+}
 
+function mergeAdminShippingPrices(
+  quote: CartQuote,
+  rates: CalculatedShippingRate[]
+): CartQuote {
+  if (!rates.length) return quote;
+
+  const shipping = quote.shipping.map((option) => {
+    const match = matchShippingRate(rates, {
+      groupId: option.groupId,
+      handle: option.handle,
+      title: option.title,
+      priceAmount: option.priceAmount,
+    });
+    const amount = Number(match?.price?.amount ?? option.priceAmount);
+    if (!match || !Number.isFinite(amount) || amount === option.priceAmount) {
+      return option;
+    }
+    return {
+      ...option,
+      handle: match.handle || option.handle,
+      title: cleanShippingCopy(match.title || option.title),
+      priceAmount: amount,
+      price: formatMoney(amount, "ISK"),
+    };
+  });
+
+  const droppStillFree = shipping.some(
+    (row) => /dropp/i.test(row.title) && row.priceAmount === 0
+  );
+  const adminDropp = rates
+    .filter((rate) => /dropp/i.test(rate.title) && Number(rate.price?.amount ?? 0) > 0)
+    .map((rate) => {
+      const amount = Number(rate.price?.amount ?? 0);
+      return {
+        groupId: shipping[0]?.groupId ?? "",
+        handle: rate.handle,
+        title: cleanShippingCopy(rate.title),
+        description:
+          shipping.find((row) => /dropp/i.test(row.title))?.description ?? "",
+        price: formatMoney(amount, "ISK"),
+        priceAmount: amount,
+      };
+    });
+
+  if ((droppStillFree || !shipping.some((row) => /dropp/i.test(row.title))) && adminDropp.length) {
+    return {
+      ...quote,
+      shipping: [
+        ...shipping.filter((row) => !/dropp/i.test(row.title)),
+        ...adminDropp,
+      ],
+    };
+  }
+
+  return { ...quote, shipping };
+}
+
+async function shopifyShippingLine(
+  lines: CheckoutLine[],
+  address: ReturnType<typeof mailingAddress>,
+  shipping: PayShipping
+) {
+  const rates = await fetchAdminShippingRates(lines, address);
   const match = matchShippingRate(rates, shipping);
   if (!match?.handle) return undefined;
   return {
