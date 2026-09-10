@@ -32,7 +32,7 @@ export default async function HomePage() {
           eyebrow="Tilbúin föt og fylgihlutir"
           headline="Nýja línan"
           cta="Vefverslun"
-          fit="contain"
+          fit="cover"
           priority
         />
       </section>
