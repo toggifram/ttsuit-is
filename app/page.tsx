@@ -27,7 +27,7 @@ export default async function HomePage() {
         />
         <HeroFrame
           href="/verslun"
-          image="/images/studio/shop-pair.png"
+          image="/images/studio/shop-trio.jpg"
           alt="Vefverslun Tjé Tjé"
           eyebrow="Tilbúin föt og fylgihlutir"
           headline="Nýja línan"
@@ -87,7 +87,7 @@ function HeroFrame({
         priority={priority}
         className={
           fit === "contain"
-            ? "object-contain object-center p-8 md:p-14"
+            ? "object-contain object-center p-5 md:p-8"
             : "object-cover object-[center_38%] brightness-[1.06]"
         }
         sizes="(min-width:768px) 50vw, 100vw"
