@@ -8,6 +8,8 @@ import {
   extraOptions,
   formatIsk,
   garmentOptions,
+  hasJacketCanvas,
+  toggleGarment,
   type Canvas,
   type ExtraKey,
   type GarmentKey,
@@ -56,7 +58,7 @@ export function PackageCalculator() {
     () => estimatePackage({ garments, extras, tier, canvas, rush }),
     [garments, extras, tier, canvas, rush]
   );
-  const hasJacket = garments.includes("jakki");
+  const hasJacket = hasJacketCanvas(garments);
 
   function toggleExtra(key: ExtraKey) {
     setExtras((current) => toggle(current, key));
@@ -88,7 +90,9 @@ export function PackageCalculator() {
               <Chip
                 key={item.key}
                 selected={garments.includes(item.key)}
-                onClick={() => setGarments((current) => toggle(current, item.key))}
+                onClick={() =>
+                  setGarments((current) => toggleGarment(current, item.key))
+                }
               >
                 {item.label}
               </Chip>

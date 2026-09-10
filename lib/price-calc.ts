@@ -1,6 +1,11 @@
 import { accessoryPrices, garmentPrices } from "@/lib/site";
 
-export type GarmentKey = "jakki" | "buxur" | "vesti";
+export type GarmentKey =
+  | "jakki"
+  | "buxur"
+  | "vesti"
+  | "jakkafot"
+  | "jakkafot-vesti";
 export type ExtraKey =
   | "skyrta"
   | "axlabond"
@@ -36,7 +41,54 @@ export const garmentOptions: { key: GarmentKey; label: string }[] = [
   { key: "jakki", label: "Jakki" },
   { key: "buxur", label: "Buxur" },
   { key: "vesti", label: "Vesti" },
+  { key: "jakkafot", label: "Jakkaföt" },
+  { key: "jakkafot-vesti", label: "Jakkaföt + vesti" },
 ];
+
+const PACKAGE_TWO = "jakkafot" satisfies GarmentKey;
+const PACKAGE_THREE = "jakkafot-vesti" satisfies GarmentKey;
+
+export function toggleGarment(
+  current: readonly GarmentKey[],
+  key: GarmentKey
+): GarmentKey[] {
+  if (current.includes(key)) {
+    return current.filter((item) => item !== key);
+  }
+
+  if (key === PACKAGE_TWO) {
+    return [
+      ...current.filter(
+        (item) => item !== "jakki" && item !== "buxur" && item !== PACKAGE_THREE
+      ),
+      PACKAGE_TWO,
+    ];
+  }
+
+  if (key === PACKAGE_THREE) {
+    return [PACKAGE_THREE];
+  }
+
+  if (key === "jakki" || key === "buxur") {
+    return [
+      ...current.filter((item) => item !== PACKAGE_TWO && item !== PACKAGE_THREE),
+      key,
+    ];
+  }
+
+  return [
+    ...current.filter((item) => item !== PACKAGE_THREE),
+    key,
+  ];
+}
+
+export function hasJacketCanvas(garments: readonly GarmentKey[]) {
+  return (
+    garments.includes("jakki") ||
+    garments.includes("jakkafot") ||
+    garments.includes("jakkafot-vesti")
+  );
+}
 
 export const extraOptions: { key: ExtraKey; label: string }[] = [
   { key: "skyrta", label: "Skyrta" },
@@ -70,9 +122,9 @@ export function estimatePackage(input: CalcInput): CalcResult {
   const tier = Math.min(Math.max(input.tier, 0), 5);
   const lines: CalcLine[] = [];
   const g = input.garments;
-  const jacket = has(g, "jakki");
-  const trousers = has(g, "buxur");
-  const vest = has(g, "vesti");
+  const jacket = has(g, "jakki") || has(g, "jakkafot") || has(g, "jakkafot-vesti");
+  const trousers = has(g, "buxur") || has(g, "jakkafot") || has(g, "jakkafot-vesti");
+  const vest = has(g, "vesti") || has(g, "jakkafot-vesti");
 
   if (jacket && trousers && vest) {
     lines.push({
@@ -85,19 +137,19 @@ export function estimatePackage(input: CalcInput): CalcResult {
       amount: rowAmount(garmentPrices, "Jakkaföt", tier),
     });
   } else {
-    if (jacket) {
+    if (has(g, "jakki")) {
       lines.push({
         label: `Jakki · Flokkur ${tier + 1}`,
         amount: rowAmount(garmentPrices, "Jakki", tier),
       });
     }
-    if (trousers) {
+    if (has(g, "buxur")) {
       lines.push({
         label: `Buxur · Flokkur ${tier + 1}`,
         amount: rowAmount(garmentPrices, "Buxur", tier),
       });
     }
-    if (vest) {
+    if (has(g, "vesti")) {
       lines.push({
         label: `Vesti · Flokkur ${tier + 1}`,
         amount: rowAmount(garmentPrices, "Vesti", tier),
