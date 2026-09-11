@@ -87,6 +87,24 @@ export function categoryFromSlug(slug: string) {
   return shopCategories.find((cat) => cat.slug === slug) ?? null;
 }
 
+export function isGiftCardProduct(input: {
+  handle?: string | null;
+  title?: string | null;
+  productType?: string | null;
+  tags?: readonly string[] | null;
+}) {
+  const hay = [
+    input.handle,
+    input.title,
+    input.productType,
+    ...(input.tags ?? []),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return /gift|gjafa|voucher/.test(hay);
+}
+
 export function categoryLabel(id: ProductCategory) {
   return shopCategories.find((cat) => cat.id === id)?.label ?? "Verslun";
 }

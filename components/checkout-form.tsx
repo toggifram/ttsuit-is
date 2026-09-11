@@ -360,8 +360,8 @@ export function CheckoutForm() {
               className={fieldClass}
             />
             <p className="mt-1.5 text-[12px] text-ink/45">
-              Open15 gildir á tilbúnum fatnaði og gjafabréfum í vefverslun —
-              ekki beint á sérsaum. Gjafabréf má nota upp í sérsaum.
+              Open15 gildir á tilbúnum fatnaði í vefverslun — ekki á gjafabréf
+              eða sérsaum.
             </p>
           </Field>
         </div>

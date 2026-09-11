@@ -1,11 +1,11 @@
-import { formatMoney } from "@/lib/product";
+import { formatMoney, isGiftCardProduct } from "@/lib/product";
 import { isNewsletterOffer, newsletterOfferAmount, NEWSLETTER_OFFER } from "@/lib/offers";
 import {
   getAdminAccessToken,
   getStorefrontAccessToken,
   storeDomain,
 } from "@/lib/shopify-auth";
-import { ensureOpen15Discount, open15DraftDiscount } from "@/lib/shopify-discount";
+import { open15DraftDiscount } from "@/lib/shopify-discount";
 import {
   getCheckoutVariantStates,
   publishOnlineStoreProducts,
@@ -46,6 +46,7 @@ export type CartQuote = {
   discountCode?: string;
   discountAmount?: number;
   discountLabel?: string;
+  clothingAmount?: number;
   shipping: DeliveryOption[];
 };
 
@@ -60,7 +61,13 @@ const CART_CORE_FIELDS = `
   lines(first: 50) {
     nodes {
       quantity
-      merchandise { ... on ProductVariant { id } }
+      cost { totalAmount { amount } }
+      merchandise {
+        ... on ProductVariant {
+          id
+          product { handle title productType tags }
+        }
+      }
     }
   }
 `;
@@ -100,7 +107,19 @@ type StorefrontCart = {
   totalQuantity?: number;
   cost: { subtotalAmount: Money; totalAmount: Money };
   lines?: {
-    nodes?: { quantity: number; merchandise?: { id?: string } | null }[];
+    nodes?: {
+      quantity: number;
+      cost?: { totalAmount?: Money | null } | null;
+      merchandise?: {
+        id?: string;
+        product?: {
+          handle?: string | null;
+          title?: string | null;
+          productType?: string | null;
+          tags?: string[] | null;
+        } | null;
+      } | null;
+    }[];
   };
   deliveryGroups?: {
     nodes?: DeliveryGroup[];
@@ -396,8 +415,24 @@ function mapCart(cart: StorefrontCart): CartQuote {
     ),
     subtotalAmount: Number(cart.cost.subtotalAmount.amount),
     totalAmount: Number(cart.cost.totalAmount.amount),
+    clothingAmount: clothingSubtotal(cart),
     shipping,
   };
+}
+
+function clothingSubtotal(cart: StorefrontCart) {
+  let clothing = 0;
+  let accounted = 0;
+  for (const line of cart.lines?.nodes ?? []) {
+    const amount = Number(line.cost?.totalAmount?.amount ?? 0);
+    if (!Number.isFinite(amount) || amount <= 0) continue;
+    accounted += amount;
+    if (isGiftCardProduct(line.merchandise?.product ?? {})) continue;
+    clothing += amount;
+  }
+  const subtotal = Number(cart.cost.subtotalAmount.amount);
+  if (!accounted) return subtotal;
+  return clothing;
 }
 
 export function parseCheckoutLines(raw: unknown): CheckoutLine[] | null {
@@ -446,6 +481,37 @@ export function parseAddress(raw: unknown): CheckoutAddress | null {
 
 function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function giftCardVariantIds(lines: CheckoutLine[]) {
+  const ids = [...new Set(lines.map((line) => line.variantId))];
+  if (!ids.length) return new Set<string>();
+  const queried = await adminGraphql<{
+    nodes?: {
+      id?: string;
+      product?: {
+        handle?: string | null;
+        title?: string | null;
+        productType?: string | null;
+        tags?: string[] | null;
+      } | null;
+    }[];
+  }>(
+    `query GiftVariants($ids: [ID!]!) {
+      nodes(ids: $ids) {
+        ... on ProductVariant {
+          id
+          product { handle title productType tags }
+        }
+      }
+    }`,
+    { ids }
+  );
+  const gifts = new Set<string>();
+  for (const node of queried.data?.nodes ?? []) {
+    if (node?.id && isGiftCardProduct(node.product ?? {})) gifts.add(node.id);
+  }
+  return gifts;
 }
 
 function cartQuantities(cart: StorefrontCart) {
@@ -609,8 +675,17 @@ export async function quoteShopifyCart(
 
 function applyNewsletterOffer(quote: CartQuote, code?: string): CartQuote {
   if (!isNewsletterOffer(code)) return quote;
+  const base = quote.clothingAmount ?? quote.subtotalAmount;
   const already = Math.max(0, quote.subtotalAmount - quote.totalAmount);
-  const want = newsletterOfferAmount(quote.subtotalAmount);
+  const want = newsletterOfferAmount(base);
+  if (want <= 0) {
+    return {
+      ...quote,
+      discountCode: NEWSLETTER_OFFER.code,
+      discountAmount: 0,
+      discountLabel: NEWSLETTER_OFFER.code,
+    };
+  }
   const amount = already >= want * 0.9 ? already : want;
   return {
     ...quote,
@@ -879,9 +954,8 @@ async function createTeyaCheckoutInvoice(input: {
   const shippingLine = input.shipping
     ? await shopifyShippingLine(input.lines, address, input.shipping)
     : undefined;
-  const nativeOpen15 =
-    isNewsletterOffer(input.discountCode) && (await ensureOpen15Discount());
-  const useAppliedOpen15 = isNewsletterOffer(input.discountCode) && !nativeOpen15;
+  const open15 = isNewsletterOffer(input.discountCode);
+  const giftIds = open15 ? await giftCardVariantIds(input.lines) : new Set<string>();
   const shippingNote = input.shipping
     ? `Sending valin á ttsuit.is: ${input.shipping.title} (${input.shipping.priceAmount} kr.)`
     : "";
@@ -894,15 +968,12 @@ async function createTeyaCheckoutInvoice(input: {
     visibleToCustomer: true,
     allowDiscountCodesInCheckout: true,
     discountCodes:
-      useAppliedOpen15
-        ? undefined
-        : input.discountCode
-          ? [input.discountCode]
-          : undefined,
-    appliedDiscount: useAppliedOpen15 ? open15DraftDiscount() : undefined,
+      open15 || !input.discountCode ? undefined : [input.discountCode],
     lineItems: input.lines.map((line) => ({
       variantId: line.variantId,
       quantity: line.quantity,
+      appliedDiscount:
+        open15 && !giftIds.has(line.variantId) ? open15DraftDiscount() : undefined,
     })),
     shippingAddress: address,
     billingAddress: address,

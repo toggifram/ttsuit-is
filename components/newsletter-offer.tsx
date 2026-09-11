@@ -27,8 +27,8 @@ export function NewsletterOffer({
     <div className={cn("space-y-3", dark ? "text-white/85" : "text-ink/70")}>
       <p className="text-sm leading-relaxed">
         Takk. Kóðinn þinn er <span className="font-semibold">{NEWSLETTER_OFFER.code}</span>{" "}
-        — 15% af tilbúnum fatnaði og gjafabréfum í vefverslun. Gjafabréfin má
-        nota upp í sérsaum. Afslátturinn gildir ekki beint á sérsaum.
+        — 15% af tilbúnum fatnaði í vefverslun. Gildir ekki á gjafabréf eða
+        sérsaum.
       </p>
       <div className="flex flex-wrap items-center gap-2">
         <p

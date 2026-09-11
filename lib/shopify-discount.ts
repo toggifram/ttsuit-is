@@ -100,7 +100,7 @@ export async function ensureOpen15Discount() {
 export function open15DraftDiscount() {
   return {
     title: NEWSLETTER_OFFER.code,
-    description: "Póstlisti — tilbúinn fatnaður og gjafabréf",
+    description: "Póstlisti — tilbúinn fatnaður",
     value: NEWSLETTER_OFFER.percent,
     valueType: "PERCENTAGE" as const,
   };

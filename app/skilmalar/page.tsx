@@ -140,10 +140,10 @@ export default function TermsPage() {
           <p className="mt-3">
             Með því að skrá þig á póstlista {brand.name} samþykkir þú að við
             sendum þér fréttir, tilboð og uppfærslur. Nýskráning gefur 15%
-            afsláttarkóða (Open15) af gjafabréfum og tilbúnum fatnaði í
-            vefverslun. Afslátturinn gildir ekki beint á sérsaum, en gjafabréf
-            má nota upp í sérsaum. Kóðinn birtist um leið og þú skráir þig.
-            Ein tilboð per netfang. Þú getur afskráð þig hvenær sem er.
+            afsláttarkóða (Open15) af tilbúnum fatnaði í vefverslun.
+            Afslátturinn gildir ekki á gjafabréf eða sérsaum. Kóðinn birtist
+            um leið og þú skráir þig. Ein tilboð per netfang. Þú getur
+            afskráð þig hvenær sem er.
           </p>
         </section>
 

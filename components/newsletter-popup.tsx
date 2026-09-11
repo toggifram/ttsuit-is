@@ -118,8 +118,8 @@ export function NewsletterPopup() {
                 Velkominn í heiminn okkar
               </h2>
               <p className="mt-3 max-w-[22rem] text-[13px] leading-relaxed text-ink/55">
-                Skráðu þig á póstlistann og fáðu 15% afslátt af gjafabréfum og
-                öllum tilbúnum fatnaði.
+                Skráðu þig á póstlistann og fáðu 15% afslátt af tilbúnum
+                fatnaði í vefverslun.
               </p>
               <form
                 onSubmit={onSubmit}

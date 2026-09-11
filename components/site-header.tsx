@@ -21,7 +21,7 @@ import { brand, nav, navLeft, navRight, sersaumurMenu } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const promoCopy =
-  "Við vorum að opna nýja heimasíðu, 15% afsláttur af gjafabréfum og öllum tilbúnum fatnaði ef þú skráir þig á póstlistann";
+  "Við vorum að opna nýja heimasíðu, 15% afsláttur af tilbúnum fatnaði ef þú skráir þig á póstlistann";
 
 function PromoTicker() {
   return (
