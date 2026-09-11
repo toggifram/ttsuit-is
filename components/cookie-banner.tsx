@@ -7,6 +7,7 @@ import { Settings } from "lucide-react";
 import {
   CONSENT_KEYS,
   type CookieChoice,
+  notifyCookieConsentChanged,
   readConsent,
   writeConsent,
 } from "@/lib/consent";
@@ -22,6 +23,7 @@ export function CookieBanner() {
 
   function save(choice: CookieChoice) {
     writeConsent(CONSENT_KEYS.cookies, choice);
+    notifyCookieConsentChanged();
     setVisible(false);
   }
 
@@ -33,8 +35,8 @@ export function CookieBanner() {
         <div className="max-w-3xl">
           <p className="text-sm font-semibold">Vefsíðan notar vafrakökur</p>
           <p className="mt-2 text-[13px] leading-relaxed text-white/80">
-            Við notum vafrakökur til að bæta upplifunina. Með því að nota
-            síðuna samþykkir þú vafrakökur í samræmi við{" "}
+            Við notum nauðsynlegar vafrakökur og, með samþykki þínu, tölfræði
+            (Google Analytics) og markaðssetningu (Meta Pixel). Nánar í{" "}
             <Link
               href="/vafrakokur"
               className="underline underline-offset-2 hover:text-white"
@@ -73,8 +75,11 @@ export function CookieBanner() {
                   className="mt-0.5 size-3.5 accent-white"
                 />
                 <span>
-                  <span className="font-medium text-white">Tölfræði</span>
-                  {" — "}hjálpar okkur að sjá hvað virkar á síðunni.
+                  <span className="font-medium text-white">
+                    Tölfræði og markaðssetning
+                  </span>
+                  {" — "}Google Analytics og Meta Pixel, til að sjá hvað
+                  virkar og mæla auglýsingar.
                 </span>
               </label>
               <button

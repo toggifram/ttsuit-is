@@ -56,6 +56,7 @@ export const footerWe = [
   { href: "/um-okkur", label: "Um TT" },
   { href: "/hafa-samband", label: "Hafa samband" },
   { href: "/skilmalar", label: "Skilmálar" },
+  { href: "/vafrakokur", label: "Vafrakökur" },
 ] as const;
 
 export const processSteps = [

@@ -6,7 +6,17 @@ export const CONSENT_KEYS = {
   cookies: "tjetje.cookie-consent",
 } as const;
 
+export const COOKIE_CONSENT_CHANGED = "tjetje-cookie-consent";
+
 export type CookieChoice = "all" | "necessary";
+
+export function hasTrackingConsent() {
+  return readConsent(CONSENT_KEYS.cookies) === "all";
+}
+
+export function notifyCookieConsentChanged() {
+  window.dispatchEvent(new Event(COOKIE_CONSENT_CHANGED));
+}
 
 export function readConsent(key: string): string | null {
   try {

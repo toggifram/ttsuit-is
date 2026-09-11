@@ -30,12 +30,13 @@ Við breytum **alltaf local fyrst**. Þegar þú ert sáttur biðurðu um að se
 | `/hafa-samband` | Hafa samband |
 | `/um-okkur` | Um TT |
 | `/skilmalar` | Skilmálar |
+| `/vafrakokur` | Vafrakökur |
 
 ## GitHub og Netlify
 
 Sama GitHub- og Netlify-aðgangur og fram.is, en **sér repo og sér site**. Prufusíðan er [ttsuit-is.netlify.app](https://ttsuit-is.netlify.app). Auto-publish frá git er slökkt — við deploy-um þegar þú biður um það.
 
-Shopify og Mailchimp eru stillt sem environment variables á Netlify-site-inu. Lyklar fara **aldrei** í git.
+Shopify, Mailchimp, Google Analytics og Meta Pixel eru stillt sem environment variables á Netlify-site-inu. Leyndarmál og mælingaraðkenni fara **aldrei** í git. Google Analytics (`NEXT_PUBLIC_GA_MEASUREMENT_ID`) og Meta Pixel (`NEXT_PUBLIC_META_PIXEL_ID`) hlaðast **aðeins** eftir að gestur samþykkir vafrakökur.
 
 ## Hvað er innifalið
 

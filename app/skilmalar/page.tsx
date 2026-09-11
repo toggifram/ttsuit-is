@@ -129,7 +129,16 @@ export default function TermsPage() {
             trúnaðarmál og verða ekki afhentar þriðja aðila. Lögð er áhersla
             á öryggi persónuupplýsinga og farið er með slíkar upplýsingar í
             samræmi við lög og reglur um persónuvernd. {brand.name} safnar
-            eingöngu upplýsingum til að veita þá þjónustu sem beðið er um.
+            eingöngu upplýsingum til að veita þá þjónustu sem beðið er um. Með
+            samþykki þínu notum við Google Analytics og Meta Pixel til
+            tölfræði og markaðssetningar, eins og lýst er í{" "}
+            <Link
+              href="/vafrakokur"
+              className="text-forest underline-offset-4 hover:underline"
+            >
+              stefnu um vafrakökur
+            </Link>
+            .
           </p>
         </section>
 
