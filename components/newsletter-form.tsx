@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 
+import { NewsletterOffer } from "@/components/newsletter-offer";
+import { CONSENT_KEYS, writeConsent } from "@/lib/consent";
+import { NEWSLETTER_OFFER } from "@/lib/offers";
 import { subscribeNewsletter } from "@/lib/subscribe-newsletter";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +24,8 @@ export function NewsletterForm({
     setStatus("loading");
     try {
       await subscribeNewsletter(email);
+      writeConsent(CONSENT_KEYS.newsletter, "subscribed");
+      writeConsent(CONSENT_KEYS.newsletterOffer, NEWSLETTER_OFFER.code);
       setStatus("done");
     } catch (err) {
       setStatus("idle");
@@ -34,14 +39,9 @@ export function NewsletterForm({
 
   if (status === "done") {
     return (
-      <p
-        className={cn(
-          "text-sm",
-          variant === "dark" ? "text-white/80" : "text-forest"
-        )}
-      >
-        Takk — þú ert á póstlistanum.
-      </p>
+      <div className="max-w-[16rem]">
+        <NewsletterOffer variant={variant} />
+      </div>
     );
   }
 

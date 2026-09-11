@@ -261,7 +261,7 @@ export const faqs = [
   },
   {
     q: "Gildir 15% afslátturinn á sérsaum?",
-    a: "Nei. Afsláttur póstlistans gildir á gjafabréf og tilbúinn fatnað, ekki á sérsaum.",
+    a: "Nei. Open15 gildir í vefverslun á tilbúnum fatnaði og gjafabréfum, ekki beint á sérsaum. Gjafabréf má hins vegar nota upp í sérsaum.",
   },
   {
     q: "Hvað ef fötin passa ekki alveg?",

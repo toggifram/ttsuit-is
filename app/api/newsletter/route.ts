@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { subscribeToMailchimp } from "@/lib/mailchimp";
+import { NEWSLETTER_OFFER } from "@/lib/offers";
+import { ensureOpen15Discount } from "@/lib/shopify-discount";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -26,7 +28,8 @@ export async function POST(request: Request) {
 
   try {
     await subscribeToMailchimp(email);
-    return NextResponse.json({ ok: true });
+    void ensureOpen15Discount();
+    return NextResponse.json({ ok: true, code: NEWSLETTER_OFFER.code });
   } catch (error) {
     if (error instanceof Error && error.message === "missing_config") {
       return NextResponse.json(

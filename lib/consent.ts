@@ -1,5 +1,8 @@
+import { NEWSLETTER_OFFER } from "@/lib/offers";
+
 export const CONSENT_KEYS = {
   newsletter: "tjetje.newsletter-popup",
+  newsletterOffer: NEWSLETTER_OFFER.storageKey,
   cookies: "tjetje.cookie-consent",
 } as const;
 

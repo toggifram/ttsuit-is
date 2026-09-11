@@ -8,7 +8,9 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NewsletterOffer } from "@/components/newsletter-offer";
 import { CONSENT_KEYS, readConsent, writeConsent } from "@/lib/consent";
+import { NEWSLETTER_OFFER } from "@/lib/offers";
 import { subscribeNewsletter } from "@/lib/subscribe-newsletter";
 import { cn } from "@/lib/utils";
 
@@ -58,6 +60,7 @@ export function NewsletterPopup() {
     try {
       await subscribeNewsletter(email);
       writeConsent(CONSENT_KEYS.newsletter, "subscribed");
+      writeConsent(CONSENT_KEYS.newsletterOffer, NEWSLETTER_OFFER.code);
       setStatus("done");
     } catch (err) {
       setStatus("idle");
@@ -68,12 +71,6 @@ export function NewsletterPopup() {
       );
     }
   }
-
-  useEffect(() => {
-    if (status !== "done") return;
-    const timer = window.setTimeout(() => setOpen(false), 2800);
-    return () => window.clearTimeout(timer);
-  }, [status]);
 
   if (!open) return null;
 
@@ -109,10 +106,9 @@ export function NewsletterPopup() {
           </button>
           <Logo size="md" variant="dark" className="object-center" />
           {status === "done" ? (
-            <p className="mt-10 max-w-[20rem] text-sm leading-relaxed text-ink/70">
-              Takk. Við sendum þér 15% afsláttinn á netfangið þitt — hann gildir
-              á gjafabréf og tilbúinn fatnað.
-            </p>
+            <div className="mt-10 max-w-[22rem] text-left">
+              <NewsletterOffer />
+            </div>
           ) : (
             <>
               <h2

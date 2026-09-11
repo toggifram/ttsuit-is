@@ -21,8 +21,8 @@ export async function SiteFooter() {
           />
           <p className="mt-5 text-sm text-white/80">Póstlisti</p>
           <p className="mt-1.5 max-w-[13.5rem] text-[12px] leading-snug text-white/55">
-            Gleymdu ekki að skrá þig — 15% afsláttur af fyrstu pöntuninni fylgir
-            með.
+            Gleymdu ekki að skrá þig — 15% af tilbúnum fatnaði og gjafabréfum
+            í vefverslun. Gjafabréfin má nota upp í sérsaum.
           </p>
           <div className="mt-3">
             <NewsletterForm variant="dark" />

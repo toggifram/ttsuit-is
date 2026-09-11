@@ -1,9 +1,11 @@
 import { formatMoney } from "@/lib/product";
+import { isNewsletterOffer, newsletterOfferAmount, NEWSLETTER_OFFER } from "@/lib/offers";
 import {
   getAdminAccessToken,
   getStorefrontAccessToken,
   storeDomain,
 } from "@/lib/shopify-auth";
+import { ensureOpen15Discount, open15DraftDiscount } from "@/lib/shopify-discount";
 import {
   getCheckoutVariantStates,
   publishOnlineStoreProducts,
@@ -41,6 +43,9 @@ export type CartQuote = {
   total: string;
   subtotalAmount: number;
   totalAmount: number;
+  discountCode?: string;
+  discountAmount?: number;
+  discountLabel?: string;
   shipping: DeliveryOption[];
 };
 
@@ -596,7 +601,25 @@ export async function quoteShopifyCart(
     lines,
     mailingAddress(address)
   );
-  return mergeAdminShippingPrices(quoted, adminRates);
+  return applyNewsletterOffer(
+    mergeAdminShippingPrices(quoted, adminRates),
+    discountCode
+  );
+}
+
+function applyNewsletterOffer(quote: CartQuote, code?: string): CartQuote {
+  if (!isNewsletterOffer(code)) return quote;
+  const already = Math.max(0, quote.subtotalAmount - quote.totalAmount);
+  const want = newsletterOfferAmount(quote.subtotalAmount);
+  const amount = already >= want * 0.9 ? already : want;
+  return {
+    ...quote,
+    discountCode: NEWSLETTER_OFFER.code,
+    discountAmount: amount,
+    discountLabel: NEWSLETTER_OFFER.code,
+    totalAmount: quote.subtotalAmount - amount,
+    total: formatMoney(quote.subtotalAmount - amount),
+  };
 }
 
 function pickRichestQuote(...quotes: (CartQuote | null)[]) {
@@ -856,6 +879,9 @@ async function createTeyaCheckoutInvoice(input: {
   const shippingLine = input.shipping
     ? await shopifyShippingLine(input.lines, address, input.shipping)
     : undefined;
+  const nativeOpen15 =
+    isNewsletterOffer(input.discountCode) && (await ensureOpen15Discount());
+  const useAppliedOpen15 = isNewsletterOffer(input.discountCode) && !nativeOpen15;
   const shippingNote = input.shipping
     ? `Sending valin á ttsuit.is: ${input.shipping.title} (${input.shipping.priceAmount} kr.)`
     : "";
@@ -867,7 +893,13 @@ async function createTeyaCheckoutInvoice(input: {
     sourceName: "ttsuit.is",
     visibleToCustomer: true,
     allowDiscountCodesInCheckout: true,
-    discountCodes: input.discountCode ? [input.discountCode] : undefined,
+    discountCodes:
+      useAppliedOpen15
+        ? undefined
+        : input.discountCode
+          ? [input.discountCode]
+          : undefined,
+    appliedDiscount: useAppliedOpen15 ? open15DraftDiscount() : undefined,
     lineItems: input.lines.map((line) => ({
       variantId: line.variantId,
       quantity: line.quantity,

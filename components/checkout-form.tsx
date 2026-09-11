@@ -8,6 +8,8 @@ import { PaymentMethods } from "@/components/payment-methods";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CHECKOUT_CART_BACKUP_KEY } from "@/lib/cart";
+import { CONSENT_KEYS, readConsent } from "@/lib/consent";
+import { NEWSLETTER_OFFER } from "@/lib/offers";
 import { formatMoney } from "@/lib/product";
 import type { CartQuote, DeliveryOption } from "@/lib/shopify-cart";
 import { cn } from "@/lib/utils";
@@ -52,6 +54,7 @@ export function CheckoutForm() {
   const [addressReady, setAddressReady] = useState(false);
   const [quote, setQuote] = useState<CartQuote | null>(null);
   const [shippingHandle, setShippingHandle] = useState("");
+  const [savedOffer, setSavedOffer] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const quoteGen = useRef(0);
   const lastKey = useRef("");
@@ -65,6 +68,11 @@ export function CheckoutForm() {
     () => quote?.shipping.find((row) => row.handle === shippingHandle) ?? null,
     [quote, shippingHandle]
   );
+
+  useEffect(() => {
+    const saved = readConsent(CONSENT_KEYS.newsletterOffer);
+    if (saved === NEWSLETTER_OFFER.code) setSavedOffer(saved);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -346,8 +354,15 @@ export function CheckoutForm() {
             <Input
               id="kassi-discount"
               name="discount"
+              defaultValue={savedOffer}
+              key={savedOffer || "discount"}
+              placeholder="Open15"
               className={fieldClass}
             />
+            <p className="mt-1.5 text-[12px] text-ink/45">
+              Open15 gildir á tilbúnum fatnaði og gjafabréfum í vefverslun —
+              ekki beint á sérsaum. Gjafabréf má nota upp í sérsaum.
+            </p>
           </Field>
         </div>
 
@@ -447,6 +462,12 @@ export function CheckoutForm() {
             <span className="text-ink/55">Vörur</span>
             <span>{quote?.subtotal ?? formatMoney(totalAmount)}</span>
           </div>
+          {quote?.discountAmount ? (
+            <div className="flex justify-between">
+              <span className="text-ink/55">{quote.discountLabel}</span>
+              <span>−{formatMoney(quote.discountAmount)}</span>
+            </div>
+          ) : null}
           <div className="flex justify-between gap-4">
             <span className="text-ink/55">Sending</span>
             <span className="text-right">
@@ -461,7 +482,11 @@ export function CheckoutForm() {
             <span>Samtals</span>
             <span>
               {selected && quote
-                ? formatMoney(quote.subtotalAmount + selected.priceAmount)
+                ? formatMoney(
+                    quote.subtotalAmount -
+                      (quote.discountAmount ?? 0) +
+                      selected.priceAmount
+                  )
                 : (quote?.total ?? formatMoney(totalAmount))}
             </span>
           </div>
