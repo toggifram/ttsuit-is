@@ -8,8 +8,6 @@ import { PaymentMethods } from "@/components/payment-methods";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CHECKOUT_CART_BACKUP_KEY } from "@/lib/cart";
-import { CONSENT_KEYS, readConsent } from "@/lib/consent";
-import { NEWSLETTER_OFFER } from "@/lib/offers";
 import { formatMoney } from "@/lib/product";
 import type { CartQuote, DeliveryOption } from "@/lib/shopify-cart";
 import { cn } from "@/lib/utils";
@@ -54,7 +52,6 @@ export function CheckoutForm() {
   const [addressReady, setAddressReady] = useState(false);
   const [quote, setQuote] = useState<CartQuote | null>(null);
   const [shippingHandle, setShippingHandle] = useState("");
-  const [savedOffer, setSavedOffer] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const quoteGen = useRef(0);
   const lastKey = useRef("");
@@ -68,11 +65,6 @@ export function CheckoutForm() {
     () => quote?.shipping.find((row) => row.handle === shippingHandle) ?? null,
     [quote, shippingHandle]
   );
-
-  useEffect(() => {
-    const saved = readConsent(CONSENT_KEYS.newsletterOffer);
-    if (saved === NEWSLETTER_OFFER.code) setSavedOffer(saved);
-  }, []);
 
   useEffect(() => {
     return () => {
@@ -354,15 +346,9 @@ export function CheckoutForm() {
             <Input
               id="kassi-discount"
               name="discount"
-              defaultValue={savedOffer}
-              key={savedOffer || "discount"}
-              placeholder="Open15"
+              autoComplete="off"
               className={fieldClass}
             />
-            <p className="mt-1.5 text-[12px] text-ink/45">
-              Open15 gildir á tilbúnum fatnaði í vefverslun — ekki á gjafabréf
-              eða sérsaum.
-            </p>
           </Field>
         </div>
 
