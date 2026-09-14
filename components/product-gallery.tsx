@@ -23,7 +23,6 @@ export function ProductGallery({
   onChange: (index: number) => void;
 }) {
   const start = useRef<{ x: number; y: number; id: number } | null>(null);
-  const swiped = useRef(false);
   const count = images.length;
   const index = count ? ((active % count) + count) % count : 0;
   const src = images[index] ?? images[0];
@@ -33,43 +32,44 @@ export function ProductGallery({
     onChange((index + delta + count) % count);
   }
 
-  function finishSwipe(event: PointerEvent<HTMLDivElement>) {
-    const origin = start.current;
-    start.current = null;
-    try {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    } catch {
-      /* already released */
-    }
-    if (!origin || count < 2 || origin.id !== event.pointerId) return;
-    const dx = event.clientX - origin.x;
-    const dy = event.clientY - origin.y;
-    if (Math.abs(dx) < SWIPE_PX || Math.abs(dx) <= Math.abs(dy)) return;
-    swiped.current = true;
-    go(dx < 0 ? 1 : -1);
+  function isArrow(target: EventTarget | null) {
+    return target instanceof Element && Boolean(target.closest("button"));
   }
 
   function onPointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (count < 2) return;
+    if (count < 2 || isArrow(event.target)) return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
-    swiped.current = false;
     start.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
     event.currentTarget.setPointerCapture(event.pointerId);
   }
 
   function onPointerMove(event: PointerEvent<HTMLDivElement>) {
     const origin = start.current;
-    if (!origin || origin.id !== event.pointerId || count < 2) return;
+    if (!origin || origin.id !== event.pointerId) return;
     const dx = event.clientX - origin.x;
     const dy = event.clientY - origin.y;
     if (Math.abs(dx) < SWIPE_PX || Math.abs(dx) <= Math.abs(dy)) return;
     start.current = null;
-    swiped.current = true;
     try {
       event.currentTarget.releasePointerCapture(event.pointerId);
     } catch {
       /* already released */
     }
+    go(dx < 0 ? 1 : -1);
+  }
+
+  function onPointerUp(event: PointerEvent<HTMLDivElement>) {
+    const origin = start.current;
+    start.current = null;
+    try {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    } catch {
+      /* already released */
+    }
+    if (!origin || origin.id !== event.pointerId) return;
+    const dx = event.clientX - origin.x;
+    const dy = event.clientY - origin.y;
+    if (Math.abs(dx) < SWIPE_PX || Math.abs(dx) <= Math.abs(dy)) return;
     go(dx < 0 ? 1 : -1);
   }
 
@@ -87,7 +87,7 @@ export function ProductGallery({
         )}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onPointerUp={finishSwipe}
+        onPointerUp={onPointerUp}
         onPointerCancel={() => {
           start.current = null;
         }}
@@ -116,23 +116,19 @@ export function ProductGallery({
           <>
             <button
               type="button"
-              onClick={() => {
-                if (swiped.current) return;
-                go(-1);
-              }}
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={() => go(-1)}
               aria-label="Fyrri mynd"
-              className="absolute top-1/2 left-3 z-10 flex size-10 -translate-y-1/2 items-center justify-center bg-white/90 text-forest shadow-sm transition-colors hover:bg-white md:size-11"
+              className="absolute top-1/2 left-3 z-20 flex size-11 -translate-y-1/2 items-center justify-center bg-white/90 text-forest shadow-sm transition-colors hover:bg-white"
             >
               <ChevronLeft className="size-5" />
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (swiped.current) return;
-                go(1);
-              }}
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={() => go(1)}
               aria-label="Næsta mynd"
-              className="absolute top-1/2 right-3 z-10 flex size-10 -translate-y-1/2 items-center justify-center bg-white/90 text-forest shadow-sm transition-colors hover:bg-white md:size-11"
+              className="absolute top-1/2 right-3 z-20 flex size-11 -translate-y-1/2 items-center justify-center bg-white/90 text-forest shadow-sm transition-colors hover:bg-white"
             >
               <ChevronRight className="size-5" />
             </button>
