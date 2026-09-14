@@ -1,7 +1,7 @@
 export type SizeChartColumn = {
   key: string;
   label: string;
-  hint: string;
+  hint?: string;
 };
 
 export type SizeChartRow = {
@@ -102,13 +102,69 @@ const PEACOAT: SizeChart = {
   ],
 };
 
-const CHARTS: Record<string, SizeChart> = {
-  [PEACOAT.handle]: PEACOAT,
+const CASHMERE: SizeChart = {
+  handle: "kasmir-peysa",
+  title: "Stærðartafla",
+  unit: "cm",
+  columns: [
+    { key: "chest", label: "Brjóst" },
+    { key: "length", label: "Lengd" },
+    { key: "sleeve", label: "Ermi" },
+    { key: "shoulder", label: "Axlir" },
+  ],
+  rows: [
+    {
+      size: "XS",
+      values: { chest: "94", length: "65", sleeve: "63", shoulder: "36,5" },
+    },
+    {
+      size: "S",
+      values: { chest: "100", length: "67", sleeve: "64", shoulder: "38" },
+    },
+    {
+      size: "M",
+      values: { chest: "106", length: "69", sleeve: "65", shoulder: "39,5" },
+    },
+    {
+      size: "L",
+      values: { chest: "112", length: "71", sleeve: "67", shoulder: "41" },
+    },
+    {
+      size: "XL",
+      values: { chest: "120", length: "73", sleeve: "68", shoulder: "43" },
+    },
+    {
+      size: "2XL",
+      values: { chest: "128", length: "75", sleeve: "69", shoulder: "45" },
+    },
+  ],
 };
 
-export function sizeChartFor(handle?: string | null) {
-  if (!handle) return undefined;
-  return CHARTS[handle];
+const CHARTS: Record<string, SizeChart> = {
+  [PEACOAT.handle]: PEACOAT,
+  [CASHMERE.handle]: CASHMERE,
+};
+
+export function sizeChartFor(
+  product?:
+    | string
+    | {
+        handle?: string | null;
+        title?: string | null;
+        subtitle?: string | null;
+      }
+    | null
+) {
+  if (!product) return undefined;
+  const handle = typeof product === "string" ? product : product.handle;
+  if (handle && CHARTS[handle]) return CHARTS[handle];
+  const hay = (
+    typeof product === "string"
+      ? product
+      : [product.handle, product.title, product.subtitle].filter(Boolean).join(" ")
+  ).toLowerCase();
+  if (/kasm[íi]r|cashmere/.test(hay)) return CASHMERE;
+  return undefined;
 }
 
 export function normalizeSizeLabel(size?: string | null) {

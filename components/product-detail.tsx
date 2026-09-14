@@ -89,7 +89,7 @@ export function ProductDetail({
   const canAdd =
     shopifyBuy && variant ? variantAvailable : inStock;
   const fewLeft = !colorSoldOut && variantFewLeft(variant);
-  const sizeChart = sizeChartFor(product.handle);
+  const sizeChart = sizeChartFor(product);
 
   useEffect(() => {
     if (active >= gallery.length) setActive(0);

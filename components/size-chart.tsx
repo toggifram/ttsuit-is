@@ -26,9 +26,11 @@ export function SizeChartPanel({
                 className="px-0.5 py-2 font-normal sm:px-2"
               >
                 <span className="block">{column.label}</span>
-                <span className="mt-0.5 hidden text-[10px] tracking-normal text-ink/40 normal-case sm:block">
-                  {column.hint}
-                </span>
+                {column.hint ? (
+                  <span className="mt-0.5 hidden text-[10px] tracking-normal text-ink/40 normal-case sm:block">
+                    {column.hint}
+                  </span>
+                ) : null}
               </th>
             ))}
           </tr>
