@@ -32,12 +32,8 @@ export function ProductGallery({
     onChange((index + delta + count) % count);
   }
 
-  function isArrow(target: EventTarget | null) {
-    return target instanceof Element && Boolean(target.closest("button"));
-  }
-
   function onPointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (count < 2 || isArrow(event.target)) return;
+    if (count < 2) return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
     start.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -79,58 +75,45 @@ export function ProductGallery({
 
   return (
     <div>
-      <div
-        className={cn(
-          "relative aspect-[4/5] overflow-hidden select-none",
-          isGift ? "bg-[#1a1a1a]" : "bg-[#ebe6dc]",
-          count > 1 && "touch-pan-y cursor-grab active:cursor-grabbing"
-        )}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={() => {
-          start.current = null;
-        }}
-        onKeyDown={(event) => {
-          if (event.key === "ArrowLeft") {
-            event.preventDefault();
-            go(-1);
-          }
-          if (event.key === "ArrowRight") {
-            event.preventDefault();
-            go(1);
-          }
-        }}
-        tabIndex={count > 1 ? 0 : undefined}
-        role={count > 1 ? "region" : undefined}
-        aria-roledescription={count > 1 ? "myndasýning" : undefined}
-        aria-label={count > 1 ? `${alt}, mynd ${index + 1} af ${count}` : undefined}
-      >
-        <img src={src} alt={alt} draggable={false} className={imgClass} />
-        {badge ? (
-          <span className="absolute left-3 top-3 z-10 bg-black px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
-            {badge}
-          </span>
-        ) : null}
+      <div className="relative">
+        <div
+          className={cn(
+            "relative aspect-[4/5] overflow-hidden select-none",
+            isGift ? "bg-[#1a1a1a]" : "bg-[#ebe6dc]",
+            count > 1 && "touch-pan-y cursor-grab active:cursor-grabbing"
+          )}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={() => {
+            start.current = null;
+          }}
+        >
+          <img src={src} alt={alt} draggable={false} className={imgClass} />
+          {badge ? (
+            <span className="absolute left-3 top-3 z-10 bg-black px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
+              {badge}
+            </span>
+          ) : null}
+        </div>
+
         {count > 1 ? (
           <>
             <button
               type="button"
-              onPointerDown={(event) => event.stopPropagation()}
-              onClick={() => go(-1)}
               aria-label="Fyrri mynd"
-              className="absolute top-1/2 left-3 z-20 flex size-11 -translate-y-1/2 items-center justify-center bg-white/90 text-forest shadow-sm transition-colors hover:bg-white"
+              onClick={() => go(-1)}
+              className="absolute top-1/2 left-3 z-30 flex size-11 -translate-y-1/2 cursor-pointer items-center justify-center bg-white text-forest shadow-md hover:bg-cream"
             >
-              <ChevronLeft className="size-5" />
+              <ChevronLeft className="size-5" aria-hidden />
             </button>
             <button
               type="button"
-              onPointerDown={(event) => event.stopPropagation()}
-              onClick={() => go(1)}
               aria-label="Næsta mynd"
-              className="absolute top-1/2 right-3 z-20 flex size-11 -translate-y-1/2 items-center justify-center bg-white/90 text-forest shadow-sm transition-colors hover:bg-white"
+              onClick={() => go(1)}
+              className="absolute top-1/2 right-3 z-30 flex size-11 -translate-y-1/2 cursor-pointer items-center justify-center bg-white text-forest shadow-md hover:bg-cream"
             >
-              <ChevronRight className="size-5" />
+              <ChevronRight className="size-5" aria-hidden />
             </button>
             <p className="sr-only" aria-live="polite">
               Mynd {index + 1} af {count}
@@ -138,6 +121,7 @@ export function ProductGallery({
           </>
         ) : null}
       </div>
+
       {count > 1 ? (
         <>
           <div className="mt-3 flex justify-center gap-1.5 md:hidden">
