@@ -22,7 +22,8 @@ export default async function HomePage() {
           eyebrow="Sérsaumur á 4–6 vikum"
           headline="Saumað fyrir þig"
           cta="Sérsaumur"
-          fit="cover"
+          overlay
+          position="object-[center_38%]"
           priority
         />
         <HeroFrame
@@ -32,7 +33,7 @@ export default async function HomePage() {
           eyebrow="Tilbúin föt og fylgihlutir"
           headline="Nýja línan"
           cta="Vefverslun"
-          fit="contain"
+          position="object-center"
           priority
         />
       </section>
@@ -66,7 +67,8 @@ function HeroFrame({
   eyebrow,
   headline,
   cta,
-  fit = "cover",
+  overlay = false,
+  position = "object-center",
   priority = false,
 }: {
   href: string;
@@ -75,7 +77,8 @@ function HeroFrame({
   eyebrow: string;
   headline: string;
   cta: string;
-  fit?: "cover" | "contain";
+  overlay?: boolean;
+  position?: string;
   priority?: boolean;
 }) {
   return (
@@ -86,13 +89,13 @@ function HeroFrame({
         fill
         priority={priority}
         className={
-          fit === "contain"
-            ? "object-contain object-center p-5 md:p-8"
-            : "object-cover object-[center_38%] brightness-[1.06]"
+          overlay
+            ? `object-cover brightness-[1.06] ${position}`
+            : `object-cover ${position}`
         }
         sizes="(min-width:768px) 50vw, 100vw"
       />
-      {fit === "cover" ? (
+      {overlay ? (
         <div className="absolute inset-0 z-10 bg-black/10" aria-hidden />
       ) : null}
       <div className="absolute inset-0 z-20 flex items-center justify-center px-6">
