@@ -40,7 +40,7 @@ function PricePairs({ amounts }: { amounts: readonly number[] }) {
 
   if (pairs.length === 1) {
     return (
-      <p className="font-serif text-[15px] text-forest tabular-nums">
+      <p className="text-right font-serif text-[14px] text-forest tabular-nums">
         {isk(pairs[0].amount)}
       </p>
     );
