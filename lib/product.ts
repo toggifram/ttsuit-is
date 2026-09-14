@@ -190,6 +190,7 @@ export function catalogGroups(products: Product[]) {
       listings: listings.filter((row) => row.product.category === cat.id),
     }))
     .filter((group) => group.listings.length);
+}
 
 export function hasShopifyVariants(product: Product) {
   return (product.variants ?? []).some((variant) =>
