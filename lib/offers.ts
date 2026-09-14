@@ -1,6 +1,6 @@
 export const NEWSLETTER_OFFER = {
-  code: "Open15",
-  percent: 15,
+  code: "Open10",
+  percent: 10,
   storageKey: "tjetje.newsletter-offer",
 } as const;
 

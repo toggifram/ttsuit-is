@@ -18,10 +18,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { nav, navLeft, navRight, sersaumurMenu } from "@/lib/site";
+import { NEWSLETTER_OFFER } from "@/lib/offers";
 import { cn } from "@/lib/utils";
 
-const promoCopy =
-  "Við vorum að opna nýja heimasíðu, 15% afsláttur af tilbúnum fatnaði ef þú skráir þig á póstlistann";
+const promoCopy = `Við vorum að opna nýja heimasíðu, ${NEWSLETTER_OFFER.percent}% afsláttur af tilbúnum fatnaði ef þú skráir þig á póstlistann`;
 
 function PromoTicker() {
   return (

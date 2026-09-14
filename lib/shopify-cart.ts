@@ -5,7 +5,7 @@ import {
   getStorefrontAccessToken,
   storeDomain,
 } from "@/lib/shopify-auth";
-import { open15DraftDiscount } from "@/lib/shopify-discount";
+import { newsletterDraftDiscount } from "@/lib/shopify-discount";
 import {
   getCheckoutVariantStates,
   publishOnlineStoreProducts,
@@ -974,7 +974,7 @@ async function createTeyaCheckoutInvoice(input: {
       variantId: line.variantId,
       quantity: line.quantity,
       appliedDiscount:
-        open15 && !giftIds.has(line.variantId) ? open15DraftDiscount() : undefined,
+        open15 && !giftIds.has(line.variantId) ? newsletterDraftDiscount() : undefined,
     })),
     shippingAddress: address,
     billingAddress: address,

@@ -3,7 +3,7 @@ import { NEWSLETTER_OFFER } from "@/lib/offers";
 
 const API_VERSION = "2025-01";
 
-let nativeOpen15: boolean | null = null;
+let nativeNewsletter: boolean | null = null;
 
 type GqlJson<T> = {
   data?: T;
@@ -32,20 +32,56 @@ async function adminGraphql<T>(
   return (await res.json()) as GqlJson<T>;
 }
 
-/** Creates Open15 in Shopify when the app has write_discounts. */
-export async function ensureOpen15Discount() {
-  if (nativeOpen15) return true;
+export async function deleteDiscountByCode(code: string) {
+  const existing = await adminGraphql<{
+    codeDiscountNodeByCode?: { id?: string } | null;
+  }>(
+    `query DiscountByCode($code: String!) {
+      codeDiscountNodeByCode(code: $code) { id }
+    }`,
+    { code }
+  );
+  const id = existing.data?.codeDiscountNodeByCode?.id;
+  if (!id) return { deleted: false, reason: "not_found" as const };
+
+  const deleted = await adminGraphql<{
+    discountCodeDelete?: {
+      deletedCodeDiscountId?: string | null;
+      userErrors?: { message: string }[];
+    };
+  }>(
+    `mutation DeleteDiscount($id: ID!) {
+      discountCodeDelete(id: $id) {
+        deletedCodeDiscountId
+        userErrors { message }
+      }
+    }`,
+    { id }
+  );
+  const err =
+    deleted.data?.discountCodeDelete?.userErrors?.[0]?.message ||
+    deleted.errors?.[0]?.message;
+  if (err) return { deleted: false, reason: err };
+  return {
+    deleted: Boolean(deleted.data?.discountCodeDelete?.deletedCodeDiscountId),
+    reason: "ok" as const,
+  };
+}
+
+/** Creates the newsletter code in Shopify when the app has write_discounts. */
+export async function ensureNewsletterDiscount() {
+  if (nativeNewsletter) return true;
 
   const existing = await adminGraphql<{
     codeDiscountNodeByCode?: { id?: string } | null;
   }>(
-    `query Open15($code: String!) {
+    `query NewsletterDiscount($code: String!) {
       codeDiscountNodeByCode(code: $code) { id }
     }`,
     { code: NEWSLETTER_OFFER.code }
   );
   if (existing.data?.codeDiscountNodeByCode?.id) {
-    nativeOpen15 = true;
+    nativeNewsletter = true;
     return true;
   }
 
@@ -55,7 +91,7 @@ export async function ensureOpen15Discount() {
       userErrors?: { message: string }[];
     };
   }>(
-    `mutation CreateOpen15($basicCodeDiscount: DiscountCodeBasicInput!) {
+    `mutation CreateNewsletterDiscount($basicCodeDiscount: DiscountCodeBasicInput!) {
       discountCodeBasicCreate(basicCodeDiscount: $basicCodeDiscount) {
         codeDiscountNode { id }
         userErrors { field message }
@@ -63,7 +99,7 @@ export async function ensureOpen15Discount() {
     }`,
     {
       basicCodeDiscount: {
-        title: "Open15 — póstlisti",
+        title: `${NEWSLETTER_OFFER.code} — póstlisti`,
         code: NEWSLETTER_OFFER.code,
         startsAt: new Date().toISOString(),
         appliesOncePerCustomer: true,
@@ -84,20 +120,20 @@ export async function ensureOpen15Discount() {
   const node = created.data?.discountCodeBasicCreate?.codeDiscountNode?.id;
   const err = created.data?.discountCodeBasicCreate?.userErrors?.[0]?.message;
   if (node) {
-    nativeOpen15 = true;
+    nativeNewsletter = true;
     return true;
   }
-  if (err) console.error(`Open15 Shopify discount: ${err}`);
+  if (err) console.error(`Newsletter Shopify discount: ${err}`);
   if (created.errors?.length) {
     console.error(
-      `Open15 Shopify discount: ${created.errors.map((item) => item.message).join("; ")}`
+      `Newsletter Shopify discount: ${created.errors.map((item) => item.message).join("; ")}`
     );
   }
-  nativeOpen15 = false;
+  nativeNewsletter = false;
   return false;
 }
 
-export function open15DraftDiscount() {
+export function newsletterDraftDiscount() {
   return {
     title: NEWSLETTER_OFFER.code,
     description: "Póstlisti — tilbúinn fatnaður",

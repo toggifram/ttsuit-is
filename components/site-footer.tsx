@@ -4,6 +4,7 @@ import { FooterInstagram } from "@/components/instagram-feed";
 import { HashLink } from "@/components/hash-link";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { hrefForCategory, shopCategories } from "@/lib/product";
+import { NEWSLETTER_OFFER } from "@/lib/offers";
 import { brand, footerWe, sersaumurMenu, socialLinks } from "@/lib/site";
 
 export async function SiteFooter() {
@@ -21,7 +22,7 @@ export async function SiteFooter() {
           />
           <p className="mt-5 text-sm text-white/80">Póstlisti</p>
           <p className="mt-1.5 max-w-[13.5rem] text-[12px] leading-snug text-white/55">
-            Gleymdu ekki að skrá þig — 15% af tilbúnum fatnaði í vefverslun.
+            Gleymdu ekki að skrá þig — {NEWSLETTER_OFFER.percent}% af tilbúnum fatnaði í vefverslun.
           </p>
           <div className="mt-3">
             <NewsletterForm variant="dark" />
@@ -105,7 +106,7 @@ export async function SiteFooter() {
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-[1440px] px-5 py-3 text-xs text-white/40 md:px-8">
           <p>
-            © {new Date().getFullYear()} {brand.name} · {brand.legalName}
+            © {new Date().getFullYear()} {brand.name}
           </p>
         </div>
       </div>

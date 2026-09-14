@@ -15,7 +15,7 @@ export function SersaumurFeature() {
         </h2>
         <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ink/70">
           Jakkaföt, jakkar og skyrtur eftir þínum mælingum. Þú velur efni,
-          snið og smáatriði, við tökum nákvæmar mælingar og saumum fötin sem
+          snið og smáatriði. Við tökum nákvæmar mælingar og saumum fötin sem
           sitja eins og þau eiga að sitja. Ferlið tekur 4–6 vikur.
         </p>
         <a
