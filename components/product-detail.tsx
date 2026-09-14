@@ -8,12 +8,12 @@ import { ProductGallery } from "@/components/product-gallery";
 import { useCart } from "@/components/cart-provider";
 import { SizeChartPanel } from "@/components/size-chart";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { sizeChartFor } from "@/lib/size-charts";
 import {
   catalogListings,
@@ -339,22 +339,19 @@ export function ProductDetail({
       </div>
 
       {sizeChart ? (
-        <Sheet open={sizeChartOpen} onOpenChange={setSizeChartOpen}>
-          <SheetContent
-            side="right"
-            className="w-full gap-0 overflow-hidden border-border bg-white sm:max-w-2xl"
-          >
-            <SheetHeader>
-              <SheetTitle className="font-serif text-2xl text-forest">
+        <Dialog open={sizeChartOpen} onOpenChange={setSizeChartOpen}>
+          <DialogContent className="flex max-h-[min(92vh,52rem)] w-[calc(100%-1.25rem)] max-w-5xl flex-col gap-0 overflow-hidden rounded-none border border-border bg-white p-0 sm:max-w-5xl">
+            <DialogHeader className="shrink-0 border-b border-border px-5 py-4 pr-12">
+              <DialogTitle className="font-serif text-2xl text-forest">
                 {sizeChart.title}
-              </SheetTitle>
-              <SheetDescription className="sr-only">
-                Mál og útlínamynd sem sýnir hvar peacoatinn er mældur.
-              </SheetDescription>
-            </SheetHeader>
+              </DialogTitle>
+              <DialogDescription className="sr-only">
+                {sizeChart.diagramAlt}
+              </DialogDescription>
+            </DialogHeader>
             <SizeChartPanel chart={sizeChart} selectedSize={size} />
-          </SheetContent>
-        </Sheet>
+          </DialogContent>
+        </Dialog>
       ) : null}
 
       {related.length ? (
