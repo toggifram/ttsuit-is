@@ -199,6 +199,9 @@ function colorHex(name: string) {
 
 function foldKey(value: string) {
   return value
+    .replace(/[æÆ]/g, "ae")
+    .replace(/[ðÐ]/g, "d")
+    .replace(/[þÞ]/g, "th")
     .normalize("NFD")
     .replace(/\p{M}/gu, "")
     .toLowerCase()
