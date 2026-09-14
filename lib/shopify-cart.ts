@@ -1,11 +1,11 @@
 import { formatMoney, isGiftCardProduct } from "@/lib/product";
-import { isNewsletterOffer, newsletterOfferAmount, NEWSLETTER_OFFER, normalizeDiscountCode } from "@/lib/offers";
+import { knownPercentOffer, percentOffAmount, normalizeDiscountCode } from "@/lib/offers";
 import {
   getAdminAccessToken,
   getStorefrontAccessToken,
   storeDomain,
 } from "@/lib/shopify-auth";
-import { newsletterDraftDiscount } from "@/lib/shopify-discount";
+import { percentDraftDiscount } from "@/lib/shopify-discount";
 import {
   getCheckoutVariantStates,
   publishOnlineStoreProducts,
@@ -668,31 +668,32 @@ export async function quoteShopifyCart(
     lines,
     mailingAddress(address)
   );
-  return applyNewsletterOffer(
+  return applyKnownPercentOffer(
     mergeAdminShippingPrices(quoted, adminRates),
     discountCode
   );
 }
 
-function applyNewsletterOffer(quote: CartQuote, code?: string): CartQuote {
-  if (!isNewsletterOffer(code)) return quote;
+function applyKnownPercentOffer(quote: CartQuote, code?: string): CartQuote {
+  const offer = knownPercentOffer(code);
+  if (!offer) return quote;
   const base = quote.clothingAmount ?? quote.subtotalAmount;
   const already = Math.max(0, quote.subtotalAmount - quote.totalAmount);
-  const want = newsletterOfferAmount(base);
+  const want = percentOffAmount(base, offer.percent);
   if (want <= 0) {
     return {
       ...quote,
-      discountCode: NEWSLETTER_OFFER.code,
+      discountCode: offer.code,
       discountAmount: 0,
-      discountLabel: NEWSLETTER_OFFER.code,
+      discountLabel: offer.code,
     };
   }
   const amount = already >= want * 0.9 ? already : want;
   return {
     ...quote,
-    discountCode: NEWSLETTER_OFFER.code,
+    discountCode: offer.code,
     discountAmount: amount,
-    discountLabel: NEWSLETTER_OFFER.code,
+    discountLabel: offer.code,
     totalAmount: quote.subtotalAmount - amount,
     total: formatMoney(quote.subtotalAmount - amount),
   };
@@ -956,8 +957,8 @@ async function createTeyaCheckoutInvoice(input: {
     ? await shopifyShippingLine(input.lines, address, input.shipping)
     : undefined;
   const code = normalizeDiscountCode(input.discountCode);
-  const open15 = isNewsletterOffer(code);
-  const giftIds = open15 ? await giftCardVariantIds(input.lines) : new Set<string>();
+  const offer = knownPercentOffer(code);
+  const giftIds = offer ? await giftCardVariantIds(input.lines) : new Set<string>();
   const shippingNote = input.shipping
     ? `Sending valin á ttsuit.is: ${input.shipping.title} (${input.shipping.priceAmount} kr.)`
     : "";
@@ -969,12 +970,14 @@ async function createTeyaCheckoutInvoice(input: {
     sourceName: "ttsuit.is",
     visibleToCustomer: true,
     allowDiscountCodesInCheckout: false,
-    discountCodes: open15 || !code ? undefined : [code],
+    discountCodes: offer || !code ? undefined : [code],
     lineItems: input.lines.map((line) => ({
       variantId: line.variantId,
       quantity: line.quantity,
       appliedDiscount:
-        open15 && !giftIds.has(line.variantId) ? newsletterDraftDiscount() : undefined,
+        offer && !giftIds.has(line.variantId)
+          ? percentDraftDiscount(offer.code, offer.percent)
+          : undefined,
     })),
     shippingAddress: address,
     billingAddress: address,

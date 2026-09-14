@@ -4,6 +4,14 @@ export const NEWSLETTER_OFFER = {
   storageKey: "tjetje.newsletter-offer",
 } as const;
 
+/** Percent codes applied at checkout. Do not advertise these on the site. */
+const PRIVATE_PERCENT_OFFERS = [{ code: "toggi20", percent: 20 }] as const;
+
+export type PercentOffer = {
+  code: string;
+  percent: number;
+};
+
 /** One code per order — first token if several were pasted. */
 export function normalizeDiscountCode(raw?: string | null) {
   return (
@@ -21,7 +29,26 @@ export function isNewsletterOffer(code?: string | null) {
   );
 }
 
-export function newsletterOfferAmount(subtotal: number) {
+export function knownPercentOffer(code?: string | null): PercentOffer | null {
+  const normalized = normalizeDiscountCode(code).toLowerCase();
+  if (!normalized) return null;
+  if (normalized === NEWSLETTER_OFFER.code.toLowerCase()) {
+    return {
+      code: NEWSLETTER_OFFER.code,
+      percent: NEWSLETTER_OFFER.percent,
+    };
+  }
+  const privateOffer = PRIVATE_PERCENT_OFFERS.find(
+    (offer) => offer.code.toLowerCase() === normalized
+  );
+  return privateOffer ? { code: privateOffer.code, percent: privateOffer.percent } : null;
+}
+
+export function percentOffAmount(subtotal: number, percent: number) {
   if (!Number.isFinite(subtotal) || subtotal <= 0) return 0;
-  return Math.round(subtotal * (NEWSLETTER_OFFER.percent / 100));
+  return Math.round(subtotal * (percent / 100));
+}
+
+export function newsletterOfferAmount(subtotal: number) {
+  return percentOffAmount(subtotal, NEWSLETTER_OFFER.percent);
 }

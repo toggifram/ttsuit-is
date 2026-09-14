@@ -133,11 +133,15 @@ export async function ensureNewsletterDiscount() {
   return false;
 }
 
-export function newsletterDraftDiscount() {
+export function percentDraftDiscount(code: string, percent: number) {
   return {
-    title: NEWSLETTER_OFFER.code,
-    description: "Póstlisti — tilbúinn fatnaður",
-    value: NEWSLETTER_OFFER.percent,
+    title: code,
+    description: `${percent}%`,
+    value: percent,
     valueType: "PERCENTAGE" as const,
   };
+}
+
+export function newsletterDraftDiscount() {
+  return percentDraftDiscount(NEWSLETTER_OFFER.code, NEWSLETTER_OFFER.percent);
 }
