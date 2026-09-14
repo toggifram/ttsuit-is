@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { normalizeDiscountCode } from "@/lib/offers";
 import {
   parseAddress,
   parseCheckoutLines,
@@ -22,8 +23,9 @@ export async function POST(request: Request) {
   const data = body as Record<string, unknown>;
   const lines = parseCheckoutLines(data.lines);
   const address = parseAddress(data.address);
-  const discount =
-    typeof data.discountCode === "string" ? data.discountCode.trim() : "";
+  const discount = normalizeDiscountCode(
+    typeof data.discountCode === "string" ? data.discountCode : ""
+  );
 
   if (!lines) {
     return NextResponse.json({ error: "Karfan er ógild." }, { status: 400 });

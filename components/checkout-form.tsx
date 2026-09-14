@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CHECKOUT_CART_BACKUP_KEY } from "@/lib/cart";
 import { formatMoney } from "@/lib/product";
+import { normalizeDiscountCode } from "@/lib/offers";
 import type { CartQuote, DeliveryOption } from "@/lib/shopify-cart";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +42,7 @@ function quoteKey(form: HTMLFormElement, variantKey: string) {
     address2: String(data.get("address2") ?? "").trim(),
     city: String(data.get("city") ?? "").trim(),
     zip: String(data.get("zip") ?? "").trim(),
-    discount: String(data.get("discount") ?? "").trim(),
+    discount: normalizeDiscountCode(String(data.get("discount") ?? "")),
   });
 }
 
@@ -118,7 +119,9 @@ export function CheckoutForm() {
             variantId: item.variantId,
             quantity: item.quantity,
           })),
-          discountCode: String(data.get("discount") ?? "").trim(),
+          discountCode: normalizeDiscountCode(
+            String(data.get("discount") ?? "")
+          ),
           address: {
             email: String(data.get("email") ?? ""),
             phone: String(data.get("phone") ?? ""),
@@ -211,7 +214,9 @@ export function CheckoutForm() {
           handle: shipping.handle,
           title: shipping.title,
           priceAmount: shipping.priceAmount,
-          discountCode: String(data.get("discount") ?? "").trim(),
+          discountCode: normalizeDiscountCode(
+            String(data.get("discount") ?? "")
+          ),
           lines: items.map((item) => ({
             variantId: item.variantId,
             quantity: item.quantity,
@@ -342,7 +347,11 @@ export function CheckoutForm() {
               />
             </Field>
           </div>
-          <Field label="Afsláttarkóði" htmlFor="kassi-discount">
+          <Field
+            label="Afsláttarkóði"
+            htmlFor="kassi-discount"
+            hint="Aðeins einn kóði gildir á hver kaup."
+          >
             <Input
               id="kassi-discount"
               name="discount"
@@ -506,10 +515,12 @@ export function CheckoutForm() {
 function Field({
   label,
   htmlFor,
+  hint,
   children,
 }: {
   label: string;
   htmlFor: string;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -518,6 +529,7 @@ function Field({
         {label}
       </Label>
       {children}
+      {hint ? <p className="text-[12px] text-ink/50">{hint}</p> : null}
     </div>
   );
 }

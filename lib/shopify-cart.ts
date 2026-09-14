@@ -1,5 +1,5 @@
 import { formatMoney, isGiftCardProduct } from "@/lib/product";
-import { isNewsletterOffer, newsletterOfferAmount, NEWSLETTER_OFFER } from "@/lib/offers";
+import { isNewsletterOffer, newsletterOfferAmount, NEWSLETTER_OFFER, normalizeDiscountCode } from "@/lib/offers";
 import {
   getAdminAccessToken,
   getStorefrontAccessToken,
@@ -548,6 +548,7 @@ async function createQuoteCart(
   address: CheckoutAddress,
   discountCode?: string
 ) {
+  const code = normalizeDiscountCode(discountCode);
   return storefrontGraphql<{
     cartCreate?: {
       cart?: StorefrontCart | null;
@@ -566,7 +567,7 @@ async function createQuoteCart(
           merchandiseId: line.variantId,
           quantity: line.quantity,
         })),
-        discountCodes: discountCode ? [discountCode] : undefined,
+        discountCodes: code ? [code] : undefined,
         buyerIdentity: {
           email: address.email,
           phone: shopifyPhone(address.phone) || undefined,
@@ -954,7 +955,8 @@ async function createTeyaCheckoutInvoice(input: {
   const shippingLine = input.shipping
     ? await shopifyShippingLine(input.lines, address, input.shipping)
     : undefined;
-  const open15 = isNewsletterOffer(input.discountCode);
+  const code = normalizeDiscountCode(input.discountCode);
+  const open15 = isNewsletterOffer(code);
   const giftIds = open15 ? await giftCardVariantIds(input.lines) : new Set<string>();
   const shippingNote = input.shipping
     ? `Sending valin á ttsuit.is: ${input.shipping.title} (${input.shipping.priceAmount} kr.)`
@@ -966,9 +968,8 @@ async function createTeyaCheckoutInvoice(input: {
     tags: ["ttsuit.is", "teya"],
     sourceName: "ttsuit.is",
     visibleToCustomer: true,
-    allowDiscountCodesInCheckout: true,
-    discountCodes:
-      open15 || !input.discountCode ? undefined : [input.discountCode],
+    allowDiscountCodesInCheckout: false,
+    discountCodes: open15 || !code ? undefined : [code],
     lineItems: input.lines.map((line) => ({
       variantId: line.variantId,
       quantity: line.quantity,

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { normalizeDiscountCode } from "@/lib/offers";
 import {
   parseAddress,
   parseCheckoutLines,
@@ -29,8 +30,9 @@ export async function POST(request: Request) {
   const handle = typeof data.handle === "string" ? data.handle.trim() : "";
   const title = typeof data.title === "string" ? data.title.trim() : "";
   const priceAmount = Number(data.priceAmount);
-  const discountCode =
-    typeof data.discountCode === "string" ? data.discountCode.trim() : "";
+  const discountCode = normalizeDiscountCode(
+    typeof data.discountCode === "string" ? data.discountCode : ""
+  );
   const lines = parseCheckoutLines(data.lines) ?? undefined;
   const address = parseAddress(data.address) ?? undefined;
 

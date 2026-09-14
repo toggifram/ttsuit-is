@@ -150,7 +150,8 @@ export default function TermsPage() {
             Með því að skrá þig á póstlista {brand.name} samþykkir þú að við
             sendum þér fréttir, tilboð og uppfærslur. Nýskráning gefur 15%
             afsláttarkóða (Open15) af tilbúnum fatnaði í vefverslun.
-            Afslátturinn gildir ekki á gjafabréf eða sérsaum. Kóðinn birtist
+            Afslátturinn gildir ekki á gjafabréf eða sérsaum. Aðeins einn
+            afsláttarkóði gildir á hver kaup. Kóðinn birtist
             um leið og þú skráir þig. Ein tilboð per netfang. Þú getur
             afskráð þig hvenær sem er.
           </p>
