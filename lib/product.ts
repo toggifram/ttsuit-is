@@ -160,7 +160,7 @@ const CATEGORY_RANK: Record<ProductCategory, number> = {
 
 /** One card per color. Shop order: peysur, yfirhafnir, bindi, fylgihlutir, gjafabréf. Sold-out last in each group. */
 export function catalogListings(products: Product[]): CatalogListing[] {
-  const listings = products.flatMap((product) => {
+  const listings: CatalogListing[] = products.flatMap((product) => {
     if (!product.colors.length) {
       return [{ key: product.id, product }];
     }
