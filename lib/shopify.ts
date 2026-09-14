@@ -67,7 +67,7 @@ const PRODUCT_FIELDS = `
     url(transform: { maxWidth: 1400 })
     altText
   }
-  images(first: 16) {
+  images(first: 30) {
     nodes {
       url(transform: { maxWidth: 1400 })
       altText
@@ -206,6 +206,23 @@ function foldKey(value: string) {
     .trim();
 }
 
+function imageKey(url: string) {
+  return url.split("?")[0];
+}
+
+function uniqueUrls(urls: (string | undefined | null)[]) {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const url of urls) {
+    if (!url) continue;
+    const key = imageKey(url);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(url);
+  }
+  return out;
+}
+
 function imagesForColor(
   images: ShopifyImage[],
   colorName: string
@@ -216,6 +233,56 @@ function imagesForColor(
     .filter((image) => foldKey(image.altText ?? "").includes(key))
     .map((image) => image.url)
     .filter(Boolean);
+}
+
+/** Group product photos by colour: alt text, then gallery slices between variant images. */
+function galleriesByColor(
+  gallery: string[],
+  galleryImages: ShopifyImage[],
+  colorNames: string[],
+  variants: ProductVariant[]
+) {
+  const result = new Map<string, string[]>();
+  for (const name of colorNames) {
+    result.set(name, imagesForColor(galleryImages, name));
+  }
+
+  const markers = colorNames
+    .map((name) => {
+      const url = variants.find((variant) => variant.color === name && variant.image)
+        ?.image;
+      if (!url) return null;
+      const index = gallery.findIndex((item) => imageKey(item) === imageKey(url));
+      return { name, url, index };
+    })
+    .filter((item): item is { name: string; url: string; index: number } =>
+      Boolean(item)
+    );
+
+  const indexed = markers.filter((item) => item.index >= 0);
+  const uniqueIndexes = new Set(indexed.map((item) => item.index));
+  const canSlice = uniqueIndexes.size === indexed.length && indexed.length > 0;
+
+  if (canSlice) {
+    const ordered = [...indexed].sort((a, b) => a.index - b.index);
+    for (let i = 0; i < ordered.length; i++) {
+      const start = ordered[i].index;
+      const next = ordered.slice(i + 1).find((item) => item.index > start);
+      const end = next ? next.index : gallery.length;
+      const current = result.get(ordered[i].name) ?? [];
+      result.set(ordered[i].name, [...current, ...gallery.slice(start, end)]);
+    }
+  } else {
+    for (const marker of markers) {
+      const current = result.get(marker.name) ?? [];
+      result.set(marker.name, [...current, marker.url]);
+    }
+  }
+
+  for (const name of colorNames) {
+    result.set(name, uniqueUrls(result.get(name) ?? []));
+  }
+  return result;
 }
 
 function stripHtml(html: string) {
@@ -308,12 +375,9 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
 
   const variants = mapVariants(node);
   const colorNames = optionValues(node, COLOR_OPTION).slice(0, 8);
+  const byColor = galleriesByColor(gallery, galleryImages, colorNames, variants);
   const colors: ProductColor[] = colorNames.map((name) => {
-    const fromAlt = imagesForColor(galleryImages, name);
-    const fromVariant = variants.find(
-      (variant) => variant.color === name && variant.image
-    )?.image;
-    const unique = [...new Set([...fromAlt, fromVariant].filter(Boolean))] as string[];
+    const unique = byColor.get(name) ?? [];
     return {
       name,
       hex: colorHex(name),

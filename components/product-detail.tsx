@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ProductCard } from "@/components/product-card";
+import { ProductGallery } from "@/components/product-gallery";
 import { useCart } from "@/components/cart-provider";
 import {
   Sheet,
@@ -78,6 +79,10 @@ export function ProductDetail({
   const canAdd =
     shopifyBuy && variant ? variantAvailable : inStock;
 
+  useEffect(() => {
+    if (active >= gallery.length) setActive(0);
+  }, [active, gallery.length]);
+
   const selectColor = (name: string) => {
     setColor(name);
     setActive(0);
@@ -127,56 +132,14 @@ export function ProductDetail({
 
       <div className="mx-auto grid max-w-[1440px] gap-8 px-5 py-8 md:grid-cols-12 md:gap-12 md:px-10 md:py-12">
         <div className="md:col-span-7">
-          <div
-            className={cn(
-              "relative aspect-[4/5] overflow-hidden",
-              isGift ? "bg-[#1a1a1a]" : "bg-[#ebe6dc]"
-            )}
-          >
-            <img
-              src={gallery[active] ?? product.image}
-              alt={product.imageAlt}
-              className={
-                isGift
-                  ? "absolute inset-0 h-full w-full object-contain p-10"
-                  : "absolute inset-0 h-full w-full object-cover object-top"
-              }
-            />
-            {product.badge ? (
-              <span className="absolute left-3 top-3 bg-black px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
-                {product.badge}
-              </span>
-            ) : null}
-          </div>
-          {gallery.length > 1 ? (
-            <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-5">
-              {gallery.map((src, index) => (
-                <button
-                  key={src}
-                  type="button"
-                  onClick={() => setActive(index)}
-                  aria-label={`Mynd ${index + 1}`}
-                  aria-current={index === active}
-                  className={cn(
-                    "relative aspect-square overflow-hidden bg-[#ebe6dc]",
-                    index === active
-                      ? "ring-1 ring-forest"
-                      : "opacity-70 hover:opacity-100"
-                  )}
-                >
-                  <img
-                    src={src}
-                    alt=""
-                    className={
-                      isGift
-                        ? "absolute inset-0 h-full w-full object-contain bg-[#1a1a1a] p-2"
-                        : "absolute inset-0 h-full w-full object-cover object-top"
-                    }
-                  />
-                </button>
-              ))}
-            </div>
-          ) : null}
+          <ProductGallery
+            images={gallery.length ? gallery : [product.image]}
+            alt={product.imageAlt}
+            isGift={isGift}
+            badge={product.badge}
+            active={active}
+            onChange={setActive}
+          />
         </div>
 
         <div className="flex flex-col md:col-span-5 md:pt-4">

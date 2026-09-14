@@ -213,12 +213,28 @@ export function variantStock(variant?: ProductVariant) {
 }
 
 export function imagesForSelectedColor(product: Product, color?: string) {
-  if (color) {
-    const match = product.colors.find((item) => item.name === color);
-    if (match?.images?.length) return match.images;
-    if (match?.image) return [match.image];
+  const all = productImages(product);
+  if (!color) return all;
+  const match = product.colors.find((item) => item.name === color);
+  if (!match) return all;
+
+  const owned = [...(match.images ?? []), match.image].filter(Boolean) as string[];
+  const otherKeys = new Set(
+    product.colors
+      .filter((item) => item.name !== color)
+      .flatMap((item) => [item.image, ...(item.images ?? [])].filter(Boolean))
+      .map((url) => String(url).split("?")[0])
+  );
+  const extras = all.filter((url) => !otherKeys.has(url.split("?")[0]));
+  const seen = new Set<string>();
+  const unique: string[] = [];
+  for (const url of [...owned, ...extras]) {
+    const key = url.split("?")[0];
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(url);
   }
-  return productImages(product);
+  return unique.length ? unique : all;
 }
 
 export function productImages(product: Product): string[] {
