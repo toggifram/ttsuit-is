@@ -123,6 +123,8 @@ export const priceTiers = [
   "Flokkur 6*",
 ] as const;
 
+export const priceTierShorts = ["F1", "F2", "F3", "F4", "F5*", "F6*"] as const;
+
 export const garmentPrices = [
   { name: "Jakkaföt", amounts: [89990, 99990, 114990, 135990, 145990, 155990] },
   { name: "Jakki", amounts: [59990, 68990, 84990, 94990, 103990, 107990] },
@@ -139,6 +141,29 @@ export const accessoryPrices = [
   { name: "Klútur", amounts: [6490] },
   { name: "Hálsklútur", amounts: [7990] },
   { name: "Armbönd", amounts: [3990, 5990] },
+] as const;
+
+export const priceGroups = [
+  {
+    title: "Jakkaföt og 3 setta",
+    names: ["Jakkaföt", "3 setta föt"],
+  },
+  {
+    title: "Jakki, buxur og vesti",
+    names: ["Jakki", "Buxur", "Vesti"],
+  },
+  {
+    title: "Skyrtur",
+    names: ["Skyrta"],
+  },
+  {
+    title: "Bindi og klútar",
+    names: ["Bindi", "Slaufa", "Klútur", "Hálsklútur"],
+  },
+  {
+    title: "Axlabönd og armbönd",
+    names: ["Axlabönd", "Armbönd"],
+  },
 ] as const;
 
 export const priceNotes = [
@@ -253,16 +278,16 @@ export const faqs = [
     a: "Já. Kjarninn er nákvæm mæling — brjóst, mitti, axlir og hvernig þú stendur. Við ræðum líka hvernig þú vilt að fötin sitji: þétt að, klassískt eða með meira rými.",
   },
   {
+    q: "Hvað verður um mælingarnar mínar?",
+    a: "Við geymum þær. Ef þú ert sáttur og vilt panta aftur — skyrtur, jakka eða aðra flík í öðrum litum eða efnum — notum við sömu mælingar. Þá er eftirleikurinn auðveldur.",
+  },
+  {
     q: "Get ég valið allt sjálfur?",
     a: "Já. Efni, snið, vasagerð, hnappa, fóður og saumfar. Ef þú spyrð hvað mér finnst, svara ég hreint út — en lokaorðið er þitt.",
   },
   {
     q: "Hvað kostar þetta?",
     a: "Jakki frá 59.990 kr., buxur frá 38.990 kr. og heilt sett frá 89.990 kr. Verð flokkast eftir efnisvali (flokkur 1–6). Við förum yfir þetta í mælingu, án pressu.",
-  },
-  {
-    q: "Gildir 15% afslátturinn á sérsaum?",
-    a: "Nei. Open15 gildir í vefverslun á tilbúnum fatnaði, ekki á gjafabréf eða sérsaum.",
   },
   {
     q: "Hvað ef fötin passa ekki alveg?",

@@ -2,11 +2,13 @@ import { PackageCalculator } from "@/components/package-calculator";
 import {
   accessoryPrices,
   garmentPrices,
+  priceGroups,
   priceNotes,
+  priceTierShorts,
   priceTiers,
 } from "@/lib/site";
 
-const priceRows = [...garmentPrices, ...accessoryPrices];
+const allPrices = [...garmentPrices, ...accessoryPrices];
 
 function isk(amount: number) {
   return new Intl.NumberFormat("is-IS").format(amount);
@@ -27,27 +29,59 @@ function AmountCells({ amounts }: { amounts: readonly number[] }) {
   );
 }
 
+function priceRow(name: string) {
+  return allPrices.find((row) => row.name === name);
+}
+
+function PricePairs({ amounts }: { amounts: readonly number[] }) {
+  const pairs = priceTierShorts.flatMap((short, i) =>
+    amounts[i] != null ? [{ short, amount: amounts[i]! }] : []
+  );
+
+  if (pairs.length === 1) {
+    return (
+      <p className="font-serif text-[15px] text-forest tabular-nums">
+        {isk(pairs[0].amount)}
+      </p>
+    );
+  }
+
+  return (
+    <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+      {pairs.map((pair) => (
+        <div key={pair.short} className="flex items-baseline justify-between gap-2">
+          <dt className="text-[11px] tracking-[0.08em] text-ink/50">{pair.short}</dt>
+          <dd className="font-serif text-[14px] text-forest tabular-nums">
+            {isk(pair.amount)}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 function MobilePriceCards() {
   return (
     <div className="mt-8 space-y-3 md:hidden">
-      {priceRows.map((row) => (
-        <article key={row.name} className="bg-white px-5 py-5">
-          <h4 className="font-serif text-xl text-forest">{row.name}</h4>
-          <dl className="mt-3 divide-y divide-forest/10">
-            {priceTiers.map((tier, i) =>
-              row.amounts[i] != null ? (
-                <div
-                  key={tier}
-                  className="flex items-baseline justify-between gap-4 py-2 text-sm"
-                >
-                  <dt className="text-ink/55">{tier}</dt>
-                  <dd className="font-serif text-[15px] text-forest tabular-nums">
-                    {isk(row.amounts[i]!)}
-                  </dd>
+      {priceGroups.map((group) => (
+        <article key={group.title} className="bg-white px-4 py-5">
+          <h4 className="font-serif text-xl text-forest">{group.title}</h4>
+          <div className="mt-2 divide-y divide-forest/10">
+            {group.names.map((name) => {
+              const row = priceRow(name);
+              if (!row) return null;
+              return (
+                <div key={name} className="py-3 first:pt-2 last:pb-0">
+                  {group.names.length > 1 ? (
+                    <p className="mb-2 text-[13px] font-semibold text-ink">
+                      {row.name}
+                    </p>
+                  ) : null}
+                  <PricePairs amounts={row.amounts} />
                 </div>
-              ) : null
-            )}
-          </dl>
+              );
+            })}
+          </div>
         </article>
       ))}
     </div>
