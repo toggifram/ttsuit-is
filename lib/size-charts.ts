@@ -12,7 +12,6 @@ export type SizeChartRow = {
 export type SizeChart = {
   handle: string;
   title: string;
-  intro: string;
   unit: string;
   columns: SizeChartColumn[];
   rows: SizeChartRow[];
@@ -21,8 +20,6 @@ export type SizeChart = {
 const PEACOAT: SizeChart = {
   handle: "peacoat",
   title: "Stærðartafla",
-  intro:
-    "Mál í sentímetrum. Brjóst og mitta eru líkamsstærð. Axlir, ermi og lengd eru mál jakkans. Ef þú ert á milli stærða, veldu þá stærri.",
   unit: "cm",
   columns: [
     { key: "chest", label: "Brjóst", hint: "Líkamsstærð" },

@@ -10,11 +10,7 @@ export function SizeChartPanel({
 }) {
   return (
     <div className="min-h-0 flex-1 overflow-auto px-4 pb-5 sm:px-6 sm:pb-6">
-      <p className="text-[13px] leading-relaxed text-ink/70 sm:text-[14px]">
-        {chart.intro}
-      </p>
-
-      <table className="mt-4 w-full table-fixed border-collapse text-left text-[11px] sm:mt-5 sm:text-[13px]">
+      <table className="w-full table-fixed border-collapse text-left text-[11px] sm:text-[13px]">
         <caption className="mb-2 text-left text-[11px] text-ink/50 sm:text-[12px]">
           Allar tölur í {chart.unit}
         </caption>
