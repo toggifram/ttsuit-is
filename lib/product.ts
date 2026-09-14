@@ -181,17 +181,6 @@ export function catalogListings(products: Product[]): CatalogListing[] {
   });
 }
 
-export function catalogGroups(products: Product[]) {
-  const listings = catalogListings(products);
-  return shopCategories
-    .filter((cat) => cat.id !== "all")
-    .map((cat) => ({
-      category: cat,
-      listings: listings.filter((row) => row.product.category === cat.id),
-    }))
-    .filter((group) => group.listings.length);
-}
-
 export function hasShopifyVariants(product: Product) {
   return (product.variants ?? []).some((variant) =>
     variant.id.includes("ProductVariant")
