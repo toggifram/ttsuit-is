@@ -22,7 +22,8 @@ export function ProductGallery({
   active: number;
   onChange: (index: number) => void;
 }) {
-  const start = useRef<{ x: number; y: number } | null>(null);
+  const start = useRef<{ x: number; y: number; id: number } | null>(null);
+  const swiped = useRef(false);
   const count = images.length;
   const index = count ? ((active % count) + count) % count : 0;
   const src = images[index] ?? images[0];
@@ -32,20 +33,43 @@ export function ProductGallery({
     onChange((index + delta + count) % count);
   }
 
-  function onPointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (event.pointerType === "mouse" && event.button !== 0) return;
-    start.current = { x: event.clientX, y: event.clientY };
+  function finishSwipe(event: PointerEvent<HTMLDivElement>) {
+    const origin = start.current;
+    start.current = null;
+    try {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    } catch {
+      /* already released */
+    }
+    if (!origin || count < 2 || origin.id !== event.pointerId) return;
+    const dx = event.clientX - origin.x;
+    const dy = event.clientY - origin.y;
+    if (Math.abs(dx) < SWIPE_PX || Math.abs(dx) <= Math.abs(dy)) return;
+    swiped.current = true;
+    go(dx < 0 ? 1 : -1);
   }
 
-  function onPointerUp(event: PointerEvent<HTMLDivElement>) {
-    if (!start.current || count < 2) {
-      start.current = null;
-      return;
-    }
-    const dx = event.clientX - start.current.x;
-    const dy = event.clientY - start.current.y;
-    start.current = null;
+  function onPointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (count < 2) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    swiped.current = false;
+    start.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function onPointerMove(event: PointerEvent<HTMLDivElement>) {
+    const origin = start.current;
+    if (!origin || origin.id !== event.pointerId || count < 2) return;
+    const dx = event.clientX - origin.x;
+    const dy = event.clientY - origin.y;
     if (Math.abs(dx) < SWIPE_PX || Math.abs(dx) <= Math.abs(dy)) return;
+    start.current = null;
+    swiped.current = true;
+    try {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    } catch {
+      /* already released */
+    }
     go(dx < 0 ? 1 : -1);
   }
 
@@ -62,7 +86,8 @@ export function ProductGallery({
           count > 1 && "touch-pan-y cursor-grab active:cursor-grabbing"
         )}
         onPointerDown={onPointerDown}
-        onPointerUp={onPointerUp}
+        onPointerMove={onPointerMove}
+        onPointerUp={finishSwipe}
         onPointerCancel={() => {
           start.current = null;
         }}
@@ -91,8 +116,10 @@ export function ProductGallery({
           <>
             <button
               type="button"
-              onClick={() => go(-1)}
-              onPointerDown={(event) => event.stopPropagation()}
+              onClick={() => {
+                if (swiped.current) return;
+                go(-1);
+              }}
               aria-label="Fyrri mynd"
               className="absolute top-1/2 left-3 z-10 flex size-10 -translate-y-1/2 items-center justify-center bg-white/90 text-forest shadow-sm transition-colors hover:bg-white md:size-11"
             >
@@ -100,8 +127,10 @@ export function ProductGallery({
             </button>
             <button
               type="button"
-              onClick={() => go(1)}
-              onPointerDown={(event) => event.stopPropagation()}
+              onClick={() => {
+                if (swiped.current) return;
+                go(1);
+              }}
               aria-label="Næsta mynd"
               className="absolute top-1/2 right-3 z-10 flex size-10 -translate-y-1/2 items-center justify-center bg-white/90 text-forest shadow-sm transition-colors hover:bg-white md:size-11"
             >
