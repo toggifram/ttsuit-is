@@ -1,13 +1,13 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Search } from "lucide-react";
 
-import { Logo } from "@/components/logo";
 import { CartButton } from "@/components/cart-drawer";
 import { HashLink } from "@/components/hash-link";
+import { LogoHomeLink } from "@/components/logo-home-link";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -17,7 +17,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { brand, nav, navLeft, navRight, sersaumurMenu } from "@/lib/site";
+import { nav, navLeft, navRight, sersaumurMenu } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const promoCopy =
@@ -93,6 +93,7 @@ function NavLink({
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 bg-forest text-white">
@@ -114,13 +115,7 @@ export function SiteHeader() {
                 )
               )}
             </nav>
-            <Link
-              href="/"
-              className="pointer-events-auto flex shrink-0 items-center"
-              aria-label={brand.name}
-            >
-              <Logo size="md" variant="light" className="object-center" />
-            </Link>
+            <LogoHomeLink className="pointer-events-auto" />
             <nav className="pointer-events-auto hidden items-center gap-7 pl-8 lg:flex">
               {navRight.map((item) => (
                 <NavLink
@@ -151,7 +146,7 @@ export function SiteHeader() {
 
           <div className="flex items-center gap-1 lg:hidden">
             <CartButton className="md:hidden" />
-            <Sheet>
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger
                 render={
                   <Button
@@ -170,7 +165,10 @@ export function SiteHeader() {
               >
                 <SheetHeader>
                   <SheetTitle className="text-white">
-                    <Logo size="sm" variant="light" />
+                    <LogoHomeLink
+                      size="sm"
+                      onClick={() => setMenuOpen(false)}
+                    />
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col gap-1 px-4">

@@ -3,6 +3,17 @@
 import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 
+/** Jump to the absolute top of the document, beating Next.js scroll restoration. */
+export function scrollToPageTop() {
+  const go = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  };
+  go();
+  window.requestAnimationFrame(go);
+  window.setTimeout(go, 80);
+  window.setTimeout(go, 240);
+}
+
 export function scrollToHash(
   hash: string,
   behavior: ScrollBehavior = "smooth"
