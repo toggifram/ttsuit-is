@@ -54,6 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${outfit.variable} ${cormorant.variable} ${greatVibes.variable} ${geistMono.variable} h-full`}
     >
       <body className="flex min-h-full flex-col">
+        <div id="top" className="h-0 w-0 overflow-hidden" />
         <CartProvider>
           <SiteHeader />
           <main className="flex-1 bg-white">{children}</main>

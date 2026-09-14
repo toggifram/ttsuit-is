@@ -1,9 +1,7 @@
 "use client";
 
-import type { ComponentProps } from "react";
-import { useLayoutEffect, useRef } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { forwardRef, useLayoutEffect, useRef, type ComponentProps } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 import { Logo } from "@/components/logo";
 import { scrollToPageTop } from "@/components/scroll-to-hash";
@@ -12,52 +10,102 @@ import { cn } from "@/lib/utils";
 
 type LogoSize = "sm" | "md" | "lg";
 
-export function LogoHomeLink({
-  className,
-  size = "md",
-  onClick,
-  ...props
-}: {
+type Props = {
   size?: LogoSize;
-} & Omit<ComponentProps<typeof Link>, "href">) {
-  const pathname = usePathname();
-  const pendingTop = useRef(false);
+} & Omit<ComponentProps<"a">, "href">;
 
-  useLayoutEffect(() => {
-    if (!pendingTop.current || pathname !== "/") return;
-    pendingTop.current = false;
-    scrollToPageTop();
-  }, [pathname]);
+export const LogoHomeLink = forwardRef<HTMLAnchorElement, Props>(
+  function LogoHomeLink({ className, size = "md", onClick, ...props }, ref) {
+    const pathname = usePathname();
+    const router = useRouter();
+    const pendingTop = useRef(false);
 
-  return (
-    <Link
-      href="/"
-      scroll={false}
-      aria-label={`${brand.name} — forsíða`}
-      {...props}
-      className={cn("inline-flex shrink-0 items-center", className)}
-      onClick={(event) => {
-        onClick?.(event);
-        if (event.defaultPrevented) return;
+    useLayoutEffect(() => {
+      if (!pendingTop.current || pathname !== "/") return;
+      pendingTop.current = false;
+      scrollToPageTop();
+    }, [pathname]);
 
-        if (pathname === "/") {
+    return (
+      <a
+        ref={ref}
+        href="/"
+        aria-label={`${brand.name} — forsíða`}
+        {...props}
+        className={cn(
+          "relative z-20 inline-flex shrink-0 items-center",
+          className
+        )}
+        onClick={(event) => {
+          onClick?.(event);
+          if (
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey ||
+            event.button !== 0
+          ) {
+            return;
+          }
+
           event.preventDefault();
           if (window.location.hash) {
             window.history.replaceState(null, "", "/");
           }
+          if (pathname !== "/") {
+            pendingTop.current = true;
+            router.push("/");
+          }
           scrollToPageTop();
-          return;
-        }
+        }}
+      >
+        <Logo
+          size={size}
+          variant="light"
+          className={size === "md" ? "object-center" : undefined}
+        />
+      </a>
+    );
+  }
+);
 
-        pendingTop.current = true;
-        scrollToPageTop();
-      }}
-    >
-      <Logo
-        size={size}
-        variant="light"
-        className={size === "md" ? "object-center" : undefined}
-      />
-    </Link>
-  );
-}
+      <a
+        ref={ref}
+        href="/"
+        aria-label={`${brand.name} — forsíða`}
+        {...props}
+        className={cn(
+          "relative z-20 inline-flex shrink-0 items-center",
+          className
+        )}
+        onClick={(event) => {
+          onClick?.(event);
+          if (
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey ||
+            event.button !== 0
+          ) {
+            return;
+          }
+
+          event.preventDefault();
+          if (window.location.hash) {
+            window.history.replaceState(null, "", "/");
+          }
+          if (pathname !== "/") {
+            router.push("/");
+          }
+          scrollToPageTop();
+        }}
+      >
+        <Logo
+          size={size}
+          variant="light"
+          className={size === "md" ? "object-center" : undefined}
+        />
+      </a>
+    );
+  }
+);

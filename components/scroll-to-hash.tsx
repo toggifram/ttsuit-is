@@ -7,6 +7,12 @@ import { usePathname } from "next/navigation";
 export function scrollToPageTop() {
   const go = () => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    document.getElementById("top")?.scrollIntoView({
+      block: "start",
+      behavior: "auto",
+    });
   };
   go();
   window.requestAnimationFrame(go);

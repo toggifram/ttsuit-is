@@ -99,7 +99,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 bg-forest text-white">
       <PromoTicker />
       <div className="relative mx-auto flex h-16 max-w-[1440px] items-center px-4 md:h-[4.5rem] md:px-6">
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center">
           <div className="flex items-center">
             <nav className="pointer-events-auto hidden items-center gap-7 pr-8 lg:flex">
               {navLeft.map((item) =>
@@ -165,10 +165,7 @@ export function SiteHeader() {
               >
                 <SheetHeader>
                   <SheetTitle className="text-white">
-                    <LogoHomeLink
-                      size="sm"
-                      onClick={() => setMenuOpen(false)}
-                    />
+                    <SheetClose render={<LogoHomeLink size="sm" />} />
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col gap-1 px-4">
