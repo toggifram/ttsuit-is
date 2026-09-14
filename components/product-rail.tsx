@@ -72,10 +72,17 @@ export function ProductRail({ products }: { products: Product[] }) {
                     className={
                       product.category === "gjafabref"
                         ? "absolute inset-0 h-full w-full object-contain p-4"
-                        : "absolute inset-0 h-full w-full object-cover object-top"
+                        : cn(
+                            "absolute inset-0 h-full w-full object-cover object-top",
+                            product.available === false && "opacity-70"
+                          )
                     }
                   />
-                  {product.badge ? (
+                  {product.available === false ? (
+                    <span className="absolute left-2 top-2 bg-forest px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
+                      UPPSELT
+                    </span>
+                  ) : product.badge ? (
                     <span className="absolute left-2 top-2 bg-black px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
                       {product.badge}
                     </span>

@@ -206,14 +206,51 @@ function foldKey(value: string) {
     .trim();
 }
 
+function tokenFitsColor(token: string, colorKey: string) {
+  if (!token || !colorKey) return false;
+  if (token === colorKey) return true;
+  const [short, long] =
+    token.length <= colorKey.length ? [token, colorKey] : [colorKey, token];
+  if (long.startsWith(short) && short.length >= 4) return true;
+  let i = 0;
+  while (i < token.length && i < colorKey.length && token[i] === colorKey[i]) {
+    i += 1;
+  }
+  return i >= 4 && Math.abs(token.length - colorKey.length) <= 2;
+}
+
+function altMatchesColor(
+  alt: string,
+  colorName: string,
+  allColorNames: string[]
+) {
+  const colorKey = foldKey(colorName);
+  if (!colorKey) return false;
+  const tokens = foldKey(alt).split(" ").filter(Boolean);
+  if (!tokens.some((token) => tokenFitsColor(token, colorKey))) return false;
+
+  for (const other of allColorNames) {
+    if (other === colorName) continue;
+    const otherKey = foldKey(other);
+    if (!otherKey || otherKey === colorKey) continue;
+    const otherHit = tokens.some((token) => tokenFitsColor(token, otherKey));
+    if (otherHit && otherKey.length > colorKey.length) return false;
+  }
+  return true;
+}
+
 function imagesForColor(
   images: ShopifyImage[],
-  colorName: string
+  colorName: string,
+  allColorNames: string[]
 ): string[] {
-  const key = foldKey(colorName);
-  if (!key) return [];
+  if (allColorNames.length <= 1) {
+    return images.map((image) => image.url).filter(Boolean);
+  }
   return images
-    .filter((image) => foldKey(image.altText ?? "").includes(key))
+    .filter((image) =>
+      altMatchesColor(image.altText ?? "", colorName, allColorNames)
+    )
     .map((image) => image.url)
     .filter(Boolean);
 }
@@ -307,18 +344,23 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
   if (!featured) return null;
 
   const variants = mapVariants(node);
-  const colorNames = optionValues(node, COLOR_OPTION).slice(0, 8);
+  const colorNames = optionValues(node, COLOR_OPTION);
   const colors: ProductColor[] = colorNames.map((name) => {
-    const fromAlt = imagesForColor(galleryImages, name);
+    const fromAlt = imagesForColor(galleryImages, name, colorNames);
     const fromVariant = variants.find(
       (variant) => variant.color === name && variant.image
     )?.image;
-    const unique = [...new Set([...fromAlt, fromVariant].filter(Boolean))] as string[];
+    const unique = [
+      ...new Set([fromVariant, ...fromAlt].filter(Boolean)),
+    ] as string[];
     return {
       name,
       hex: colorHex(name),
       image: unique[0],
       images: unique.length ? unique : undefined,
+      available: variants.some(
+        (variant) => variant.color === name && variant.available
+      ),
     };
   });
   const featuredColor = colors.find(
@@ -675,7 +717,9 @@ export async function fetchShopifyProduct(
 export async function getHomeProducts(limit = 18): Promise<Product[]> {
   const { getCatalogProducts } = await import("./catalog");
   const all = await getCatalogProducts();
-  return uniqueByImage(shuffle(all)).slice(0, Math.min(limit, all.length));
+  const inStock = all.filter((product) => product.available !== false);
+  const pool = inStock.length ? inStock : all;
+  return uniqueByImage(shuffle(pool)).slice(0, Math.min(limit, pool.length));
 }
 
 const CART_CREATE = /* GraphQL */ `

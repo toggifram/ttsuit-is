@@ -3,6 +3,7 @@ export type ProductColor = {
   hex: string;
   image?: string;
   images?: string[];
+  available?: boolean;
 };
 
 export type ProductCategory =
@@ -147,9 +148,9 @@ export type CatalogListing = {
   color?: ProductColor;
 };
 
-/** One card per color so category pages show every colourway. */
+/** One card per color so category pages show every colourway. Sold-out last. */
 export function catalogListings(products: Product[]): CatalogListing[] {
-  return products.flatMap((product) => {
+  const listings = products.flatMap((product) => {
     if (!product.colors.length) {
       return [{ key: product.id, product }];
     }
@@ -158,6 +159,11 @@ export function catalogListings(products: Product[]): CatalogListing[] {
       product,
       color,
     }));
+  });
+  return listings.sort((a, b) => {
+    const aStock = Number(isListingInStock(a.product, a.color));
+    const bStock = Number(isListingInStock(b.product, b.color));
+    return bStock - aStock;
   });
 }
 
@@ -191,17 +197,44 @@ export function findProductVariant(
   return matches.find((variant) => variant.available) ?? matches[0];
 }
 
+export function sizesForColor(product: Product, color?: string) {
+  const all = product.sizes ?? [];
+  if (!hasShopifyVariants(product) || !color) return all;
+  const existing = new Set(
+    (product.variants ?? [])
+      .filter((variant) => !variant.color || variant.color === color)
+      .map((variant) => variant.size)
+      .filter((size): size is string => Boolean(size))
+  );
+  if (!existing.size) return all;
+  return all.filter((size) => existing.has(size));
+}
+
 export function firstAvailableSize(product: Product, color?: string) {
-  for (const size of product.sizes ?? []) {
+  const sizes = sizesForColor(product, color);
+  for (const size of sizes) {
     if (isSizeInStock(product, size, color)) return size;
   }
-  return product.sizes?.[0] ?? "";
+  return sizes[0] ?? "";
 }
 
 export function isSizeInStock(product: Product, size: string, color?: string) {
   if (!hasShopifyVariants(product)) return true;
   const variant = findProductVariant(product, size, color);
   return Boolean(variant?.available);
+}
+
+export function isListingInStock(product: Product, color?: ProductColor | string) {
+  if (!hasShopifyVariants(product)) return product.available !== false;
+  const colorName = typeof color === "string" ? color : color?.name;
+  if (colorName) {
+    const match = product.colors.find((item) => item.name === colorName);
+    if (typeof match?.available === "boolean") return match.available;
+    return (product.variants ?? []).some(
+      (variant) => variant.color === colorName && variant.available
+    );
+  }
+  return product.available !== false;
 }
 
 export function variantStock(variant?: ProductVariant) {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { productHref, type Product, type ProductColor } from "@/lib/product";
+import { isListingInStock, productHref, type Product, type ProductColor } from "@/lib/product";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({
@@ -18,6 +18,7 @@ export function ProductCard({
     : product.imageAlt;
   const href = productHref(product.handle, color?.name);
   const subtitle = color?.name ?? product.subtitle;
+  const soldOut = !isListingInStock(product, color);
 
   return (
     <article className={cn("bg-white", className)}>
@@ -34,10 +35,17 @@ export function ProductCard({
             className={
               product.category === "gjafabref"
                 ? "absolute inset-0 h-full w-full object-contain p-4"
-                : "absolute inset-0 h-full w-full object-cover object-top"
+                : cn(
+                    "absolute inset-0 h-full w-full object-cover object-top",
+                    soldOut && "opacity-70"
+                  )
             }
           />
-          {product.badge ? (
+          {soldOut ? (
+            <span className="absolute left-2 top-2 bg-forest px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
+              UPPSELT
+            </span>
+          ) : product.badge ? (
             <span className="absolute left-2 top-2 bg-black px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
               {product.badge}
             </span>
@@ -58,9 +66,14 @@ export function ProductCard({
               {product.colors.slice(0, 5).map((swatch) => (
                 <span
                   key={swatch.name}
-                  title={swatch.name}
+                  title={
+                    swatch.available === false
+                      ? `${swatch.name}, uppselt`
+                      : swatch.name
+                  }
                   className={cn(
                     "size-3.5 border border-black/15",
+                    swatch.available === false && "opacity-35",
                     color?.name === swatch.name && "outline outline-1 outline-offset-1 outline-ink"
                   )}
                   style={{ backgroundColor: swatch.hex }}

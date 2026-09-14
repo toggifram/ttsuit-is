@@ -20,8 +20,10 @@ import {
   hasShopifyVariants,
   hrefForCategory,
   imagesForSelectedColor,
+  isListingInStock,
   isSizeInStock,
   productHref,
+  sizesForColor,
   variantStock,
   type Product,
 } from "@/lib/product";
@@ -70,6 +72,8 @@ export function ProductDetail({
   const isGift = product.category === "gjafabref";
   const shopifyBuy = hasShopifyVariants(product);
   const gallery = imagesForSelectedColor(product, color || undefined);
+  const sizes = sizesForColor(product, color || undefined);
+  const colorSoldOut = !isListingInStock(product, color || undefined);
   const variant = findProductVariant(
     product,
     size || undefined,
@@ -164,16 +168,18 @@ export function ProductDetail({
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 {product.colors.map((item) => {
                   const selected = color === item.name;
+                  const soldOut = item.available === false;
                   return (
                     <button
                       key={item.name}
                       type="button"
                       onClick={() => selectColor(item.name)}
-                      title={item.name}
-                      aria-label={item.name}
+                      title={soldOut ? `${item.name}, uppselt` : item.name}
+                      aria-label={soldOut ? `${item.name}, uppselt` : item.name}
                       aria-pressed={selected}
                       className={cn(
                         "size-8 border transition-shadow",
+                        soldOut && "opacity-40",
                         selected
                           ? "border-forest ring-1 ring-forest ring-offset-2"
                           : "border-black/15 hover:border-forest/50"
@@ -186,7 +192,7 @@ export function ProductDetail({
             </div>
           ) : null}
 
-          {product.sizes?.length ? (
+          {sizes.length ? (
             <div className="mt-8">
               <div className="flex items-baseline justify-between gap-4">
                 <p className="text-[11px] tracking-[0.18em] text-ink/50 uppercase">
@@ -201,7 +207,7 @@ export function ProductDetail({
                 </button>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
-                {product.sizes.map((value) => {
+                {sizes.map((value) => {
                   const inStockSize = isSizeInStock(product, value, color || undefined);
                   return (
                     <button
@@ -228,6 +234,11 @@ export function ProductDetail({
                   );
                 })}
               </div>
+              {colorSoldOut ? (
+                <p className="mt-3 text-[12px] text-ink/50">
+                  Uppselt í þessum lit.
+                </p>
+              ) : null}
             </div>
           ) : null}
 
