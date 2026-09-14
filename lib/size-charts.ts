@@ -14,8 +14,6 @@ export type SizeChart = {
   title: string;
   intro: string;
   unit: string;
-  diagramAlt: string;
-  legend: { n: number; label: string; detail: string }[];
   columns: SizeChartColumn[];
   rows: SizeChartRow[];
 };
@@ -26,15 +24,6 @@ const PEACOAT: SizeChart = {
   intro:
     "Mál í sentímetrum. Brjóst og mitta eru líkamsstærð. Axlir, ermi og lengd eru mál jakkans. Ef þú ert á milli stærða, veldu þá stærri.",
   unit: "cm",
-  diagramAlt:
-    "Útlínamynd af peacoat sem sýnir hvar brjóst, mitta, axlir, ermi og lengd eru mæld",
-  legend: [
-    { n: 1, label: "Brjóst", detail: "Líkamsstærð um brjóstkassa" },
-    { n: 2, label: "Mitta", detail: "Líkamsstærð um mitti" },
-    { n: 3, label: "Axlir", detail: "Mál jakkans milli axlaenda" },
-    { n: 4, label: "Ermi", detail: "Mál ermar frá öxl að úlnlið" },
-    { n: 5, label: "Lengd", detail: "Mál jakkans frá öxl niður að faldi" },
-  ],
   columns: [
     { key: "chest", label: "Brjóst", hint: "Líkamsstærð" },
     { key: "waist", label: "Mitta", hint: "Líkamsstærð" },

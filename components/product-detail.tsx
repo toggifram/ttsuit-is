@@ -340,13 +340,13 @@ export function ProductDetail({
 
       {sizeChart ? (
         <Dialog open={sizeChartOpen} onOpenChange={setSizeChartOpen}>
-          <DialogContent className="flex max-h-[min(92vh,52rem)] w-[calc(100%-1.25rem)] max-w-5xl flex-col gap-0 overflow-hidden rounded-none border border-border bg-white p-0 sm:max-w-5xl">
-            <DialogHeader className="shrink-0 border-b border-border px-5 py-4 pr-12">
-              <DialogTitle className="font-serif text-2xl text-forest">
+          <DialogContent className="flex max-h-[min(92dvh,40rem)] w-[calc(100%-1rem)] max-w-4xl flex-col gap-0 overflow-hidden rounded-none border border-border bg-white p-0 sm:w-[calc(100%-2rem)] sm:max-w-4xl">
+            <DialogHeader className="shrink-0 border-b border-border px-4 py-3 pr-12 sm:px-6 sm:py-4">
+              <DialogTitle className="font-serif text-xl text-forest sm:text-2xl">
                 {sizeChart.title}
               </DialogTitle>
               <DialogDescription className="sr-only">
-                {sizeChart.diagramAlt}
+                Stærðartafla í sentímetrum. Smelltu á X til að loka.
               </DialogDescription>
             </DialogHeader>
             <SizeChartPanel chart={sizeChart} selectedSize={size} />
