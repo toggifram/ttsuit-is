@@ -33,7 +33,8 @@ export default async function HomePage() {
           eyebrow="Tilbúin föt og fylgihlutir"
           headline="Nýja línan"
           cta="Vefverslun"
-          position="object-center"
+          fit="contain"
+          position="object-bottom"
           priority
         />
       </section>
@@ -68,6 +69,7 @@ function HeroFrame({
   headline,
   cta,
   overlay = false,
+  fit = "cover",
   position = "object-center",
   priority = false,
 }: {
@@ -78,6 +80,7 @@ function HeroFrame({
   headline: string;
   cta: string;
   overlay?: boolean;
+  fit?: "cover" | "contain";
   position?: string;
   priority?: boolean;
 }) {
@@ -91,7 +94,7 @@ function HeroFrame({
         className={
           overlay
             ? `object-cover brightness-[1.06] ${position}`
-            : `object-cover ${position}`
+            : `${fit === "contain" ? "object-contain" : "object-cover"} ${position}`
         }
         sizes="(min-width:768px) 50vw, 100vw"
       />
