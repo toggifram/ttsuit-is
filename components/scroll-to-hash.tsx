@@ -6,13 +6,10 @@ import { usePathname } from "next/navigation";
 /** Jump to the absolute top of the document, beating Next.js scroll restoration. */
 export function scrollToPageTop() {
   const go = () => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    const instant = "instant" as ScrollBehavior;
+    window.scrollTo({ top: 0, left: 0, behavior: instant });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-    document.getElementById("top")?.scrollIntoView({
-      block: "start",
-      behavior: "auto",
-    });
   };
   go();
   window.requestAnimationFrame(go);
