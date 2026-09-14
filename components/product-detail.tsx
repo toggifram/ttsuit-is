@@ -22,8 +22,10 @@ import {
   imagesForSelectedColor,
   isListingInStock,
   isSizeInStock,
+  listingSellingFast,
   productHref,
   sizesForColor,
+  variantFewLeft,
   variantStock,
   type Product,
 } from "@/lib/product";
@@ -74,6 +76,7 @@ export function ProductDetail({
   const gallery = imagesForSelectedColor(product, color || undefined);
   const sizes = sizesForColor(product, color || undefined);
   const colorSoldOut = !isListingInStock(product, color || undefined);
+  const sellingFast = listingSellingFast(product, color || undefined);
   const variant = findProductVariant(
     product,
     size || undefined,
@@ -82,6 +85,7 @@ export function ProductDetail({
   const variantAvailable = Boolean(variant?.available);
   const canAdd =
     shopifyBuy && variant ? variantAvailable : inStock;
+  const fewLeft = !colorSoldOut && variantFewLeft(variant);
 
   useEffect(() => {
     if (active >= gallery.length) setActive(0);
@@ -141,6 +145,8 @@ export function ProductDetail({
             alt={product.imageAlt}
             isGift={isGift}
             badge={product.badge}
+            sellingFast={!colorSoldOut && sellingFast}
+            soldOut={colorSoldOut}
             active={active}
             onChange={setActive}
           />
@@ -238,11 +244,20 @@ export function ProductDetail({
                 <p className="mt-3 text-[12px] text-ink/50">
                   Uppselt í þessum lit.
                 </p>
+              ) : fewLeft ? (
+                <p className="mt-3 text-[12px] text-forest" aria-live="polite">
+                  Fá eintök eftir
+                </p>
               ) : null}
             </div>
           ) : null}
 
           <div className="mt-10 flex flex-col gap-3">
+            {!sizes.length && fewLeft ? (
+              <p className="text-[12px] text-forest" aria-live="polite">
+                Fá eintök eftir
+              </p>
+            ) : null}
             {canAdd ? (
               shopifyBuy && variant ? (
                 <button

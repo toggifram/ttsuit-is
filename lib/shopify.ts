@@ -356,14 +356,25 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
     const unique = [
       ...new Set([fromVariant, ...fromAlt].filter(Boolean)),
     ] as string[];
+    const colorVariants = variants.filter((variant) => variant.color === name);
+    const tracked = colorVariants.filter(
+      (variant) => typeof variant.quantityAvailable === "number"
+    );
+    const inStock = colorVariants.some((variant) => variant.available);
+    const soldOutSizes = tracked.filter(
+      (variant) => variant.quantityAvailable === 0
+    ).length;
+    const fewSizes = tracked.filter((variant) => {
+      const qty = variant.quantityAvailable ?? 0;
+      return qty >= 1 && qty <= 2;
+    }).length;
     return {
       name,
       hex: colorHex(name),
       image: unique[0],
       images: unique.length ? unique : undefined,
-      available: variants.some(
-        (variant) => variant.color === name && variant.available
-      ),
+      available: inStock,
+      sellingFast: inStock && (soldOutSizes >= 1 || fewSizes >= 2),
     };
   });
   const featuredColor = colors.find(
@@ -402,6 +413,7 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
     variants: variants.length ? variants : undefined,
     category: categoryFrom(node),
     available,
+    sellingFast: colors.some((color) => color.sellingFast),
   };
 }
 

@@ -1,6 +1,13 @@
 import Link from "next/link";
 
-import { isListingInStock, productHref, type Product, type ProductColor } from "@/lib/product";
+import { ProductImageBadges } from "@/components/product-image-badges";
+import {
+  isListingInStock,
+  listingSellingFast,
+  productHref,
+  type Product,
+  type ProductColor,
+} from "@/lib/product";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({
@@ -19,6 +26,7 @@ export function ProductCard({
   const href = productHref(product.handle, color?.name);
   const subtitle = color?.name ?? product.subtitle;
   const soldOut = !isListingInStock(product, color);
+  const sellingFast = listingSellingFast(product, color);
 
   return (
     <article className={cn("bg-white", className)}>
@@ -41,15 +49,12 @@ export function ProductCard({
                   )
             }
           />
-          {soldOut ? (
-            <span className="absolute left-2 top-2 bg-forest px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
-              UPPSELT
-            </span>
-          ) : product.badge ? (
-            <span className="absolute left-2 top-2 bg-black px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
-              {product.badge}
-            </span>
-          ) : null}
+          <ProductImageBadges
+            soldOut={soldOut}
+            sellingFast={sellingFast}
+            badge={product.badge}
+            compact
+          />
         </div>
         <div className="px-3 pb-6 pt-3 text-left">
           <div className="flex items-start justify-between gap-3">

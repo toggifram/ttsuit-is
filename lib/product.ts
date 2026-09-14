@@ -4,6 +4,7 @@ export type ProductColor = {
   image?: string;
   images?: string[];
   available?: boolean;
+  sellingFast?: boolean;
 };
 
 export type ProductCategory =
@@ -16,9 +17,9 @@ export type ProductCategory =
 export const shopCategories = [
   { id: "all", slug: "", label: "Allar vörur" },
   { id: "peysur", slug: "peysur", label: "Peysur" },
-  { id: "bindi", slug: "bindi", label: "Bindi" },
   { id: "yfirhafnir", slug: "yfirhafnir", label: "Yfirhafnir" },
-  { id: "fylgihlutir", slug: "fylgihluti", label: "Fylgihluti" },
+  { id: "bindi", slug: "bindi", label: "Bindi" },
+  { id: "fylgihlutir", slug: "fylgihluti", label: "Fylgihlutir" },
   { id: "gjafabref", slug: "gjafabref", label: "Gjafabréf" },
 ] as const;
 
@@ -40,14 +41,6 @@ export const categoryLooks = [
     position: "top",
   },
   {
-    id: "bindi",
-    label: "Bindi",
-    href: "/verslun/bindi",
-    image: "/images/studio/bindi.jpg",
-    alt: "Navy bindi með doppum",
-    position: "center",
-  },
-  {
     id: "yfirhafnir",
     label: "Yfirhafnir",
     href: "/verslun/yfirhafnir",
@@ -56,8 +49,16 @@ export const categoryLooks = [
     position: "top",
   },
   {
+    id: "bindi",
+    label: "Bindi",
+    href: "/verslun/bindi",
+    image: "/images/studio/bindi.jpg",
+    alt: "Navy bindi með doppum",
+    position: "center",
+  },
+  {
     id: "fylgihlutir",
-    label: "Fylgihluti",
+    label: "Fylgihlutir",
     href: "/verslun/fylgihluti",
     image: "/images/studio/navy-detail.jpg",
     alt: "TJ merki á peysu",
@@ -140,6 +141,7 @@ export type Product = {
   variants?: ProductVariant[];
   shopifyUrl?: string;
   available?: boolean;
+  sellingFast?: boolean;
 };
 
 export type CatalogListing = {
@@ -148,7 +150,15 @@ export type CatalogListing = {
   color?: ProductColor;
 };
 
-/** One card per color so category pages show every colourway. Sold-out last. */
+const CATEGORY_RANK: Record<ProductCategory, number> = {
+  peysur: 0,
+  yfirhafnir: 1,
+  bindi: 2,
+  fylgihlutir: 3,
+  gjafabref: 4,
+};
+
+/** One card per color. Shop order: peysur, yfirhafnir, bindi, fylgihlutir, gjafabréf. Sold-out last in each group. */
 export function catalogListings(products: Product[]): CatalogListing[] {
   const listings = products.flatMap((product) => {
     if (!product.colors.length) {
@@ -161,11 +171,25 @@ export function catalogListings(products: Product[]): CatalogListing[] {
     }));
   });
   return listings.sort((a, b) => {
+    const category =
+      (CATEGORY_RANK[a.product.category] ?? 99) -
+      (CATEGORY_RANK[b.product.category] ?? 99);
+    if (category !== 0) return category;
     const aStock = Number(isListingInStock(a.product, a.color));
     const bStock = Number(isListingInStock(b.product, b.color));
     return bStock - aStock;
   });
 }
+
+export function catalogGroups(products: Product[]) {
+  const listings = catalogListings(products);
+  return shopCategories
+    .filter((cat) => cat.id !== "all")
+    .map((cat) => ({
+      category: cat,
+      listings: listings.filter((row) => row.product.category === cat.id),
+    }))
+    .filter((group) => group.listings.length);
 
 export function hasShopifyVariants(product: Product) {
   return (product.variants ?? []).some((variant) =>
@@ -235,6 +259,44 @@ export function isListingInStock(product: Product, color?: ProductColor | string
     );
   }
   return product.available !== false;
+}
+
+function trackedVariants(product: Product, color?: string) {
+  return (product.variants ?? []).filter((variant) => {
+    if (typeof variant.quantityAvailable !== "number") return false;
+    if (color && variant.color && variant.color !== color) return false;
+    return true;
+  });
+}
+
+/** Colourway still for sale, but stock has moved: a size is gone, or several sizes are nearly gone. */
+export function listingSellingFast(
+  product: Product,
+  color?: ProductColor | string
+) {
+  if (!isListingInStock(product, color)) return false;
+  const colorName = typeof color === "string" ? color : color?.name;
+  const tracked = trackedVariants(product, colorName);
+  if (!tracked.length) {
+    if (colorName) {
+      return Boolean(
+        product.colors.find((item) => item.name === colorName)?.sellingFast
+      );
+    }
+    return Boolean(product.sellingFast);
+  }
+  const soldOut = tracked.filter((row) => row.quantityAvailable === 0).length;
+  const few = tracked.filter((row) => {
+    const qty = row.quantityAvailable ?? 0;
+    return qty >= 1 && qty <= 2;
+  }).length;
+  return soldOut >= 1 || few >= 2;
+}
+
+export function variantFewLeft(variant?: ProductVariant) {
+  if (!variant?.available) return false;
+  if (typeof variant.quantityAvailable !== "number") return false;
+  return variant.quantityAvailable >= 1 && variant.quantityAvailable <= 2;
 }
 
 export function variantStock(variant?: ProductVariant) {

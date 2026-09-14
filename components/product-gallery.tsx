@@ -3,6 +3,7 @@
 import { useRef, type PointerEvent } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { ProductImageBadges } from "@/components/product-image-badges";
 import { cn } from "@/lib/utils";
 
 const SWIPE_PX = 48;
@@ -12,6 +13,8 @@ export function ProductGallery({
   alt,
   isGift = false,
   badge,
+  sellingFast = false,
+  soldOut = false,
   active,
   onChange,
 }: {
@@ -19,6 +22,8 @@ export function ProductGallery({
   alt: string;
   isGift?: boolean;
   badge?: string;
+  sellingFast?: boolean;
+  soldOut?: boolean;
   active: number;
   onChange: (index: number) => void;
 }) {
@@ -90,11 +95,11 @@ export function ProductGallery({
           }}
         >
           <img src={src} alt={alt} draggable={false} className={imgClass} />
-          {badge ? (
-            <span className="absolute left-3 top-3 z-10 bg-black px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
-              {badge}
-            </span>
-          ) : null}
+          <ProductImageBadges
+            badge={badge}
+            sellingFast={sellingFast}
+            soldOut={soldOut}
+          />
         </div>
 
         {count > 1 ? (

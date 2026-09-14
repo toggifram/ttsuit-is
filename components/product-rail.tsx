@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { shuffle, type Product } from "@/lib/product";
+import { ProductImageBadges } from "@/components/product-image-badges";
+import { listingSellingFast, shuffle, type Product } from "@/lib/product";
 import { cn } from "@/lib/utils";
 
 export function ProductRail({ products }: { products: Product[] }) {
@@ -78,15 +79,12 @@ export function ProductRail({ products }: { products: Product[] }) {
                           )
                     }
                   />
-                  {product.available === false ? (
-                    <span className="absolute left-2 top-2 bg-forest px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
-                      UPPSELT
-                    </span>
-                  ) : product.badge ? (
-                    <span className="absolute left-2 top-2 bg-black px-1.5 py-0.5 text-[10px] tracking-[0.12em] text-white">
-                      {product.badge}
-                    </span>
-                  ) : null}
+                  <ProductImageBadges
+                    soldOut={product.available === false}
+                    sellingFast={listingSellingFast(product)}
+                    badge={product.badge}
+                    compact
+                  />
                 </div>
                 <div className="px-3 pb-6 pt-3">
                   <div className="flex items-start justify-between gap-3">
