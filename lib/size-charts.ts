@@ -296,6 +296,7 @@ const CHARTS: Record<string, SizeChart> = {
   [PEACOAT.handle]: PEACOAT,
   [CASHMERE.handle]: CASHMERE,
   [POLO.handle]: POLO,
+  "v-halsmal-merinopeysa": POLO,
   [HALF_ZIP_WOOL.handle]: HALF_ZIP_WOOL,
   [CABLE.handle]: CABLE,
   "heilrennd-kadlapeysa": CABLE,
@@ -323,6 +324,7 @@ export function sizeChartFor(
   ).toLowerCase();
   if (/kasm[íi]r|cashmere/.test(hay)) return CASHMERE;
   if (/p[oó]l[oó]/.test(hay)) return POLO;
+  if (/v-háls|v-hals/.test(hay)) return POLO;
   if (/halfrennd-ullarpeysa|hálfrennd ullarpeysa/.test(hay)) return HALF_ZIP_WOOL;
   if (/kaðla|kadla/.test(hay)) return CABLE;
   if (/hneppt/.test(hay)) return BUTTONED;
