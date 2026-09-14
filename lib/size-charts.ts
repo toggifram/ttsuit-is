@@ -178,10 +178,49 @@ const POLO: SizeChart = {
   ],
 };
 
+const HALF_ZIP_WOOL: SizeChart = {
+  handle: "halfrennd-ullarpeysa",
+  title: "Stærðartafla",
+  unit: "cm",
+  columns: [
+    { key: "chest", label: "Brjóst" },
+    { key: "length", label: "Lengd" },
+    { key: "sleeve", label: "Ermi" },
+    { key: "shoulder", label: "Axlir" },
+  ],
+  rows: [
+    {
+      size: "XS",
+      values: { chest: "98", length: "65", sleeve: "63", shoulder: "38" },
+    },
+    {
+      size: "S",
+      values: { chest: "104", length: "67", sleeve: "64", shoulder: "39,5" },
+    },
+    {
+      size: "M",
+      values: { chest: "110", length: "69", sleeve: "65", shoulder: "41" },
+    },
+    {
+      size: "L",
+      values: { chest: "116", length: "71", sleeve: "66", shoulder: "42,5" },
+    },
+    {
+      size: "XL",
+      values: { chest: "124", length: "73", sleeve: "67", shoulder: "44,5" },
+    },
+    {
+      size: "2XL",
+      values: { chest: "132", length: "75", sleeve: "68", shoulder: "46,5" },
+    },
+  ],
+};
+
 const CHARTS: Record<string, SizeChart> = {
   [PEACOAT.handle]: PEACOAT,
   [CASHMERE.handle]: CASHMERE,
   [POLO.handle]: POLO,
+  [HALF_ZIP_WOOL.handle]: HALF_ZIP_WOOL,
 };
 
 export function sizeChartFor(
@@ -204,6 +243,7 @@ export function sizeChartFor(
   ).toLowerCase();
   if (/kasm[íi]r|cashmere/.test(hay)) return CASHMERE;
   if (/p[oó]l[oó]/.test(hay)) return POLO;
+  if (/halfrennd-ullarpeysa|hálfrennd ullarpeysa/.test(hay)) return HALF_ZIP_WOOL;
   return undefined;
 }
 
