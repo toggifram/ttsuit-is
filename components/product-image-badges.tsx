@@ -29,7 +29,7 @@ export function ProductImageBadges({
       ) : null}
       {!soldOut && sellingFast ? (
         <span className={cn(chip, "bg-forest", compact ? "right-2" : "right-3")}>
-          SELT HRATT
+          SELST HRATT
         </span>
       ) : null}
     </>

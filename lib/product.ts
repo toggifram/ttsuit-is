@@ -123,6 +123,51 @@ export type ProductVariant = {
   image?: string;
 };
 
+/** Units sold of one colourway before the badge appears. */
+export const SELLING_FAST_SOLD_UNITS = 2;
+
+export type StockBaseline = Record<string, number>;
+
+export function variantStockKey(id: string) {
+  return id.replace(/^gid:\/\/shopify\/ProductVariant\//, "");
+}
+
+export function mergeStockBaseline(
+  current: StockBaseline,
+  saved?: StockBaseline
+): { baseline: StockBaseline; dirty: boolean } {
+  if (!saved) return { baseline: { ...current }, dirty: true };
+  const baseline = { ...saved };
+  let dirty = false;
+  for (const [id, qty] of Object.entries(current)) {
+    if (typeof baseline[id] !== "number") {
+      baseline[id] = qty;
+      dirty = true;
+    } else if (qty > baseline[id]) {
+      baseline[id] = qty;
+      dirty = true;
+    }
+  }
+  return { baseline, dirty };
+}
+
+export function unitsSoldSinceBaseline(
+  variants: { id: string; quantityAvailable?: number }[],
+  baseline?: StockBaseline
+) {
+  if (!baseline) return 0;
+  let sold = 0;
+  for (const variant of variants) {
+    if (typeof variant.quantityAvailable !== "number") continue;
+    const start = baseline[variantStockKey(variant.id)];
+    if (typeof start !== "number") continue;
+    if (start > variant.quantityAvailable) {
+      sold += start - variant.quantityAvailable;
+    }
+  }
+  return sold;
+}
+
 export type Product = {
   id: string;
   handle: string;
@@ -251,36 +296,22 @@ export function isListingInStock(product: Product, color?: ProductColor | string
   return product.available !== false;
 }
 
-function trackedVariants(product: Product, color?: string) {
-  return (product.variants ?? []).filter((variant) => {
-    if (typeof variant.quantityAvailable !== "number") return false;
-    if (color && variant.color && variant.color !== color) return false;
-    return true;
-  });
-}
-
-/** Colourway still for sale, but stock has moved: a size is gone, or several sizes are nearly gone. */
+/** Badge only the colour that actually sold — never the rest of the category. */
 export function listingSellingFast(
   product: Product,
   color?: ProductColor | string
 ) {
   if (!isListingInStock(product, color)) return false;
   const colorName = typeof color === "string" ? color : color?.name;
-  const tracked = trackedVariants(product, colorName);
-  if (!tracked.length) {
-    if (colorName) {
-      return Boolean(
-        product.colors.find((item) => item.name === colorName)?.sellingFast
-      );
-    }
-    return Boolean(product.sellingFast);
+  if (colorName) {
+    return Boolean(
+      product.colors.find((item) => item.name === colorName)?.sellingFast
+    );
   }
-  const soldOut = tracked.filter((row) => row.quantityAvailable === 0).length;
-  const few = tracked.filter((row) => {
-    const qty = row.quantityAvailable ?? 0;
-    return qty >= 1 && qty <= 2;
-  }).length;
-  return soldOut >= 1 || few >= 2;
+  if (product.colors.length) {
+    return Boolean(product.colors[0]?.sellingFast);
+  }
+  return Boolean(product.sellingFast);
 }
 
 export function variantFewLeft(variant?: ProductVariant) {

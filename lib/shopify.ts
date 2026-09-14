@@ -1,12 +1,16 @@
 import {
   formatMoney,
+  mergeStockBaseline,
   productHref,
   shuffle,
   uniqueByImage,
+  unitsSoldSinceBaseline,
+  SELLING_FAST_SOLD_UNITS,
   type Product,
   type ProductCategory,
   type ProductColor,
   type ProductVariant,
+  type StockBaseline,
 } from "@/lib/product";
 import {
   getAdminAccessToken,
@@ -340,7 +344,11 @@ function mapVariants(node: ShopifyProduct): ProductVariant[] {
     .filter((variant) => variant.id.includes("ProductVariant"));
 }
 
-function mapProduct(node: ShopifyProduct, domain: string): Product | null {
+function mapProduct(
+  node: ShopifyProduct,
+  domain: string,
+  baseline?: StockBaseline
+): Product | null {
   const galleryImages = node.images?.nodes ?? [];
   const gallery = galleryImages.map((image) => image.url).filter(Boolean);
   const featured = node.featuredImage?.url ?? gallery[0];
@@ -357,24 +365,15 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
       ...new Set([fromVariant, ...fromAlt].filter(Boolean)),
     ] as string[];
     const colorVariants = variants.filter((variant) => variant.color === name);
-    const tracked = colorVariants.filter(
-      (variant) => typeof variant.quantityAvailable === "number"
-    );
     const inStock = colorVariants.some((variant) => variant.available);
-    const soldOutSizes = tracked.filter(
-      (variant) => variant.quantityAvailable === 0
-    ).length;
-    const fewSizes = tracked.filter((variant) => {
-      const qty = variant.quantityAvailable ?? 0;
-      return qty >= 1 && qty <= 2;
-    }).length;
+    const soldUnits = unitsSoldSinceBaseline(colorVariants, baseline);
     return {
       name,
       hex: colorHex(name),
       image: unique[0],
       images: unique.length ? unique : undefined,
       available: inStock,
-      sellingFast: inStock && (soldOutSizes >= 1 || fewSizes >= 2),
+      sellingFast: inStock && soldUnits >= SELLING_FAST_SOLD_UNITS,
     };
   });
   const featuredColor = colors.find(
@@ -413,7 +412,10 @@ function mapProduct(node: ShopifyProduct, domain: string): Product | null {
     variants: variants.length ? variants : undefined,
     category: categoryFrom(node),
     available,
-    sellingFast: colors.some((color) => color.sellingFast),
+    sellingFast: colors.length
+      ? Boolean(colors[0]?.sellingFast)
+      : available &&
+        unitsSoldSinceBaseline(variants, baseline) >= SELLING_FAST_SOLD_UNITS,
   };
 }
 
@@ -531,6 +533,150 @@ async function adminPut(url: string, body: unknown) {
   return res;
 }
 
+const STOCK_BASELINE_NS = "tjetje";
+const STOCK_BASELINE_KEY = "stock_baseline";
+
+async function adminGraphql<T>(
+  query: string,
+  variables?: Record<string, unknown>
+): Promise<T | null> {
+  const token = await getAdminAccessToken();
+  if (!token) return null;
+  const res = await fetch(
+    `https://${storeDomain()}/admin/api/${API_VERSION}/graphql.json`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": token,
+      },
+      body: JSON.stringify({ query, variables }),
+      cache: "no-store",
+    }
+  );
+  if (!res.ok) {
+    console.error(`Shopify Admin GraphQL ${res.status}`);
+    return null;
+  }
+  const json = (await res.json()) as {
+    data?: T;
+    errors?: { message?: string }[];
+  };
+  if (json.errors?.length) {
+    console.error(
+      `Shopify Admin GraphQL: ${json.errors.map((row) => row.message).join("; ")}`
+    );
+    return null;
+  }
+  return json.data ?? null;
+}
+
+function currentStockMap(product: AdminProduct): StockBaseline {
+  const out: StockBaseline = {};
+  for (const variant of product.variants ?? []) {
+    if (!variant.inventory_management) continue;
+    out[String(variant.id)] = variant.inventory_quantity ?? 0;
+  }
+  return out;
+}
+
+function parseStockBaseline(raw?: string): StockBaseline | undefined {
+  if (!raw) return undefined;
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const out: StockBaseline = {};
+    for (const [key, value] of Object.entries(parsed)) {
+      if (typeof value !== "number" || !Number.isFinite(value)) continue;
+      out[key.replace(/^gid:\/\/shopify\/ProductVariant\//, "")] = value;
+    }
+    return Object.keys(out).length ? out : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function fetchStockBaselines(
+  ids: string[]
+): Promise<Map<string, StockBaseline>> {
+  const map = new Map<string, StockBaseline>();
+  if (!ids.length) return map;
+  const data = await adminGraphql<{
+    nodes: ({ id: string; metafield?: { value?: string } | null } | null)[];
+  }>(
+    `query StockBaselines($ids: [ID!]!) {
+      nodes(ids: $ids) {
+        ... on Product {
+          id
+          metafield(namespace: "${STOCK_BASELINE_NS}", key: "${STOCK_BASELINE_KEY}") {
+            value
+          }
+        }
+      }
+    }`,
+    { ids }
+  );
+  for (const node of data?.nodes ?? []) {
+    if (!node?.id) continue;
+    const parsed = parseStockBaseline(node.metafield?.value);
+    if (node.metafield?.value != null) {
+      map.set(node.id, parsed ?? {});
+    }
+  }
+  return map;
+}
+
+async function persistStockBaselines(
+  writes: { ownerId: string; value: StockBaseline }[]
+) {
+  for (let i = 0; i < writes.length; i += 25) {
+    const chunk = writes.slice(i, i + 25);
+    const data = await adminGraphql<{
+      metafieldsSet?: { userErrors?: { message: string }[] };
+    }>(
+      `mutation SetStockBaselines($metafields: [MetafieldsSetInput!]!) {
+        metafieldsSet(metafields: $metafields) {
+          userErrors { message }
+        }
+      }`,
+      {
+        metafields: chunk.map((row) => ({
+          ownerId: row.ownerId,
+          namespace: STOCK_BASELINE_NS,
+          key: STOCK_BASELINE_KEY,
+          type: "json",
+          value: JSON.stringify(row.value),
+        })),
+      }
+    );
+    const errors = data?.metafieldsSet?.userErrors;
+    if (errors?.length) {
+      console.error(
+        `Shopify stock baseline: ${errors.map((row) => row.message).join("; ")}`
+      );
+    }
+  }
+}
+
+async function syncStockBaselines(products: AdminProduct[]) {
+  const ids = products.map((product) => `gid://shopify/Product/${product.id}`);
+  const saved = await fetchStockBaselines(ids);
+  const writes: { ownerId: string; value: StockBaseline }[] = [];
+  const result = new Map<string, StockBaseline>();
+
+  for (const product of products) {
+    const ownerId = `gid://shopify/Product/${product.id}`;
+    const { baseline, dirty } = mergeStockBaseline(
+      currentStockMap(product),
+      saved.get(ownerId)
+    );
+    result.set(ownerId, baseline);
+    if (dirty) writes.push({ ownerId, value: baseline });
+  }
+
+  if (writes.length) await persistStockBaselines(writes);
+  return result;
+}
+
 async function publishUnlistedProducts(products: AdminProduct[]) {
   const domain = storeDomain();
   for (const product of products) {
@@ -622,7 +768,11 @@ async function fetchAdminProducts(): Promise<Product[] | null> {
 
   while (url && pages < 8) {
     const res = await adminFetch(url);
-    if (!res) return collected.length ? mapAdminList(collected, domain) : null;
+    if (!res) {
+      if (!collected.length) return null;
+      const baselines = await syncStockBaselines(collected);
+      return mapAdminList(collected, domain, baselines);
+    }
     const json = (await res.json()) as { products?: AdminProduct[] };
     collected.push(...(json.products ?? []));
     url = nextLink(res.headers.get("link"));
@@ -630,7 +780,8 @@ async function fetchAdminProducts(): Promise<Product[] | null> {
   }
 
   await publishUnlistedProducts(collected);
-  return mapAdminList(collected, domain);
+  const baselines = await syncStockBaselines(collected);
+  return mapAdminList(collected, domain, baselines);
 }
 
 async function fetchAdminProduct(handle: string): Promise<Product | null> {
@@ -644,12 +795,27 @@ async function fetchAdminProduct(handle: string): Promise<Product | null> {
   const product = json.products?.[0];
   if (!product) return null;
   await publishUnlistedProducts([product]);
-  return mapProduct(fromAdminProduct(product), domain);
+  const baselines = await syncStockBaselines([product]);
+  return mapProduct(
+    fromAdminProduct(product),
+    domain,
+    baselines.get(`gid://shopify/Product/${product.id}`)
+  );
 }
 
-function mapAdminList(products: AdminProduct[], domain: string) {
+function mapAdminList(
+  products: AdminProduct[],
+  domain: string,
+  baselines: Map<string, StockBaseline>
+) {
   const mapped = products
-    .map((product) => mapProduct(fromAdminProduct(product), domain))
+    .map((product) =>
+      mapProduct(
+        fromAdminProduct(product),
+        domain,
+        baselines.get(`gid://shopify/Product/${product.id}`)
+      )
+    )
     .filter((item): item is Product => item !== null);
   return mapped.length ? mapped : null;
 }

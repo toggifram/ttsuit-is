@@ -81,7 +81,7 @@ export function ProductRail({ products }: { products: Product[] }) {
                   />
                   <ProductImageBadges
                     soldOut={product.available === false}
-                    sellingFast={listingSellingFast(product)}
+                    sellingFast={listingSellingFast(product, product.colors[0])}
                     badge={product.badge}
                     compact
                   />
