@@ -6,12 +6,15 @@ import { useEffect, useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import { ProductGallery } from "@/components/product-gallery";
 import { useCart } from "@/components/cart-provider";
+import { SizeChartPanel } from "@/components/size-chart";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { sizeChartFor } from "@/lib/size-charts";
 import {
   catalogListings,
   categoryLabel,
@@ -86,6 +89,7 @@ export function ProductDetail({
   const canAdd =
     shopifyBuy && variant ? variantAvailable : inStock;
   const fewLeft = !colorSoldOut && variantFewLeft(variant);
+  const sizeChart = sizeChartFor(product.handle);
 
   useEffect(() => {
     if (active >= gallery.length) setActive(0);
@@ -204,13 +208,15 @@ export function ProductDetail({
                 <p className="text-[11px] tracking-[0.18em] text-ink/50 uppercase">
                   Stærð
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setSizeChartOpen(true)}
-                  className="text-[12px] text-forest underline-offset-4 hover:underline"
-                >
-                  Stærðartafla
-                </button>
+                {sizeChart ? (
+                  <button
+                    type="button"
+                    onClick={() => setSizeChartOpen(true)}
+                    className="text-[12px] text-forest underline-offset-4 hover:underline"
+                  >
+                    Stærðartafla
+                  </button>
+                ) : null}
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {sizes.map((value) => {
@@ -332,25 +338,24 @@ export function ProductDetail({
         </div>
       </div>
 
-      <Sheet open={sizeChartOpen} onOpenChange={setSizeChartOpen}>
-        <SheetContent
-          side="right"
-          className="w-full gap-0 border-border bg-white sm:max-w-md"
-        >
-          <SheetHeader>
-            <SheetTitle className="font-serif text-2xl text-forest">
-              Stærðartafla
-            </SheetTitle>
-          </SheetHeader>
-          <div className="px-4 py-6 text-[15px] leading-relaxed text-ink/70">
-            <p>Stærðartaflan er ekki komin inn enn.</p>
-            <p className="mt-3">
-              Stærðir eru S–2XL. Sjáðu vöruupplýsingar um hæð fyrirmynda og hvaða
-              stærð þær klæðast.
-            </p>
-          </div>
-        </SheetContent>
-      </Sheet>
+      {sizeChart ? (
+        <Sheet open={sizeChartOpen} onOpenChange={setSizeChartOpen}>
+          <SheetContent
+            side="right"
+            className="w-full gap-0 overflow-hidden border-border bg-white sm:max-w-2xl"
+          >
+            <SheetHeader>
+              <SheetTitle className="font-serif text-2xl text-forest">
+                {sizeChart.title}
+              </SheetTitle>
+              <SheetDescription className="sr-only">
+                Mál og útlínamynd sem sýnir hvar peacoatinn er mældur.
+              </SheetDescription>
+            </SheetHeader>
+            <SizeChartPanel chart={sizeChart} selectedSize={size} />
+          </SheetContent>
+        </Sheet>
+      ) : null}
 
       {related.length ? (
         <section className="border-t border-border bg-white">

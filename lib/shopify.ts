@@ -12,6 +12,7 @@ import {
   type ProductVariant,
   type StockBaseline,
 } from "@/lib/product";
+import { isTwoXlSize } from "@/lib/size-charts";
 import {
   getAdminAccessToken,
   getStorefrontAccessToken,
@@ -344,6 +345,24 @@ function mapVariants(node: ShopifyProduct): ProductVariant[] {
     .filter((variant) => variant.id.includes("ProductVariant"));
 }
 
+/** Local preview: treat one Peacoat 2XL as in stock until Shopify inventory can be written. */
+function applyLocalStockOverrides(
+  handle: string,
+  variants: ProductVariant[]
+): ProductVariant[] {
+  if (handle !== "peacoat") return variants;
+  return variants.map((variant) => {
+    if (!isTwoXlSize(variant.size)) return variant;
+    const qty = variant.quantityAvailable ?? 0;
+    if (variant.available && qty > 0) return variant;
+    return {
+      ...variant,
+      available: true,
+      quantityAvailable: Math.max(qty, 1),
+    };
+  });
+}
+
 function mapProduct(
   node: ShopifyProduct,
   domain: string,
@@ -354,7 +373,7 @@ function mapProduct(
   const featured = node.featuredImage?.url ?? gallery[0];
   if (!featured) return null;
 
-  const variants = mapVariants(node);
+  const variants = applyLocalStockOverrides(node.handle, mapVariants(node));
   const colorNames = optionValues(node, COLOR_OPTION);
   const colors: ProductColor[] = colorNames.map((name) => {
     const fromAlt = imagesForColor(galleryImages, name, colorNames);
