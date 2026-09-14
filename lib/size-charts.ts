@@ -216,11 +216,51 @@ const HALF_ZIP_WOOL: SizeChart = {
   ],
 };
 
+const CABLE: SizeChart = {
+  handle: "halfrennd-kadlapeysa",
+  title: "Stærðartafla",
+  unit: "cm",
+  columns: [
+    { key: "chest", label: "Brjóst" },
+    { key: "length", label: "Lengd" },
+    { key: "sleeve", label: "Ermi" },
+    { key: "shoulder", label: "Axlir" },
+  ],
+  rows: [
+    {
+      size: "XS",
+      values: { chest: "86", length: "66", sleeve: "63", shoulder: "38" },
+    },
+    {
+      size: "S",
+      values: { chest: "92", length: "68", sleeve: "64", shoulder: "39,5" },
+    },
+    {
+      size: "M",
+      values: { chest: "98", length: "70", sleeve: "65", shoulder: "41" },
+    },
+    {
+      size: "L",
+      values: { chest: "104", length: "72", sleeve: "66", shoulder: "42,5" },
+    },
+    {
+      size: "XL",
+      values: { chest: "112", length: "74", sleeve: "67", shoulder: "44,5" },
+    },
+    {
+      size: "2XL",
+      values: { chest: "120", length: "76", sleeve: "68", shoulder: "46,5" },
+    },
+  ],
+};
+
 const CHARTS: Record<string, SizeChart> = {
   [PEACOAT.handle]: PEACOAT,
   [CASHMERE.handle]: CASHMERE,
   [POLO.handle]: POLO,
   [HALF_ZIP_WOOL.handle]: HALF_ZIP_WOOL,
+  [CABLE.handle]: CABLE,
+  "heilrennd-kadlapeysa": CABLE,
 };
 
 export function sizeChartFor(
@@ -244,6 +284,7 @@ export function sizeChartFor(
   if (/kasm[íi]r|cashmere/.test(hay)) return CASHMERE;
   if (/p[oó]l[oó]/.test(hay)) return POLO;
   if (/halfrennd-ullarpeysa|hálfrennd ullarpeysa/.test(hay)) return HALF_ZIP_WOOL;
+  if (/kaðla|kadla/.test(hay)) return CABLE;
   return undefined;
 }
 
