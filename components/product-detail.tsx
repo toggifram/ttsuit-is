@@ -297,8 +297,7 @@ export function ProductDetail({
             )}
             {shopifyBuy ? (
               <p className="text-[12px] leading-relaxed text-ink/50">
-                Sendingarleið velurðu á kassanum. Kortagreiðsla fer um Teya —
-                Visa, Mastercard, Apple Pay og Google Pay.
+                Kortagreiðsla fer um Teya.
               </p>
             ) : buyHref ? (
               <p className="text-[12px] leading-relaxed text-ink/50">
