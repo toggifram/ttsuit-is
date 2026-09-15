@@ -107,7 +107,7 @@ function HeroFrame({
       <div
         className={
           copy === "stomach"
-            ? "absolute inset-0 z-20 flex items-start justify-center px-6 pt-[52%] md:items-center md:pt-0"
+            ? "absolute inset-0 z-20 flex items-end justify-center px-6 pb-[24vw] md:items-center md:pb-0"
             : "absolute inset-0 z-20 flex items-center justify-center px-6"
         }
       >
