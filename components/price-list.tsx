@@ -50,7 +50,9 @@ function PricePairs({ amounts }: { amounts: readonly number[] }) {
     <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5">
       {pairs.map((pair) => (
         <div key={pair.short} className="flex items-baseline justify-between gap-2">
-          <dt className="text-[11px] tracking-[0.08em] text-ink/50">{pair.short}</dt>
+          <dt className="text-[11px] font-bold tracking-[0.08em] text-forest">
+            {pair.short}
+          </dt>
           <dd className="font-serif text-[14px] text-forest tabular-nums">
             {isk(pair.amount)}
           </dd>
@@ -109,7 +111,7 @@ export function PriceList() {
               {priceTiers.map((tier) => (
                 <th
                   key={tier}
-                  className="px-2 py-4 text-center text-[11px] font-semibold tracking-[0.08em] text-forest/55 uppercase"
+                  className="px-2 py-4 text-center text-[11px] font-bold tracking-[0.08em] text-forest uppercase"
                 >
                   {tier}
                 </th>

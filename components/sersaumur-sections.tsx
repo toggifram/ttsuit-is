@@ -101,7 +101,7 @@ export function SersaumurEfnin() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={fabric.image}
-                  alt=""
+                  alt={fabric.name}
                   className="absolute inset-0 h-full w-full object-cover"
                 />
               </div>

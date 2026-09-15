@@ -246,19 +246,19 @@ export const fabrics = [
     name: "Ull",
     note: "Ítalía, England og Skotland",
     text: "Klassíkin. Heldur formi, andar og eldist fallega — frá léttum Super 120s til þykkari vetrarullar.",
-    image: "/images/studio/navy-detail.jpg",
+    image: "/images/studio/fabric-ull.jpg",
   },
   {
     name: "Hör",
     note: "Sumar og hlýtt veður",
     text: "Létt, hrukkuð á réttan hátt og köld á húðinni. Fyrir þá sem vilja jakkaföt sem anda í júní.",
-    image: "/images/studio/charcoal-back.jpg",
+    image: "/images/studio/fabric-hor.jpg",
   },
   {
     name: "Flannel og tweed",
     note: "Haust og vetur",
     text: "Mýkri áferð, meiri karakter. Gott þegar þú vilt að fötin séu áberandi án þess að vera hátíðleg.",
-    image: "/images/studio/brown-back.jpg",
+    image: "/images/studio/fabric-flannel-tweed.jpg",
   },
   {
     name: "Skyrtuefni",
