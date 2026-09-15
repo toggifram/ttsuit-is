@@ -119,7 +119,7 @@
 @media (max-width: 767px) {
   .hero-copy-stomach {
     align-items: flex-start;
-    padding-top: 2.25rem;
+    padding-top: 10vh;
   }
 }
 
