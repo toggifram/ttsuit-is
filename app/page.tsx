@@ -107,7 +107,7 @@ function HeroFrame({
       <div
         className={
           copy === "stomach"
-            ? "absolute inset-0 z-20 flex items-end justify-center px-6 pb-[24vw] md:items-center md:pb-0"
+            ? "absolute z-20 flex justify-center px-6 max-md:inset-x-0 max-md:top-[66%] md:inset-0 md:items-center"
             : "absolute inset-0 z-20 flex items-center justify-center px-6"
         }
       >
@@ -121,7 +121,7 @@ function HeroFrame({
           <Link
             href={href}
             scroll
-            className="mt-7 inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid"
+            className="mt-4 inline-flex h-12 items-center bg-forest px-7 text-sm text-white transition-colors hover:bg-forest-mid md:mt-7"
           >
             {cta}
           </Link>
