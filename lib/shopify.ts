@@ -12,7 +12,7 @@ import {
   type ProductVariant,
   type StockBaseline,
 } from "@/lib/product";
-import { isTwoXlSize } from "@/lib/size-charts";
+import { isTwoXlSize, normalizeSizeLabel } from "@/lib/size-charts";
 import {
   getAdminAccessToken,
   getStorefrontAccessToken,
@@ -345,14 +345,20 @@ function mapVariants(node: ShopifyProduct): ProductVariant[] {
     .filter((variant) => variant.id.includes("ProductVariant"));
 }
 
-/** Local preview: treat one Peacoat 2XL as in stock until Shopify inventory can be written. */
+/** Local preview until Shopify inventory can be written. */
+const LOCAL_ONE_IN_STOCK: Record<string, (size?: string | null) => boolean> = {
+  peacoat: isTwoXlSize,
+  vetrarjakki: (size) => normalizeSizeLabel(size) === "L",
+};
+
 function applyLocalStockOverrides(
   handle: string,
   variants: ProductVariant[]
 ): ProductVariant[] {
-  if (handle !== "peacoat") return variants;
+  const match = LOCAL_ONE_IN_STOCK[handle];
+  if (!match) return variants;
   return variants.map((variant) => {
-    if (!isTwoXlSize(variant.size)) return variant;
+    if (!match(variant.size)) return variant;
     const qty = variant.quantityAvailable ?? 0;
     if (variant.available && qty > 0) return variant;
     return {

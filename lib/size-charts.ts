@@ -292,6 +292,81 @@ const BUTTONED: SizeChart = {
   ],
 };
 
+const WINTER_JACKET: SizeChart = {
+  handle: "vetrarjakki",
+  title: "Stærðartafla",
+  unit: "cm",
+  columns: [
+    { key: "chest", label: "Brjóst", hint: "Líkamsstærð" },
+    { key: "waist", label: "Mitta", hint: "Líkamsstærð" },
+    { key: "shoulder", label: "Axlir", hint: "Jakkinn" },
+    { key: "sleeve", label: "Ermi", hint: "Jakkinn" },
+    { key: "length", label: "Lengd", hint: "Jakkinn" },
+  ],
+  rows: [
+    {
+      size: "XS",
+      values: {
+        chest: "96–100",
+        waist: "86–90",
+        shoulder: "44",
+        sleeve: "64",
+        length: "75",
+      },
+    },
+    {
+      size: "S",
+      values: {
+        chest: "100–104",
+        waist: "90–94",
+        shoulder: "46",
+        sleeve: "65",
+        length: "77",
+      },
+    },
+    {
+      size: "M",
+      values: {
+        chest: "104–108",
+        waist: "96–100",
+        shoulder: "47,5",
+        sleeve: "66",
+        length: "78",
+      },
+    },
+    {
+      size: "L",
+      values: {
+        chest: "110–114",
+        waist: "102–106",
+        shoulder: "49",
+        sleeve: "67",
+        length: "79",
+      },
+    },
+    {
+      size: "XL",
+      values: {
+        chest: "114–118",
+        waist: "106–110",
+        shoulder: "50,5",
+        sleeve: "68",
+        length: "80",
+      },
+    },
+    {
+      size: "2XL",
+      values: {
+        chest: "120–124",
+        waist: "112–116",
+        shoulder: "52",
+        sleeve: "69",
+        length: "81",
+      },
+    },
+  ],
+};
+
 const CHARTS: Record<string, SizeChart> = {
   [PEACOAT.handle]: PEACOAT,
   [CASHMERE.handle]: CASHMERE,
@@ -302,6 +377,7 @@ const CHARTS: Record<string, SizeChart> = {
   "heilrennd-kadlapeysa": CABLE,
   [BUTTONED.handle]: BUTTONED,
   "hneppt-merinopeysa": BUTTONED,
+  [WINTER_JACKET.handle]: WINTER_JACKET,
 };
 
 export function sizeChartFor(
@@ -328,6 +404,7 @@ export function sizeChartFor(
   if (/halfrennd-ullarpeysa|hálfrennd ullarpeysa/.test(hay)) return HALF_ZIP_WOOL;
   if (/kaðla|kadla/.test(hay)) return CABLE;
   if (/hneppt/.test(hay)) return BUTTONED;
+  if (/vetrarjakki/.test(hay)) return WINTER_JACKET;
   return undefined;
 }
 
