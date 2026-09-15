@@ -106,7 +106,7 @@
   font-family: var(--font-cormorant), ui-serif, Georgia, serif;
 }
 
-/* Shop hero copy: sit on the knitwear stomach on phones; stay centered from md up. */
+/* Shop hero copy: in the white above the figures on phones; centered overlay from md up. */
 .hero-copy-stomach {
   position: absolute;
   inset: 0;
@@ -118,7 +118,8 @@
 
 @media (max-width: 767px) {
   .hero-copy-stomach {
-    inset: 74% 0 auto;
+    align-items: flex-start;
+    padding-top: 2.25rem;
   }
 }
 

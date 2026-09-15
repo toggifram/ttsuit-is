@@ -112,10 +112,22 @@ function HeroFrame({
         }
       >
         <div className="flex flex-col items-center text-center">
-          <p className="text-[11px] font-semibold tracking-[0.22em] text-white uppercase drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)] md:text-xs">
+          <p
+            className={
+              copy === "stomach"
+                ? "text-[11px] font-semibold tracking-[0.22em] text-forest uppercase md:text-xs md:text-white md:drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)]"
+                : "text-[11px] font-semibold tracking-[0.22em] text-white uppercase drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)] md:text-xs"
+            }
+          >
             {eyebrow}
           </p>
-          <p className="mt-3 font-serif text-[2.65rem] leading-[0.95] font-medium text-white italic drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] md:text-[3.35rem] lg:text-[3.75rem]">
+          <p
+            className={
+              copy === "stomach"
+                ? "mt-3 font-serif text-[2.65rem] leading-[0.95] font-medium text-forest italic md:text-[3.35rem] md:text-white md:drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] lg:text-[3.75rem]"
+                : "mt-3 font-serif text-[2.65rem] leading-[0.95] font-medium text-white italic drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] md:text-[3.35rem] lg:text-[3.75rem]"
+            }
+          >
             {headline}
           </p>
           <Link
