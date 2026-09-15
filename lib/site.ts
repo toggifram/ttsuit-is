@@ -136,7 +136,7 @@ export const garmentPrices = [
 export const accessoryPrices = [
   { name: "Skyrta", amounts: [22990, 28990] },
   { name: "Axlabönd", amounts: [9990] },
-  { name: "Bindi", amounts: [9990, 12990] },
+  { name: "Bindi", amounts: [11990] },
   { name: "Slaufa", amounts: [6490] },
   { name: "Klútur", amounts: [6490] },
   { name: "Hálsklútur", amounts: [7990] },
