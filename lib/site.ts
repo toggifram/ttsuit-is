@@ -275,11 +275,11 @@ export const faqs = [
   },
   {
     q: "Þarf ég að koma í mælingu?",
-    a: "Já. Kjarninn er nákvæm mæling — brjóst, mitti, axlir og hvernig þú stendur. Við ræðum líka hvernig þú vilt að fötin sitji: þétt að, klassískt eða með meira rými.",
+    a: "Já, kjarninn er nákvæm mæling, brjóst, mitti, axlir og hvernig þú stendur. Við ræðum líka hvernig þú vilt að fötin sitji: þétt að, klassískt eða með meira rými.",
   },
   {
     q: "Hvað verður um mælingarnar mínar?",
-    a: "Við geymum þær. Ef þú ert sáttur og vilt panta aftur — skyrtur, jakka eða aðra flík í öðrum litum eða efnum — notum við sömu mælingar. Þá er eftirleikurinn auðveldur.",
+    a: "Við geymum þær. Ef þú ert sáttur og vilt panta aftur, skyrtur, jakka eða aðra flík í öðrum litum eða efnum er hægt að nota sömu mælingar. Eftirleikurinn gerist ekki auðveldari.",
   },
   {
     q: "Get ég valið allt sjálfur?",
