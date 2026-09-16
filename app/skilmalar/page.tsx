@@ -32,9 +32,16 @@ export default function TermsPage() {
             >
               {brand.email}
             </a>
-            . VSK-númer: 146132. {brand.legalName} áskilur sér rétt til að
-            hætta við pantanir, t.d. vegna rangra verðupplýsinga, eða hætta
-            að bjóða upp á ákveðna vöru fyrirvaralaust.
+            . VSK-númer: 146132. TT/TjéTjé —{" "}
+            <a
+              href={`mailto:${brand.email}`}
+              className="text-forest underline-offset-4 hover:underline"
+            >
+              {brand.email}
+            </a>
+            , áskilur sér rétt til að hætta við pantanir, t.d. vegna rangra
+            verðupplýsinga, eða hætta að bjóða upp á ákveðna vöru
+            fyrirvaralaust.
           </p>
         </section>
 
@@ -62,8 +69,8 @@ export default function TermsPage() {
             ef pöntun berst um helgi, á föstudegi eða rauðum dögum.
           </p>
           <p className="mt-3">
-            Komi fyrir að vara sé uppseld mun {brand.legalName} hafa samband
-            við viðskiptavin og kynna valkosti: hvenær varan kemur aftur, eða
+            Komi fyrir að vara sé uppseld munum við hafa samband við
+            viðskiptavin og kynna valkosti: hvenær varan kemur aftur, eða
             endurgreiða uppselda vöru að fullu sé þess óskað.
           </p>
           <p className="mt-3">
@@ -71,11 +78,11 @@ export default function TermsPage() {
             kassanum. Öll vöruverð á vefsíðunni eru án sendingarkostnaðar.
             Hægt er að komast að samkomulagi um aðrar sendingarleiðir með því
             að senda tölvupóst á {brand.email}. Afhendingar-, ábyrgðar- og
-            flutningsskilmálar sendingaraðila gilda við afhendingu. Seljandi,{" "}
-            {brand.legalName}, ber ekki ábyrgð á týndum sendingum eða tjóni
-            sem hlýst á vörum kaupanda í flutningi. Ef varan týnist í pósti
-            eða verður fyrir tjóni er það á ábyrgð kaupanda. Kaupandi ber
-            ábyrgð á að réttar persónuupplýsingar komi fram.
+            flutningsskilmálar sendingaraðila gilda við afhendingu. Seljandi,
+            ber ekki ábyrgð á týndum sendingum eða tjóni sem hlýst á vörum
+            kaupanda í flutningi. Ef varan týnist í pósti eða verður fyrir
+            tjóni er það á ábyrgð kaupanda. Kaupandi ber ábyrgð á að réttar
+            persónuupplýsingar komi fram.
           </p>
         </section>
 
