@@ -63,7 +63,7 @@ export const processSteps = [
   {
     n: "01",
     title: "Bókaðu tíma",
-    text: "Þú sendir línu og við finnum tíma sem hentar — virka daga, um helgi eða þegar þú ert laus.",
+    text: "Þú sendir línu og við finnum tíma sem hentar. Virka daga, um helgi eða þegar þú ert laus.",
   },
   {
     n: "02",

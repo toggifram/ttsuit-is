@@ -17,7 +17,7 @@ export function SersaumurHero() {
           Saumað eftir þér.
         </h1>
         <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink/70">
-          Jakkaföt, jakkar og skyrtur eftir líkamanum þínum — Ekki af rekka!
+          Jakkaföt, jakkar og skyrtur eftir þinni líkamsbyggingu, ekki af rekka!
           Þú velur efni, snið og smáatriði. Við tökum mælinguna og saumum.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
@@ -89,10 +89,10 @@ export function SersaumurEfnin() {
         </h2>
         <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-ink/70">
           Starfsemi TT teygir anga sína vítt og breytt um heiminn. Efni og vörur
-          frá okkur koma meðal annars frá Ítalíu, Bretlandi, Þýskalandi og
-          Tyrklandi. Hundruð efna eins og merino ull, hör, flannel, tweed og
-          bambus. Þú velur það sem þér finnst passa best við og ef þú ert í
-          vandræðum get ég hjálpað!
+          frá okkur koma meðal annars frá Ítalíu, Bretlandi, Tyrklandi og Kína.
+          Hundruð efna eins og merino ull, hör, flannel, tweed og bambus. Þú
+          velur það sem þér finnst passa best við og ef þú ert í vandræðum get
+          ég hjálpað!
         </p>
         <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {fabrics.map((fabric) => (
