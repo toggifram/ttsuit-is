@@ -283,11 +283,11 @@ export const faqs = [
   },
   {
     q: "Get ég valið allt sjálfur?",
-    a: "Já. Efni, snið, vasagerð, hnappa, fóður og saumfar. Ef þú spyrð hvað mér finnst, svara ég hreint út — en lokaorðið er þitt.",
+    a: "Já. Efni, snið, vasagerð, hnappa, fóður og saumfar. Ef þú spyrð hvað mér finnst, svara ég hreint út en lokaorðið er þitt.",
   },
   {
     q: "Hvað kostar þetta?",
-    a: "Jakki frá 59.990 kr., buxur frá 38.990 kr. og heilt sett frá 89.990 kr. Verð flokkast eftir efnisvali (flokkur 1–6). Við förum yfir þetta í mælingu, án pressu.",
+    a: "Jakki frá 59.990 kr, buxur frá 38.990 kr. og heilt sett (jakki og buxur) frá 89.990 kr. Verð flokkast eftir efnisvali (flokkar 1 til 6). Við förum yfir þetta í mælingunni, ekki hafa áhyggjur.",
   },
   {
     q: "Hvað ef fötin passa ekki alveg?",
