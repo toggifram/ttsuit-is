@@ -328,7 +328,7 @@ export function ProductDetail({
                     +
                   </span>
                 </summary>
-                <div className="mt-3 max-w-md pr-8 text-[14px] leading-relaxed text-ink/70">
+                <div className="mt-3 max-w-md pr-8 whitespace-pre-line text-[14px] leading-relaxed text-ink/70">
                   {row.body}
                 </div>
               </details>
