@@ -244,14 +244,14 @@ export const giftCards = [
 export const fabrics = [
   {
     name: "Ull",
-    note: "Ítalía, England og Skotland",
-    text: "Klassíkin. Heldur formi, andar og eldist fallega — frá léttum Super 120s til þykkari vetrarullar.",
+    note: "Klassískur bestseller",
+    text: "Klassíkin. Heldur formi, andar og eldist fallega. Frá léttum Super 120s til þykkari vetrarullar.",
     image: "/images/studio/fabric-ull.jpg",
   },
   {
-    name: "Hör",
+    name: "Hör og bambus",
     note: "Sumar og hlýtt veður",
-    text: "Létt, hrukkuð á réttan hátt og köld á húðinni. Fyrir þá sem vilja jakkaföt sem anda í júní.",
+    text: "Létt, hrukkuð á réttan hátt og með silkimýkra yfirbragð. Fyrir þá sem vilja jakkaföt sem anda í júní.",
     image: "/images/studio/fabric-hor.jpg",
   },
   {
@@ -262,8 +262,8 @@ export const fabrics = [
   },
   {
     name: "Skyrtuefni",
-    note: "Bómull, lín og blöndur",
-    text: "Hundruð lita og mynstra. Þú velur kraga, manséttur og hvort nafnið þitt fari undir kragann.",
+    note: "Bómull, lín, bambus og blöndur",
+    text: "Hundruð lita og mynstra. Þú velur kraga, efni, tölur og hvort þú vilt hafa nafnið þitt á kraganum.",
     image: "/images/studio/fabric-skyrtuefni.jpg",
   },
 ] as const;
