@@ -139,13 +139,11 @@ export function SersaumurVerdskra() {
           id="verdskra-heading"
           className="mt-3 max-w-3xl font-serif text-4xl text-forest md:text-5xl"
         >
-          Verðin gætu komið þér á óvart.
+          Hvað kostar að líta vel út?
         </h2>
         <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-ink/70">
-          Allar flíkur eru sérsaumaðar eftir líkamsbyggingu kaupanda. Hér
-          finnur þú föt á ásættanlegu verði. Verðflokkarnir fara eftir efnisvali
-          og frá hvaða framleiðanda efnin koma. Við förum betur yfir þetta í
-          sameiningu þegar þú mætir í mælingu.
+          Verð fer eftir efnisvali. Flokkur 1 er upphafsverð, hærri flokkar eru
+          fínni/dýrari efni frá mismunandi framleiðendum og framleiðslulöndum.
         </p>
         <PriceList />
       </div>
@@ -174,7 +172,7 @@ export function SersaumurBoka() {
           <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ink/70">
             Virkir dagar, helgi eða eftir vinnu. Þú sendir línu og við höfum
             samband innan 48 klukkustunda. Frá mælingu eru það venjulega 4–6
-            vikur.
+            vikur þangað til fötin mæta í hús.
           </p>
           <p className="mt-6 text-sm text-ink/55">
             Eða skrifaðu beint á{" "}

@@ -95,8 +95,8 @@ export function PriceList() {
     <>
       <h3 className="mt-12 font-serif text-3xl text-forest">Efnisflokkar</h3>
       <p className="mt-3 max-w-xl text-sm text-ink/65">
-        Verð fer eftir efnisvali. Flokkur 1 er upphafsverð — hærri flokkar eru
-        fínni dúkur frá öðrum framleiðendum.
+        Verð fer eftir efnisvali. Flokkur 1 er upphafsverð, hærri flokkar eru
+        fínni/dýrari efni frá mismunandi framleiðendum og framleiðslulöndum.
       </p>
 
       <MobilePriceCards />

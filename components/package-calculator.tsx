@@ -78,7 +78,7 @@ export function PackageCalculator() {
             Hvað kostar pakkinn þinn?
           </h3>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-ink/65">
-            Veldu flíkur og efnisflokk. Þetta er áætlun út frá verðskránni —
+            Veldu flíkur og efnisflokk. Þetta er áætlun út frá verðskránni,
             lokaorðið ræðst þegar þú velur efni í mælingu.
           </p>
 
