@@ -5,7 +5,7 @@ import { brand } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Skilmálar",
-  description: `Skilmálar ${brand.name} og ${brand.legalName}.`,
+  description: `Skilmálar ${brand.name}.`,
 };
 
 export default function TermsPage() {
@@ -25,14 +25,7 @@ export default function TermsPage() {
             Upplýsingar um fyrirtækið/söluaðilann
           </h2>
           <p className="mt-3">
-            {brand.legalName} — kt. 490922-0590 —{" "}
-            <a
-              href={`mailto:${brand.email}`}
-              className="text-forest underline-offset-4 hover:underline"
-            >
-              {brand.email}
-            </a>
-            . VSK-númer: 146132. TT/TjéTjé —{" "}
+            TT/TjéTjé —{" "}
             <a
               href={`mailto:${brand.email}`}
               className="text-forest underline-offset-4 hover:underline"
