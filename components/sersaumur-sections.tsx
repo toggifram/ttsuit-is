@@ -142,8 +142,10 @@ export function SersaumurVerdskra() {
           Hvað kostar að líta vel út?
         </h2>
         <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-ink/70">
-          Verð fer eftir efnisvali. Flokkur 1 er upphafsverð, hærri flokkar eru
-          fínni/dýrari efni frá mismunandi framleiðendum og framleiðslulöndum.
+          Allar flíkur eru sérsaumaðar eftir líkamsbyggingu kaupanda. Hér
+          finnur þú föt á ásættanlegu verði. Verðflokkarnir fara eftir efnisvali
+          og frá hvaða framleiðanda efnin koma. Við förum betur yfir þetta í
+          sameiningu þegar þú mætir í mælingu.
         </p>
         <PriceList />
       </div>
