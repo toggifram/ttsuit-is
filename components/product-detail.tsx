@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ToggleEvent } from "react";
 
 import { ProductCard } from "@/components/product-card";
 import { ProductGallery } from "@/components/product-gallery";
@@ -34,17 +34,33 @@ import {
 } from "@/lib/product";
 import { cn } from "@/lib/utils";
 
+function splitModelFromDescription(description: string) {
+  const modelSentence = /Fyrirmynd(?:in|irnar)\b[^.!?]*[.!?]/g;
+  const models = [...description.matchAll(modelSentence)].map((row) =>
+    row[0].trim()
+  );
+  const info = description
+    .replace(/Fyrirmynd(?:in|irnar)\b[^.!?]*[.!?]/g, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/[ \t]*\n[ \t]*/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return { info, model: models.join("\n\n") };
+}
+
 function productInfoRows(product: Product) {
-  const info =
-    product.description?.trim() ||
-    `${product.title} frá Tjé Tjé. ${product.subtitle}.`;
+  const fallback = `${product.title} frá Tjé Tjé. ${product.subtitle}.`;
+  const { info, model } = splitModelFromDescription(
+    product.description?.trim() || fallback
+  );
   const sizeFit = product.sizes?.length
-    ? `Stærðir: ${product.sizes.join(", ")}. Sjáðu vöruupplýsingar um fyrirmynd og snið. Ef þú ert á milli stærða, veldu þá stærri.`
+    ? `Stærðir: ${product.sizes.join(", ")}. Ef þú ert á milli stærða, veldu þá stærri.`
     : "Ein stærð. Sjáðu mál á myndum eða sendu línu ef þú ert í vafa.";
+  const sizeBody = model ? `${sizeFit}\n\n${model}` : sizeFit;
 
   return [
-    { title: "Vöruupplýsingar", body: info },
-    { title: "Stærð og snið", body: sizeFit },
+    { title: "Vöruupplýsingar", body: info || fallback, defaultOpen: true },
+    { title: "Stærð og snið", body: sizeBody },
     {
       title: "Sending og skil",
       body: "Sendingarleið velurðu á kassanum. Kortagreiðsla fer um Teya. Þú getur skilað ónotaðri vöru í upprunalegum umbúðum. Hafðu samband á ttsuit@ttsuit.is.",
@@ -70,6 +86,7 @@ export function ProductDetail({
   const [active, setActive] = useState(0);
   const [added, setAdded] = useState(false);
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(true);
   const { addItem } = useCart();
   const inStock = product.available !== false;
   const buyHref = product.shopifyUrl;
@@ -316,6 +333,13 @@ export function ProductDetail({
               <details
                 key={row.title}
                 className="group border-b border-forest/10 py-4"
+                {...(row.defaultOpen
+                  ? {
+                      open: infoOpen,
+                      onToggle: (event: ToggleEvent<HTMLDetailsElement>) =>
+                        setInfoOpen(event.currentTarget.open),
+                    }
+                  : {})}
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 marker:content-none [&::-webkit-details-marker]:hidden">
                   <span className="text-[15px] font-semibold text-ink">
