@@ -21,18 +21,16 @@ export function SersaumurHero() {
           Þú velur efni, snið og smáatriði. Við tökum mælinguna og saumum.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          {sersaumurMenu
-            .filter((item) => item.hash !== "reiknivel")
-            .map((item) => (
-              <HashLink
-                key={item.hash}
-                hash={item.hash}
-                href={item.href}
-                className="inline-flex h-12 items-center border border-forest/20 px-7 text-sm text-forest transition-colors hover:border-forest hover:bg-forest hover:text-white"
-              >
-                {item.label}
-              </HashLink>
-            ))}
+          {sersaumurMenu.map((item) => (
+            <HashLink
+              key={item.hash}
+              hash={item.hash}
+              href={item.href}
+              className="inline-flex h-12 items-center border border-forest/20 px-7 text-sm text-forest transition-colors hover:border-forest hover:bg-forest hover:text-white"
+            >
+              {item.label}
+            </HashLink>
+          ))}
         </div>
       </div>
       <div className="flex items-end justify-center bg-white px-5 pt-4 md:px-8 md:pt-8">
