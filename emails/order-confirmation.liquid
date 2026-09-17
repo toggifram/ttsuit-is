@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pöntun {{ order_name }} er móttekin</title>
+</head>
+<body style="margin:0;padding:0;background:#f6f4f0;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f6f4f0;">
+    <tr>
+      <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;">
+          <tr>
+            <td align="center" style="background:#043034;padding:36px 32px 32px;">
+              <img src="https://cdn.shopify.com/s/files/1/0922/7082/1560/files/tjetje-logo-email.png" width="168" alt="Tjé Tjé" style="display:block;border:0;width:168px;height:auto;">
+              <p style="margin:18px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.55);">
+                Pöntunarstaðfesting
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#ffffff;padding:40px 40px 8px;">
+              <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:34px;line-height:1.15;font-weight:normal;color:#043034;">
+                Pöntunin er móttekin.
+              </h1>
+              <p style="margin:18px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:#5c5c5c;">
+                Við höfum tekið við pöntun <strong style="color:#043034;">{{ order_name }}</strong>.
+                Við förum yfir hana og sendum þegar hún er tilbúin — venjulega 1–3 virkir dagar.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#ffffff;padding:20px 40px 8px;">
+              <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#04303499;">
+                Pöntunin
+              </p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                {% for line in subtotal_line_items %}
+                <tr>
+                  <td style="padding:14px 0;border-bottom:1px solid #e6e2db;font-family:Georgia,'Times New Roman',serif;color:#043034;font-size:16px;line-height:1.4;">
+                    {{ line.title }}<br>
+                    <span style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#6b6b6b;">
+                      {{ line.quantity }} stk.
+                    </span>
+                  </td>
+                  <td align="right" valign="top" style="padding:14px 0;border-bottom:1px solid #e6e2db;font-family:Georgia,'Times New Roman',serif;color:#043034;font-size:16px;white-space:nowrap;">
+                    {{ line.final_line_price | money }}
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#ffffff;padding:8px 40px 12px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:10px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#6b6b6b;">
+                    Vörur
+                  </td>
+                  <td align="right" style="padding:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#043034;">
+                    {{ subtotal_price | money }}
+                  </td>
+                </tr>
+                {% if discounts %}
+                {% for discount in discounts %}
+                <tr>
+                  <td style="padding:8px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#6b6b6b;">
+                    Afsláttur{% if discount.code %} · {{ discount.code }}{% endif %}
+                  </td>
+                  <td align="right" style="padding:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#043034;">
+                    {{ discount.savings | money }}
+                  </td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+                {% if shipping_method %}
+                <tr>
+                  <td style="padding:8px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#6b6b6b;">
+                    Sending · {{ shipping_method.title }}
+                  </td>
+                  <td align="right" style="padding:8px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#043034;">
+                    {{ shipping_price | money }}
+                  </td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td style="padding:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#043034;">
+                    Samtals
+                  </td>
+                  <td align="right" style="padding:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#043034;">
+                    {{ total_price | money }}
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="padding:6px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#8a8a8a;">
+                    Allt með VSK.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {% if shipping_address %}
+          <tr>
+            <td style="background:#ffffff;padding:24px 40px 12px;">
+              <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#04303499;">
+                Sent á
+              </p>
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#161616;">
+                {{ shipping_address.name }}<br>
+                {{ shipping_address.street }}<br>
+                {{ shipping_address.zip }} {{ shipping_address.city }}
+              </p>
+            </td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td align="center" style="background:#ffffff;padding:32px 40px 40px;">
+              <a href="https://www.ttsuit.is/verslun" style="display:inline-block;background:#043034;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 28px;">
+                Áfram í verslunina
+              </a>
+              <p style="margin:22px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:#6b6b6b;">
+                Spurning um pöntunina? Skrifaðu á
+                <a href="mailto:ttsuit@ttsuit.is" style="color:#043034;text-decoration:underline;">ttsuit@ttsuit.is</a>
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:28px 32px 40px;">
+              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#043034;">
+                Tjé Tjé
+              </p>
+              <p style="margin:8px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#8a8a8a;">
+                <a href="https://www.ttsuit.is" style="color:#8a8a8a;text-decoration:none;">ttsuit.is</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

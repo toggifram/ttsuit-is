@@ -17,8 +17,8 @@ export const dynamic = "force-dynamic";
 export default function OrderEmailPreviewPage() {
   const html = orderConfirmationHtml({
     ...sampleOrderEmail,
-    logoUrl: "/brand/logo.svg",
-    shopUrl: "/",
+    logoUrl: "/brand/logo-email.png",
+    shopUrl: "https://www.ttsuit.is/verslun",
   });
   const subject = orderEmailSubject(sampleOrderEmail.orderNumber);
 
@@ -32,8 +32,30 @@ export default function OrderEmailPreviewPage() {
           Pósturinn sem kaupandi fær.
         </h1>
         <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink/70">
-          Þetta er hönnunin — ekki sent enn. Tölur og vörur eru dæmi. Þegar þú
-          ert sáttur setjum við þetta inn sem pöntunarstaðfestingu í Shopify.
+          Sýnishorn með dæmistölum. Lógóið er komið á Shopify. Póstsniðmátið
+          sjálft þarf að líma inn í Shopify-stjórnborðinu — forrit mega það
+          ekki.
+        </p>
+        <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink/70">
+          1.{" "}
+          <a
+            href="https://admin.shopify.com/store/tje-tje/email_templates/order_confirmation/edit"
+            className="text-forest underline-offset-4 hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Opna pöntunarstaðfestingu í Shopify
+          </a>
+          .<br />
+          2. Veldu <span className="text-ink">Edit code</span>.<br />
+          3. Límdu inn skrána{" "}
+          <span className="text-ink">emails/order-confirmation.liquid</span>.
+          <br />
+          4. Efni pósts:{" "}
+          <span className="text-ink">
+            Pöntun {"{{ order_name }}"} er móttekin
+          </span>
+          .
         </p>
 
         <div className="mt-8 overflow-hidden border border-forest/10 bg-white shadow-[0_18px_50px_rgba(4,48,52,0.08)]">
