@@ -115,7 +115,7 @@ export function NewsletterPopup() {
                 id="newsletter-popup-title"
                 className="mt-8 font-serif text-[1.85rem] leading-tight text-forest md:text-[2.15rem]"
               >
-                Velkominn í heiminn okkar
+                Þetta er heimurinn okkar
               </h2>
               <p className="mt-3 max-w-[22rem] text-[13px] leading-relaxed text-ink/55">
                 Skráðu þig á póstlistann og fáðu {NEWSLETTER_OFFER.percent}% afslátt af tilbúnum
