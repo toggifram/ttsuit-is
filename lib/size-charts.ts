@@ -401,7 +401,7 @@ export function sizeChartFor(
   if (/kasm[íi]r|cashmere/.test(hay)) return CASHMERE;
   if (/p[oó]l[oó]/.test(hay)) return POLO;
   if (/v-háls|v-hals/.test(hay)) return POLO;
-  if (/halfrennd-ullarpeysa|hálfrennd ullarpeysa/.test(hay)) return HALF_ZIP_WOOL;
+  if (/halfrennd-ullarpeysa|hálfrennd ullarpeysa|hálfrennd merinopeysa/.test(hay)) return HALF_ZIP_WOOL;
   if (/kaðla|kadla/.test(hay)) return CABLE;
   if (/hneppt/.test(hay)) return BUTTONED;
   if (/vetrarjakki/.test(hay)) return WINTER_JACKET;
