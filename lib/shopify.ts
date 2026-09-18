@@ -12,7 +12,6 @@ import {
   type ProductVariant,
   type StockBaseline,
 } from "@/lib/product";
-import { isTwoXlSize, normalizeSizeLabel } from "@/lib/size-charts";
 import {
   getAdminAccessToken,
   getStorefrontAccessToken,
@@ -348,30 +347,6 @@ function mapVariants(node: ShopifyProduct): ProductVariant[] {
     .filter((variant) => variant.id.includes("ProductVariant"));
 }
 
-/** Local preview until Shopify inventory can be written. */
-const LOCAL_ONE_IN_STOCK: Record<string, (size?: string | null) => boolean> = {
-  peacoat: isTwoXlSize,
-  vetrarjakki: (size) => normalizeSizeLabel(size) === "L",
-};
-
-function applyLocalStockOverrides(
-  handle: string,
-  variants: ProductVariant[]
-): ProductVariant[] {
-  const match = LOCAL_ONE_IN_STOCK[handle];
-  if (!match) return variants;
-  return variants.map((variant) => {
-    if (!match(variant.size)) return variant;
-    const qty = variant.quantityAvailable ?? 0;
-    if (variant.available && qty > 0) return variant;
-    return {
-      ...variant,
-      available: true,
-      quantityAvailable: Math.max(qty, 1),
-    };
-  });
-}
-
 function mapProduct(
   node: ShopifyProduct,
   domain: string,
@@ -382,7 +357,7 @@ function mapProduct(
   const featured = node.featuredImage?.url ?? gallery[0];
   if (!featured) return null;
 
-  const variants = applyLocalStockOverrides(node.handle, mapVariants(node));
+  const variants = mapVariants(node);
   const colorNames = optionValues(node, COLOR_OPTION);
   const colors: ProductColor[] = colorNames.map((name) => {
     const fromAlt = imagesForColor(galleryImages, name, colorNames);
