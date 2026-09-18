@@ -367,6 +367,101 @@ const WINTER_JACKET: SizeChart = {
   ],
 };
 
+const JAZER: SizeChart = {
+  handle: "jazer-ullarjakki",
+  title: "Stærðartafla",
+  unit: "cm",
+  columns: [
+    { key: "chest", label: "Brjóst", hint: "Líkamsstærð" },
+    { key: "waist", label: "Mitta", hint: "Líkamsstærð" },
+    { key: "shoulder", label: "Axlir", hint: "Jakkinn" },
+    { key: "sleeve", label: "Ermi", hint: "Jakkinn" },
+    { key: "length", label: "Lengd", hint: "Jakkinn" },
+  ],
+  rows: [
+    {
+      size: "S",
+      values: {
+        chest: "97–101",
+        waist: "91–95",
+        shoulder: "45,2",
+        sleeve: "63,5",
+        length: "66,25",
+      },
+    },
+    {
+      size: "M",
+      values: {
+        chest: "102–106",
+        waist: "96–100",
+        shoulder: "47,2",
+        sleeve: "64,5",
+        length: "67,75",
+      },
+    },
+    {
+      size: "L",
+      values: {
+        chest: "107–111",
+        waist: "101–105",
+        shoulder: "49,2",
+        sleeve: "65,5",
+        length: "69,25",
+      },
+    },
+    {
+      size: "XL",
+      values: {
+        chest: "112–116",
+        waist: "106–110",
+        shoulder: "51,2",
+        sleeve: "66,5",
+        length: "70,75",
+      },
+    },
+    {
+      size: "2XL",
+      values: {
+        chest: "117–121",
+        waist: "111–115",
+        shoulder: "53,2",
+        sleeve: "67,5",
+        length: "72,25",
+      },
+    },
+    {
+      size: "3XL",
+      values: {
+        chest: "122–126",
+        waist: "116–120",
+        shoulder: "55,2",
+        sleeve: "68,5",
+        length: "73,75",
+      },
+    },
+    {
+      size: "4XL",
+      values: {
+        chest: "127–131",
+        waist: "121–125",
+        shoulder: "57,2",
+        sleeve: "69,5",
+        length: "75,25",
+      },
+    },
+    {
+      size: "5XL",
+      values: {
+        chest: "132–136",
+        waist: "126–130",
+        shoulder: "59,2",
+        sleeve: "70,5",
+        length: "76,75",
+      },
+    },
+  ],
+};
+
 const CHARTS: Record<string, SizeChart> = {
   [PEACOAT.handle]: PEACOAT,
   [CASHMERE.handle]: CASHMERE,
@@ -378,6 +473,7 @@ const CHARTS: Record<string, SizeChart> = {
   [BUTTONED.handle]: BUTTONED,
   "hneppt-merinopeysa": BUTTONED,
   [WINTER_JACKET.handle]: WINTER_JACKET,
+  [JAZER.handle]: JAZER,
 };
 
 export function sizeChartFor(
@@ -405,12 +501,15 @@ export function sizeChartFor(
   if (/kaðla|kadla/.test(hay)) return CABLE;
   if (/hneppt/.test(hay)) return BUTTONED;
   if (/vetrarjakki/.test(hay)) return WINTER_JACKET;
+  if (/jazer/.test(hay)) return JAZER;
   return undefined;
 }
 
 export function normalizeSizeLabel(size?: string | null) {
   const raw = (size ?? "").replace(/\s+/g, "").toUpperCase();
   if (!raw) return "";
+  if (raw === "XXXXXL" || raw === "5XL") return "5XL";
+  if (raw === "XXXXL" || raw === "4XL") return "4XL";
   if (raw === "XXXL" || raw === "3XL") return "3XL";
   if (raw === "XXL" || raw === "2XL") return "2XL";
   return raw;

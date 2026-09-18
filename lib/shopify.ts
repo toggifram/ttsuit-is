@@ -23,6 +23,8 @@ const API_VERSION = "2025-01";
 
 const COLOR_HEX: Record<string, string> = {
   navy: "#1e3a5f",
+  navyblár: "#1a2744",
+  navyblar: "#1a2744",
   "navy blue": "#1e3a5f",
   blue: "#2c4a6e",
   dökkblár: "#1a2744",
