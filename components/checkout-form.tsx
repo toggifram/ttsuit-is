@@ -354,7 +354,7 @@ export function CheckoutForm() {
             <Field
               label="Afsláttarkóði"
               htmlFor="kassi-discount"
-              hint="T.d. Open10. Aðeins einn á hver kaup."
+              hint="Aðeins einn afsláttarkóði á hver kaup"
             >
               <Input
                 id="kassi-discount"
@@ -366,7 +366,7 @@ export function CheckoutForm() {
             <Field
               label="Gjafabréfskóði"
               htmlFor="kassi-giftcard"
-              hint="Sér reitur. Ekki slá gjafabréf inn sem afslátt."
+              hint="Ekki slá gjafabréf inn sem afslátt"
             >
               <Input
                 id="kassi-giftcard"
