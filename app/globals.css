@@ -105,25 +105,3 @@
 @utility font-serif {
   font-family: var(--font-cormorant), ui-serif, Georgia, serif;
 }
-
-/* Shop hero copy: sit on the knitwear on phones; stay centered from md up. */
-.hero-copy-stomach {
-  position: absolute;
-  inset: 0;
-  z-index: 20;
-  display: flex;
-  justify-content: center;
-  padding-inline: 1.5rem;
-}
-
-@media (max-width: 767px) {
-  .hero-copy-stomach {
-    inset: 66% 0 auto;
-  }
-}
-
-@media (min-width: 768px) {
-  .hero-copy-stomach {
-    align-items: center;
-  }
-}

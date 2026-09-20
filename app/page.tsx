@@ -35,7 +35,6 @@ export default async function HomePage() {
           cta="Vefverslun"
           fit="contain"
           position="object-bottom"
-          copy="stomach"
           priority
         />
       </section>
@@ -72,7 +71,6 @@ function HeroFrame({
   overlay = false,
   fit = "cover",
   position = "object-center",
-  copy = "center",
   priority = false,
 }: {
   href: string;
@@ -84,7 +82,6 @@ function HeroFrame({
   overlay?: boolean;
   fit?: "cover" | "contain";
   position?: string;
-  copy?: "center" | "stomach";
   priority?: boolean;
 }) {
   return (
@@ -104,13 +101,7 @@ function HeroFrame({
       {overlay ? (
         <div className="absolute inset-0 z-10 bg-black/10" aria-hidden />
       ) : null}
-      <div
-        className={
-          copy === "stomach"
-            ? "hero-copy-stomach"
-            : "absolute inset-0 z-20 flex items-center justify-center px-6"
-        }
-      >
+      <div className="absolute inset-0 z-20 flex items-center justify-center px-6">
         <div className="flex flex-col items-center text-center">
           <p className="text-[11px] font-semibold tracking-[0.22em] text-white uppercase drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)] md:text-xs">
             {eyebrow}
