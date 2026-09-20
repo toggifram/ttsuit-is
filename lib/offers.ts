@@ -22,6 +22,11 @@ export function normalizeDiscountCode(raw?: string | null) {
   );
 }
 
+/** Gift cards are one code, often written with spaces or dashes. */
+export function normalizeGiftCardCode(raw?: string | null) {
+  return (raw ?? "").trim().replace(/[\s-]+/g, "").toUpperCase();
+}
+
 export function isNewsletterOffer(code?: string | null) {
   return (
     normalizeDiscountCode(code).toLowerCase() ===

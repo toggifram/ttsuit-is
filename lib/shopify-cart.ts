@@ -1,5 +1,10 @@
 import { formatMoney, isGiftCardProduct } from "@/lib/product";
-import { knownPercentOffer, percentOffAmount, normalizeDiscountCode } from "@/lib/offers";
+import {
+  knownPercentOffer,
+  percentOffAmount,
+  normalizeDiscountCode,
+  normalizeGiftCardCode,
+} from "@/lib/offers";
 import {
   getAdminAccessToken,
   getStorefrontAccessToken,
@@ -46,6 +51,9 @@ export type CartQuote = {
   discountCode?: string;
   discountAmount?: number;
   discountLabel?: string;
+  giftCardCode?: string;
+  giftCardAmount?: number;
+  giftCardLabel?: string;
   clothingAmount?: number;
   shipping: DeliveryOption[];
 };
@@ -57,6 +65,10 @@ const CART_CORE_FIELDS = `
   cost {
     subtotalAmount { amount currencyCode }
     totalAmount { amount currencyCode }
+  }
+  appliedGiftCards {
+    lastCharacters
+    amountUsed { amount currencyCode }
   }
   lines(first: 50) {
     nodes {
@@ -106,6 +118,10 @@ type StorefrontCart = {
   checkoutUrl: string;
   totalQuantity?: number;
   cost: { subtotalAmount: Money; totalAmount: Money };
+  appliedGiftCards?: {
+    lastCharacters?: string | null;
+    amountUsed?: Money | null;
+  }[];
   lines?: {
     nodes?: {
       quantity: number;
@@ -416,7 +432,22 @@ function mapCart(cart: StorefrontCart): CartQuote {
     subtotalAmount: Number(cart.cost.subtotalAmount.amount),
     totalAmount: Number(cart.cost.totalAmount.amount),
     clothingAmount: clothingSubtotal(cart),
+    ...giftCardQuote(cart),
     shipping,
+  };
+}
+
+function giftCardQuote(cart: StorefrontCart) {
+  const cards = cart.appliedGiftCards ?? [];
+  const amount = cards.reduce((sum, card) => {
+    const used = Number(card.amountUsed?.amount ?? 0);
+    return sum + (Number.isFinite(used) ? used : 0);
+  }, 0);
+  if (amount <= 0) return {};
+  const last = cards.find((card) => card.lastCharacters)?.lastCharacters;
+  return {
+    giftCardAmount: amount,
+    giftCardLabel: last ? `Gjafabréf ••••${last}` : "Gjafabréf",
   };
 }
 
@@ -543,12 +574,31 @@ async function missingLinesError(missing: CheckoutLine[]) {
   return "Varan náðist ekki inn í Shopify-kassann. Taktu hana úr körfunni og settu hana aftur inn.";
 }
 
+async function applyGiftCardToCart(cartId: string, code: string) {
+  return storefrontGraphql<{
+    cartGiftCardCodesUpdate?: {
+      cart?: StorefrontCart | null;
+      userErrors?: { message: string }[];
+    };
+  }>(
+    `mutation ApplyGiftCard($cartId: ID!, $giftCardCodes: [String!]!) {
+      cartGiftCardCodesUpdate(cartId: $cartId, giftCardCodes: $giftCardCodes) {
+        cart { ${CART_FIELDS} }
+        userErrors { field message }
+      }
+    }`,
+    { cartId, giftCardCodes: [code] }
+  );
+}
+
 async function createQuoteCart(
   lines: CheckoutLine[],
   address: CheckoutAddress,
-  discountCode?: string
+  discountCode?: string,
+  giftCardCode?: string
 ) {
   const code = normalizeDiscountCode(discountCode);
+  const giftCard = normalizeGiftCardCode(giftCardCode);
   return storefrontGraphql<{
     cartCreate?: {
       cart?: StorefrontCart | null;
@@ -568,6 +618,7 @@ async function createQuoteCart(
           quantity: line.quantity,
         })),
         discountCodes: code ? [code] : undefined,
+        giftCardCodes: giftCard ? [giftCard] : undefined,
         buyerIdentity: {
           email: address.email,
           phone: shopifyPhone(address.phone) || undefined,
@@ -595,12 +646,18 @@ async function createQuoteCart(
 export async function quoteShopifyCart(
   lines: CheckoutLine[],
   address: CheckoutAddress,
-  discountCode?: string
+  discountCode?: string,
+  giftCardCode?: string
 ): Promise<CartQuote | { error: string }> {
-  let created = await createQuoteCart(lines, address, discountCode);
+  const giftCard = normalizeGiftCardCode(giftCardCode);
+  let created = await createQuoteCart(lines, address, discountCode, giftCard);
   let cart = created.data?.cartCreate?.cart;
+  if (!cart && giftCard) {
+    created = await createQuoteCart(lines, address, discountCode);
+    cart = created.data?.cartCreate?.cart;
+  }
   const userError = created.data?.cartCreate?.userErrors?.[0]?.message;
-  if (userError) return { error: userError };
+  if (userError && !cart) return { error: userError };
   if (created.error && !cart) return { error: created.error };
 
   let missing = missingCheckoutLines(cart, lines);
@@ -619,7 +676,7 @@ export async function quoteShopifyCart(
       await publishOnlineStoreProducts(toPublish);
       for (let attempt = 0; attempt < 4; attempt++) {
         await wait(700);
-        created = await createQuoteCart(lines, address, discountCode);
+        created = await createQuoteCart(lines, address, discountCode, giftCard);
         cart = created.data?.cartCreate?.cart;
         missing = missingCheckoutLines(cart, lines);
         if (!missing.length) break;
@@ -636,6 +693,22 @@ export async function quoteShopifyCart(
   }
   if (missing.length) {
     return { error: await missingLinesError(missing) };
+  }
+
+  if (giftCard) {
+    if (!giftCardQuote(cart).giftCardAmount) {
+      const applied = await applyGiftCardToCart(cart.id, giftCard);
+      const applyError =
+        applied.data?.cartGiftCardCodesUpdate?.userErrors?.[0]?.message ||
+        applied.error;
+      cart = applied.data?.cartGiftCardCodesUpdate?.cart ?? cart;
+      if (applyError && !giftCardQuote(cart).giftCardAmount) {
+        console.error(`Shopify gift card: ${applyError}`);
+      }
+    }
+    if (!giftCardQuote(cart).giftCardAmount) {
+      return { error: "Gjafabréfskóði fannst ekki eða er uppurinn." };
+    }
   }
 
   const added = await addCartDeliveryAddress(cart.id, address);
@@ -1060,13 +1133,23 @@ export async function payShopifyCart(input: {
   lines?: CheckoutLine[];
   address?: CheckoutAddress;
   discountCode?: string;
+  giftCardCode?: string;
 }): Promise<{ url: string } | { error: string }> {
   // /cart/c/ permalinks still hit Online Store password in a real browser.
   // Draft invoices with a shipping line lock the address and show Shopify's
   // "pre-arranged shipping" banners. Invoice without a shipping line opens
   // /checkouts/do/… (works with password) and lets the customer keep/adjust
   // the address without those warnings.
-  if (input.lines?.length && input.address) {
+  const giftCard = normalizeGiftCardCode(input.giftCardCode);
+  if (giftCard) {
+    const applied = await applyGiftCardToCart(input.cartId, giftCard);
+    const cart = applied.data?.cartGiftCardCodesUpdate?.cart;
+    if (!cart || !giftCardQuote(cart).giftCardAmount) {
+      return { error: "Gjafabréfskóði fannst ekki eða er uppurinn." };
+    }
+  }
+  // Gift cards live on the Storefront cart. A new draft invoice would drop them.
+  if (!giftCard && input.lines?.length && input.address) {
     const invoice = await createTeyaCheckoutInvoice({
       lines: input.lines,
       address: input.address,

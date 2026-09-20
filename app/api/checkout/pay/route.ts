@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { normalizeDiscountCode } from "@/lib/offers";
+import { normalizeDiscountCode, normalizeGiftCardCode } from "@/lib/offers";
 import {
   parseAddress,
   parseCheckoutLines,
@@ -33,6 +33,9 @@ export async function POST(request: Request) {
   const discountCode = normalizeDiscountCode(
     typeof data.discountCode === "string" ? data.discountCode : ""
   );
+  const giftCardCode = normalizeGiftCardCode(
+    typeof data.giftCardCode === "string" ? data.giftCardCode : ""
+  );
   const lines = parseCheckoutLines(data.lines) ?? undefined;
   const address = parseAddress(data.address) ?? undefined;
 
@@ -50,6 +53,7 @@ export async function POST(request: Request) {
     lines,
     address,
     discountCode: discountCode || undefined,
+    giftCardCode: giftCardCode || undefined,
   });
   if ("error" in result) {
     return NextResponse.json({ error: result.error }, { status: 503 });

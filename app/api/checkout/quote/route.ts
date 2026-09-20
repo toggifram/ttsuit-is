@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { normalizeDiscountCode } from "@/lib/offers";
+import { normalizeDiscountCode, normalizeGiftCardCode } from "@/lib/offers";
 import {
   parseAddress,
   parseCheckoutLines,
@@ -26,6 +26,9 @@ export async function POST(request: Request) {
   const discount = normalizeDiscountCode(
     typeof data.discountCode === "string" ? data.discountCode : ""
   );
+  const giftCard = normalizeGiftCardCode(
+    typeof data.giftCardCode === "string" ? data.giftCardCode : ""
+  );
 
   if (!lines) {
     return NextResponse.json({ error: "Karfan er ógild." }, { status: 400 });
@@ -37,7 +40,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await quoteShopifyCart(lines, address, discount || undefined);
+  const result = await quoteShopifyCart(
+    lines,
+    address,
+    discount || undefined,
+    giftCard || undefined
+  );
   if ("error" in result) {
     return NextResponse.json({ error: result.error }, { status: 503 });
   }

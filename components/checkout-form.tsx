@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CHECKOUT_CART_BACKUP_KEY } from "@/lib/cart";
 import { formatMoney } from "@/lib/product";
-import { normalizeDiscountCode } from "@/lib/offers";
+import { normalizeDiscountCode, normalizeGiftCardCode } from "@/lib/offers";
 import type { CartQuote, DeliveryOption } from "@/lib/shopify-cart";
 import { cn } from "@/lib/utils";
 
@@ -43,6 +43,7 @@ function quoteKey(form: HTMLFormElement, variantKey: string) {
     city: String(data.get("city") ?? "").trim(),
     zip: String(data.get("zip") ?? "").trim(),
     discount: normalizeDiscountCode(String(data.get("discount") ?? "")),
+    giftCard: normalizeGiftCardCode(String(data.get("giftCard") ?? "")),
   });
 }
 
@@ -122,6 +123,7 @@ export function CheckoutForm() {
           discountCode: normalizeDiscountCode(
             String(data.get("discount") ?? "")
           ),
+          giftCardCode: normalizeGiftCardCode(String(data.get("giftCard") ?? "")),
           address: {
             email: String(data.get("email") ?? ""),
             phone: String(data.get("phone") ?? ""),
@@ -217,6 +219,7 @@ export function CheckoutForm() {
           discountCode: normalizeDiscountCode(
             String(data.get("discount") ?? "")
           ),
+          giftCardCode: normalizeGiftCardCode(String(data.get("giftCard") ?? "")),
           lines: items.map((item) => ({
             variantId: item.variantId,
             quantity: item.quantity,
@@ -350,12 +353,25 @@ export function CheckoutForm() {
           <Field
             label="Afsláttarkóði"
             htmlFor="kassi-discount"
-            hint="Aðeins einn kóði gildir á hver kaup."
+            hint="Aðeins einn afsláttarkóði gildir á hver kaup."
           >
             <Input
               id="kassi-discount"
               name="discount"
               autoComplete="off"
+              className={fieldClass}
+            />
+          </Field>
+          <Field
+            label="Gjafabréfskóði"
+            htmlFor="kassi-giftcard"
+            hint="Gjafabréf er greiðsla, ekki afsláttur. Eitt gjafabréf í einu."
+          >
+            <Input
+              id="kassi-giftcard"
+              name="giftCard"
+              autoComplete="off"
+              spellCheck={false}
               className={fieldClass}
             />
           </Field>
@@ -463,6 +479,12 @@ export function CheckoutForm() {
               <span>−{formatMoney(quote.discountAmount)}</span>
             </div>
           ) : null}
+          {quote?.giftCardAmount ? (
+            <div className="flex justify-between">
+              <span className="text-ink/55">{quote.giftCardLabel}</span>
+              <span>−{formatMoney(quote.giftCardAmount)}</span>
+            </div>
+          ) : null}
           <div className="flex justify-between gap-4">
             <span className="text-ink/55">Sending</span>
             <span className="text-right">
@@ -478,9 +500,13 @@ export function CheckoutForm() {
             <span>
               {selected && quote
                 ? formatMoney(
-                    quote.subtotalAmount -
-                      (quote.discountAmount ?? 0) +
-                      selected.priceAmount
+                    Math.max(
+                      0,
+                      quote.subtotalAmount -
+                        (quote.discountAmount ?? 0) -
+                        (quote.giftCardAmount ?? 0) +
+                        selected.priceAmount
+                    )
                   )
                 : (quote?.total ?? formatMoney(totalAmount))}
             </span>
