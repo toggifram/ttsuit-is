@@ -250,7 +250,7 @@ export const fallbackProducts: Product[] = [
       { name: "Black", hex: "#1a1a1a" },
     ],
     description:
-      "Navy silkibindi með kopar doppum. Klassískt snið sem virkar jafnt með navy jakkafötum og brúnum tweed.",
+      "Navy bindi með kopar doppum. Klassískt snið sem virkar jafnt með navy jakkafötum og brúnum tweed.",
   },
   {
     id: "brown-overshirt",

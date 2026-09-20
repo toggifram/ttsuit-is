@@ -29,7 +29,7 @@ export const sampleOrderEmail: Omit<OrderEmailData, "logoUrl" | "shopUrl"> = {
       price: "24.990 kr.",
     },
     {
-      title: "Navy silkibindi með kopardoppum",
+      title: "Navy bindi með kopardoppum",
       detail: "1 stk.",
       quantity: 1,
       price: "8.990 kr.",
