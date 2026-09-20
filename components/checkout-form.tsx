@@ -350,31 +350,33 @@ export function CheckoutForm() {
               />
             </Field>
           </div>
-          <Field
-            label="Afsláttarkóði"
-            htmlFor="kassi-discount"
-            hint="Aðeins einn afsláttarkóði gildir á hver kaup."
-          >
-            <Input
-              id="kassi-discount"
-              name="discount"
-              autoComplete="off"
-              className={fieldClass}
-            />
-          </Field>
-          <Field
-            label="Gjafabréfskóði"
-            htmlFor="kassi-giftcard"
-            hint="Gjafabréf er greiðsla, ekki afsláttur. Eitt gjafabréf í einu."
-          >
-            <Input
-              id="kassi-giftcard"
-              name="giftCard"
-              autoComplete="off"
-              spellCheck={false}
-              className={fieldClass}
-            />
-          </Field>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field
+              label="Afsláttarkóði"
+              htmlFor="kassi-discount"
+              hint="T.d. Open10. Aðeins einn á hver kaup."
+            >
+              <Input
+                id="kassi-discount"
+                name="discount"
+                autoComplete="off"
+                className={fieldClass}
+              />
+            </Field>
+            <Field
+              label="Gjafabréfskóði"
+              htmlFor="kassi-giftcard"
+              hint="Sér reitur. Ekki slá gjafabréf inn sem afslátt."
+            >
+              <Input
+                id="kassi-giftcard"
+                name="giftCard"
+                autoComplete="off"
+                spellCheck={false}
+                className={fieldClass}
+              />
+            </Field>
+          </div>
         </div>
 
         {error ? (
