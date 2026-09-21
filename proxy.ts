@@ -25,6 +25,13 @@ export function proxy(request: NextRequest) {
     );
   }
 
+  if (pathname !== "/vidhald") {
+    const dest = request.nextUrl.clone();
+    dest.pathname = "/vidhald";
+    dest.search = "";
+    return NextResponse.rewrite(dest);
+  }
+
   return NextResponse.next();
 }
 
