@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Geist_Mono, Great_Vibes, Outfit } from "next/font/google";
 
-import { CartDrawer } from "@/components/cart-drawer";
+import { AppChrome } from "@/components/app-chrome";
 import { CartProvider } from "@/components/cart-provider";
 import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { SiteOverlays } from "@/components/site-overlays";
 import { brand, siteUrl } from "@/lib/site";
 
 import "./globals.css";
@@ -56,11 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <div id="top" className="h-0 w-0 overflow-hidden" />
         <CartProvider>
-          <SiteHeader />
-          <main className="flex-1 bg-white">{children}</main>
-          <SiteFooter />
-          <CartDrawer />
-          <SiteOverlays />
+          <AppChrome footer={<SiteFooter />}>{children}</AppChrome>
         </CartProvider>
       </body>
     </html>
