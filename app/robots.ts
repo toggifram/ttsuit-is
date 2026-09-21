@@ -10,7 +10,11 @@ export default function robots(): MetadataRoute.Robots {
   }
 
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/kassi"] },
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: ["/kassi", "/vidhald", "/opna"],
+    },
     sitemap: `${siteUrl()}/sitemap.xml`,
   };
 }

@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Cormorant_Garamond, Geist_Mono, Great_Vibes, Outfit } from "next/font/google";
 
 import { CartDrawer } from "@/components/cart-drawer";
 import { CartProvider } from "@/components/cart-provider";
+import { MaintenanceScreen } from "@/components/maintenance-screen";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SiteOverlays } from "@/components/site-overlays";
+import {
+  MAINTENANCE_COOKIE,
+  isMaintenanceEnabled,
+  maintenanceBypassSecret,
+} from "@/lib/maintenance";
 import { brand, siteUrl } from "@/lib/site";
 
 import "./globals.css";
@@ -47,12 +54,30 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+async function isMaintenanceLocked() {
+  if (!isMaintenanceEnabled()) return false;
+  const secret = maintenanceBypassSecret();
+  if (!secret) return true;
+  const jar = await cookies();
+  return jar.get(MAINTENANCE_COOKIE)?.value !== secret;
+}
+
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locked = await isMaintenanceLocked();
+  const fontClass = `${outfit.variable} ${cormorant.variable} ${greatVibes.variable} ${geistMono.variable} h-full`;
+
+  if (locked) {
+    return (
+      <html lang="is" className={fontClass}>
+        <body className="min-h-full bg-forest">
+          <MaintenanceScreen />
+        </body>
+      </html>
+    );
+  }
+
   return (
-    <html
-      lang="is"
-      className={`${outfit.variable} ${cormorant.variable} ${greatVibes.variable} ${geistMono.variable} h-full`}
-    >
+    <html lang="is" className={fontClass}>
       <body className="flex min-h-full flex-col">
         <div id="top" className="h-0 w-0 overflow-hidden" />
         <CartProvider>
