@@ -27,7 +27,6 @@ Við breytum **alltaf local fyrst**. Þegar þú ert sáttur biðurðu um að se
 | `/verslun/peysur` · `/bindi` · `/yfirhafnir` · `/fylgihluti` · `/gjafabref` | Flokkar |
 | `/verslun/vara/[handle]` | Vörusíða |
 | `/kassi` | Sending og greiðsla |
-| `/prentun` | 80 × 50 mm sækja-miði (ekki í valmynd) |
 | `/hafa-samband` | Hafa samband |
 | `/um-okkur` | Um TT |
 | `/skilmalar` | Skilmálar |
@@ -70,17 +69,13 @@ Síðan sýnir vörurnar, körfuna og **kassa** á `/kassi`. Þegar heimilisfang
 
 Birgðir eru lesnar úr Shopify. Þegar afbrigði (t.d. Dökkblár / L) er komið niður í 0 er stærðin uppseld og ekki hægt að setja hana í körfu. Shopify dregur svo úr lagerinu við pöntun.
 
-Sækja-pantanir fá **ekki** Dropp-sendingarmiða. Á `/prentun` er 80 × 50 mm miði með nafni, síma og pöntunarnúmeri til að líma á pokann. Sláðu inn númerið eða nafn og síma og prentaðu. Í prentglugganum: pappír 80 × 50 mm, engar spássíur, 100%.
-
-Til að sækja nafn og síma sjálfkrafa úr pöntuninni: **Apps → Develop apps → TjéTjéVefur → Admin API** og bættu við `read_orders` → Save → Install. Án þeirrar heimildar er hægt að slá inn reitina í höndunum.
-
 ### 1. Vörur — Admin API
 
 Online Store má vera lokuð á meðan við sækjum vörur.
 
 1. **Settings → Apps and sales channels → Develop apps**
 2. **Create an app** — t.d. „Tjé Tjé vefur“
-3. Admin API scopes: `read_products` (og `write_draft_orders` sem varaleið fyrir kassa). `read_orders` ef sækja-miðinn á að fylla nafn og síma sjálfkrafa.
+3. Admin API scopes: `read_products` (og `write_draft_orders` sem varaleið fyrir kassa)
 4. Install app og afritaðu **Admin API access token** (`shpat_…`)
 
 ```
