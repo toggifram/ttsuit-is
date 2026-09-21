@@ -53,10 +53,15 @@ function productInfoRows(product: Product) {
   const { info, model } = splitModelFromDescription(
     product.description?.trim() || fallback
   );
+  const chart = sizeChartFor(product);
   const sizeFit = product.sizes?.length
-    ? `Stærðir: ${product.sizes.join(", ")}. Ef þú ert á milli stærða, veldu þá stærri.`
+    ? chart?.notes?.length
+      ? `Stærðir: ${product.sizes.join(", ")}.`
+      : `Stærðir: ${product.sizes.join(", ")}. Ef þú ert á milli stærða, veldu þá stærri.`
     : "Ein stærð. Sjáðu mál á myndum eða sendu línu ef þú ert í vafa.";
-  const sizeBody = model ? `${sizeFit}\n\n${model}` : sizeFit;
+  const sizeBody = [sizeFit, ...(chart?.notes ?? []), model]
+    .filter(Boolean)
+    .join("\n\n");
 
   return [
     { title: "Vöruupplýsingar", body: info || fallback, defaultOpen: true },

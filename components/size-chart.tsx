@@ -65,6 +65,13 @@ export function SizeChartPanel({
           })}
         </tbody>
       </table>
+      {chart.notes?.length ? (
+        <div className="mt-4 space-y-2 text-[13px] leading-relaxed text-ink/70">
+          {chart.notes.map((note) => (
+            <p key={note}>{note}</p>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -15,6 +15,7 @@ export type SizeChart = {
   unit: string;
   columns: SizeChartColumn[];
   rows: SizeChartRow[];
+  notes?: string[];
 };
 
 const PEACOAT: SizeChart = {
@@ -371,6 +372,10 @@ const JAZER: SizeChart = {
   handle: "jazer-ullarjakki",
   title: "Stærðartafla",
   unit: "cm",
+  notes: [
+    "Við mælum með að fara stærð upp.",
+    "Stytting á ermum er innifalin ef þess er þörf.",
+  ],
   columns: [
     { key: "chest", label: "Brjóst", hint: "Líkamsstærð" },
     { key: "waist", label: "Mitta", hint: "Líkamsstærð" },
