@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
     "cursor.com",
     "*.cursor.com",
     "*.cursor.sh",
+    "*.trycloudflare.com",
   ],
   images: {
     remotePatterns: [
