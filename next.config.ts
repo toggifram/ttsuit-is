@@ -18,6 +18,15 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "tje-tje.myshopify.com" },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/verslun/vara/ullartrefil",
+        destination: "/verslun/vara/ullartrefill",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
