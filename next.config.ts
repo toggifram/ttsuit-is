@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["127.0.0.1", "localhost", "0.0.0.0"],
+  // Cursor Preview loads the app in a sandboxed iframe (Origin: null).
+  allowedDevOrigins: [
+    "127.0.0.1",
+    "localhost",
+    "0.0.0.0",
+    "null",
+    "cursor.com",
+    "*.cursor.com",
+    "*.cursor.sh",
+  ],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "cdn.shopify.com" },

@@ -13,7 +13,7 @@ Síðan opnast á [http://127.0.0.1:4318](http://127.0.0.1:4318).
 
 ### Viðhald
 
-Á Netlify: `MAINTENANCE_MODE=true` læsir síðunni með textanum „Við erum að uppfæra síðuna hjá okkur.“ `MAINTENANCE_BYPASS` opnar forskoðun á `/opna?kodi=…`. Taktu `MAINTENANCE_MODE` af og deploy-aðu þegar síðan á að opna.
+Á Netlify: `MAINTENANCE_MODE=true` læsir síðunni með textanum „Við erum að uppfæra síðuna hjá okkur.“ `MAINTENANCE_BYPASS` opnar forskoðun á `/opna?kodi=…`. Taktu `MAINTENANCE_MODE` af og deploy-aðu þegar síðan á að opna. Local (`npm run dev`) er **aldrei** læst, jafnvel þó `MAINTENANCE_MODE` sé sett.
 
 Við breytum **alltaf local fyrst**. Þegar þú ert sáttur biðurðu um að setja á vefinn.
 
