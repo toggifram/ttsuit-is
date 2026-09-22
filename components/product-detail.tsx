@@ -53,6 +53,16 @@ function productInfoRows(product: Product) {
   const { info, model } = splitModelFromDescription(
     product.description?.trim() || fallback
   );
+  const isGift = product.category === "gjafabref";
+  if (isGift) {
+    return [
+      { title: "Vöruupplýsingar", body: info || fallback, defaultOpen: true },
+      {
+        title: "Sending",
+        body: "Gjafabréf eru rafræn og send á netfang kaupanda. Kortagreiðsla fer um Teya. Hafðu samband á ttsuit@ttsuit.is.",
+      },
+    ];
+  }
   const chart = sizeChartFor(product);
   const sizeFit = product.sizes?.length
     ? chart?.notes?.length
@@ -185,7 +195,9 @@ export function ProductDetail({
           <h1 className="mt-2 font-serif text-4xl text-forest md:text-5xl">
             {product.title}
           </h1>
-          <p className="mt-4 text-lg font-semibold text-ink">{product.price}</p>
+          <p className="mt-4 text-lg font-semibold text-ink">
+            {variant?.price ?? product.price}
+          </p>
 
           {product.colors.length ? (
             <div className="mt-8">
@@ -228,7 +240,7 @@ export function ProductDetail({
             <div className="mt-8">
               <div className="flex items-baseline justify-between gap-4">
                 <p className="text-[11px] tracking-[0.18em] text-ink/50 uppercase">
-                  Stærð
+                  {isGift ? "Upphæð" : "Stærð"}
                 </p>
                 {sizeChart ? (
                   <button

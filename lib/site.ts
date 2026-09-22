@@ -235,10 +235,10 @@ export const packages = [
 ];
 
 export const giftCards = [
-  { name: "Gjafabréf", price: "4.032 kr." },
-  { name: "Gjafabréf", price: "8.065 kr." },
-  { name: "Gjafabréf", price: "40.323 kr." },
-  { name: "Gjafabréf", price: "80.645 kr." },
+  { name: "Gjafabréf", price: "2.500 kr." },
+  { name: "Gjafabréf", price: "5.000 kr." },
+  { name: "Gjafabréf", price: "7.500 kr." },
+  { name: "Gjafabréf", price: "10.000 kr." },
 ];
 
 export const fabrics = [

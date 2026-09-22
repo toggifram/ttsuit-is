@@ -62,7 +62,9 @@ export function ProductCard({
               {product.title}
             </h3>
             <p className="shrink-0 text-[13px] font-semibold text-ink">
-              {product.price}
+              {product.category === "gjafabref" && (product.variants?.length ?? 0) > 1
+                ? `frá ${product.price}`
+                : product.price}
             </p>
           </div>
           <p className="mt-1 text-[12px] text-ink/55">{subtitle}</p>

@@ -731,6 +731,25 @@ export async function quoteShopifyCart(
     mapCart(cart);
 
   if (!quoted.shipping.length) {
+    const giftIds = await giftCardVariantIds(lines);
+    if (lines.length && lines.every((line) => giftIds.has(line.variantId))) {
+      return applyKnownPercentOffer(
+        {
+          ...quoted,
+          shipping: [
+            {
+              groupId: "digital-gift",
+              handle: "digital-gift",
+              title: "Rafræn sending",
+              description: "Kóði er sendur á netfang kaupanda.",
+              price: formatMoney(0, "ISK"),
+              priceAmount: 0,
+            },
+          ],
+        },
+        discountCode
+      );
+    }
     return {
       error:
         "Engar sendingarleiðir fundust fyrir þetta heimilisfang. Athugaðu Settings → Shipping and delivery í Shopify.",
