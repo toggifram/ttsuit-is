@@ -34,7 +34,7 @@ export function ProductCard({
         <div
           className={cn(
             "relative aspect-[3/4] overflow-hidden",
-            product.category === "gjafabref" ? "bg-[#1a1a1a]" : "bg-[#ebe6dc]"
+            product.category === "gjafabref" ? "bg-white" : "bg-[#ebe6dc]"
           )}
         >
           <img

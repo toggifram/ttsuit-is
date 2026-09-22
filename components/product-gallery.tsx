@@ -84,7 +84,7 @@ export function ProductGallery({
         <div
           className={cn(
             "relative aspect-[4/5] overflow-hidden select-none",
-            isGift ? "bg-[#1a1a1a]" : "bg-[#ebe6dc]",
+            isGift ? "bg-white" : "bg-[#ebe6dc]",
             count > 1 && "touch-pan-y cursor-grab active:cursor-grabbing"
           )}
           onPointerDown={onPointerDown}
@@ -164,7 +164,7 @@ export function ProductGallery({
                   alt=""
                   className={
                     isGift
-                      ? "absolute inset-0 h-full w-full object-contain bg-[#1a1a1a] p-2"
+                      ? "absolute inset-0 h-full w-full object-contain bg-white p-2"
                       : "absolute inset-0 h-full w-full object-cover object-top"
                   }
                 />

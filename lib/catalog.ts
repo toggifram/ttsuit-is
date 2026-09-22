@@ -274,11 +274,11 @@ export const fallbackProducts: Product[] = [
 
   {
     id: "gift-card",
-    handle: "gjafabref",
-    title: "Gjafabréf",
+    handle: "tt-gjafabref",
+    title: "TT gjafabréf",
     subtitle: "Rafrænt · Vefverslun og sérsaumur",
     category: "gjafabref",
-    href: productHref("gjafabref"),
+    href: productHref("tt-gjafabref"),
     image: "/images/studio/gift-card.jpg",
     imageAlt: "Gjafabréf Tjé Tjé",
     price: "2.500 kr.",

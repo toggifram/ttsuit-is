@@ -325,7 +325,7 @@ function optionValues(node: ShopifyProduct, pattern: RegExp) {
   return node.options.find((option) => pattern.test(option.name))?.values ?? [];
 }
 
-const SIZE_OPTION = /size|stærð|staerd|sterrd|upphæð|upphaed|amount/i;
+const SIZE_OPTION = /size|stærð|staerd|sterrd|upphæð|upphaed|amount|denomination/i;
 const COLOR_OPTION = /color|colour|litur/i;
 
 function mapVariants(node: ShopifyProduct): ProductVariant[] {

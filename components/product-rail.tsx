@@ -63,7 +63,7 @@ export function ProductRail({ products }: { products: Product[] }) {
                   className={cn(
                     "relative aspect-[3/4] overflow-hidden",
                     product.category === "gjafabref"
-                      ? "bg-[#1a1a1a]"
+                      ? "bg-white"
                       : "bg-[#ebe6dc]"
                   )}
                 >

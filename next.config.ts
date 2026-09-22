@@ -25,6 +25,11 @@ const nextConfig: NextConfig = {
         destination: "/verslun/vara/ullartrefill",
         permanent: true,
       },
+      {
+        source: "/verslun/vara/gjafabref",
+        destination: "/verslun/vara/tt-gjafabref",
+        permanent: true,
+      },
     ];
   },
 };
