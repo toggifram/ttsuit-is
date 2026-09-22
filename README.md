@@ -115,7 +115,9 @@ Lausnin er tvö skref í Shopify Admin (API-ið getur hvorki slökkt á lykilor�
 
 Kaupandi fær **nýtt PDF** af sniðmátinu sem passar við upphæðina (2.500, 5.000, 7.500, 10.000 eða sérsaumaða skyrtu). Kóðinn er stimplaður í hvíta reitinn undir „Kóði“. Skjölin eru í `gift-cards/templates/`.
 
-Við greiðslu (Shopify-reikningur) býr vefurinn til kóðann, setur hann á nýtt skjal, hýsir PDF-ið og sendir slóðina á netfang kaupanda (og afrit á ttsuit@ttsuit.is). Kóðinn er innleystur í kassanum á ttsuit.is. Shopify Plus-gjafabréfa-API er ekki í boði á þessum reikningi, svo kóðinn er okkar eigið gjafabréf — ekki sjálfvirki kóðinn sem Shopify myndi búa til.
+Við greiðslu býr vefurinn til **nýjan** kóða (ekki fastan), stofnar hann sem gjafabréf í Shopify, setur hann á nýtt PDF og sendir slóðina á kaupanda (og afrit á ttsuit@ttsuit.is). Kóðinn gildir í tvö ár og er innleystur í kassanum.
+
+Til að Shopify taki við stofnuninni þarf appið **TjéTjéVefur** `write_gift_cards` (og `read_gift_cards`): [Dev Dashboard](https://dev.shopify.com/dashboard) → TjéTjéVefur → ný útgáfa með þessum scopes → Release → samþykkja á tje-tje. Án þess er PDF-ið samt sent en kóðinn birtist ekki undir Gjafabréf í Shopify Admin.
 
 Local má opna prufu: [http://127.0.0.1:4318/api/gift-cards/preview?template=2500](http://127.0.0.1:4318/api/gift-cards/preview?template=2500) (`5000`, `7500`, `10000`, `skyrta`).
 

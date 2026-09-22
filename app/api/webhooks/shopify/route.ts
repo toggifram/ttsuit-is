@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 
 import {
   fulfillPaidGiftDraft,
+  fulfillShopifyIssuedGiftCard,
   type PaidDraft,
+  type ShopifyGiftCardWebhook,
 } from "@/lib/gift-card-fulfill";
 import { storeDomain } from "@/lib/shopify-auth";
 
@@ -44,20 +46,25 @@ export async function POST(request: Request) {
   }
 
   const topic = (request.headers.get("x-shopify-topic") || "").toLowerCase();
-  if (topic !== "draft_orders/update") {
-    return NextResponse.json({ ok: true, ignored: topic });
-  }
-
-  let draft: PaidDraft;
+  let payload: unknown;
   try {
-    draft = JSON.parse(raw) as PaidDraft;
+    payload = JSON.parse(raw);
   } catch {
     return NextResponse.json({ error: "Ógild beiðni." }, { status: 400 });
   }
 
   try {
-    const result = await fulfillPaidGiftDraft(draft);
-    return NextResponse.json({ ok: true, ...result });
+    if (topic === "gift_cards/create") {
+      const result = await fulfillShopifyIssuedGiftCard(
+        payload as ShopifyGiftCardWebhook
+      );
+      return NextResponse.json({ ok: true, ...result });
+    }
+    if (topic === "draft_orders/update") {
+      const result = await fulfillPaidGiftDraft(payload as PaidDraft);
+      return NextResponse.json({ ok: true, ...result });
+    }
+    return NextResponse.json({ ok: true, ignored: topic });
   } catch (error) {
     console.error(
       `Gift webhook: ${error instanceof Error ? error.message : error}`

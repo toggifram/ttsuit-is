@@ -1,11 +1,14 @@
 import { uploadGiftPdf } from "@/lib/gift-card-files";
 import { sendGiftCardEmail, type GiftPdfMail } from "@/lib/gift-card-email";
 import {
+  findIssuedGift,
   issueGiftCode,
   markReservedGiftsUsed,
   purchaseAlreadyIssued,
+  recordShopifyIssuedCode,
   setGiftPdfUrl,
 } from "@/lib/gift-card-ledger";
+import { normalizeGiftCardCode } from "@/lib/offers";
 import {
   parseGiftAmount,
   stampGiftCardPdf,
@@ -129,4 +132,63 @@ export async function fulfillPaidGiftDraft(draft: PaidDraft) {
   }
 
   return { issued: cards };
+}
+
+export type ShopifyGiftCardWebhook = {
+  id?: number | string;
+  code?: string;
+  initial_value?: string | number;
+  order_id?: number | string | null;
+  note?: string | null;
+  last_characters?: string | null;
+};
+
+/** When Shopify itself issues a gift card, stamp that live code onto a new PDF. */
+export async function fulfillShopifyIssuedGiftCard(
+  payload: ShopifyGiftCardWebhook,
+  email?: string
+) {
+  const code = normalizeGiftCardCode(payload.code || "");
+  if (!code) return { skipped: true as const, reason: "no_code" };
+
+  const existing = await findIssuedGift(code);
+  if (existing) return { skipped: true as const, reason: "already_tracked" };
+
+  const amount = parseGiftAmount(payload.initial_value) || 2500;
+  const template = templateForGift({
+    amount,
+    title: payload.note,
+  });
+  const issued = await recordShopifyIssuedCode({
+    code,
+    amount,
+    template,
+    email,
+    orderId: payload.order_id ? String(payload.order_id) : undefined,
+    shopifyId: payload.id ? `gid://shopify/GiftCard/${payload.id}` : undefined,
+  });
+  if (!issued) return { skipped: true as const, reason: "not_recorded" };
+  if (issued.pdfUrl) return { skipped: true as const, reason: "already_issued" };
+
+  const pdf = await stampGiftCardPdf({
+    template: issued.template,
+    code: issued.code,
+  });
+  const filename = `tt-gjafabref-${issued.template}-${issued.code.toLowerCase()}.pdf`;
+  const pdfUrl = await uploadGiftPdf(pdf, filename);
+  await setGiftPdfUrl(issued.code, pdfUrl);
+  const card = {
+    code: issued.code,
+    amount: issued.amount,
+    template: issued.template,
+    pdfUrl,
+  };
+  if (email) {
+    try {
+      await sendGiftCardEmail(email, [card]);
+    } catch (error) {
+      console.error(`Gift PDF email: ${error instanceof Error ? error.message : error}`);
+    }
+  }
+  return { issued: [card] };
 }

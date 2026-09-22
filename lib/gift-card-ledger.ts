@@ -21,6 +21,8 @@ export type IssuedGift = {
   amount: number;
   template: GiftTemplateId;
   status: IssuedGiftStatus;
+  source?: "shopify" | "ledger";
+  shopifyId?: string;
   email?: string;
   draftId?: string;
   orderId?: string;
@@ -128,6 +130,82 @@ function newCode() {
   return `TT${body}`;
 }
 
+function expiresOn() {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() + 2);
+  return date.toISOString().slice(0, 10);
+}
+
+async function createShopifyGiftCard(input: {
+  code: string;
+  amount: number;
+  note?: string;
+}): Promise<{ id?: string; code: string } | null> {
+  const created = await adminGraphql<{
+    giftCardCreate?: {
+      giftCard?: { id?: string } | null;
+      giftCardCode?: string | null;
+      userErrors?: { message: string }[];
+    };
+  }>(
+    `mutation CreateGiftCard($input: GiftCardCreateInput!) {
+      giftCardCreate(input: $input) {
+        giftCard { id }
+        giftCardCode
+        userErrors { field message }
+      }
+    }`,
+    {
+      input: {
+        initialValue: input.amount.toFixed(2),
+        code: input.code,
+        note: input.note || "ttsuit.is",
+        expiresOn: expiresOn(),
+      },
+    }
+  );
+  const payload = created?.giftCardCreate;
+  if (payload?.giftCard?.id) {
+    return {
+      id: payload.giftCard.id,
+      code: normalizeGiftCardCode(payload.giftCardCode || input.code),
+    };
+  }
+
+  const retry = await adminGraphql<{
+    giftCardCreate?: {
+      giftCard?: { id?: string } | null;
+      giftCardCode?: string | null;
+      userErrors?: { message: string }[];
+    };
+  }>(
+    `mutation CreateGiftCard($input: GiftCardCreateInput!) {
+      giftCardCreate(input: $input) {
+        giftCard { id }
+        giftCardCode
+        userErrors { field message }
+      }
+    }`,
+    {
+      input: {
+        initialValue: input.amount.toFixed(2),
+        note: input.note || "ttsuit.is",
+        expiresOn: expiresOn(),
+      },
+    }
+  );
+  const generated = retry?.giftCardCreate;
+  const code = normalizeGiftCardCode(generated?.giftCardCode || "");
+  if (generated?.giftCard?.id && code) {
+    return { id: generated.giftCard.id, code };
+  }
+  const error =
+    payload?.userErrors?.[0]?.message ||
+    generated?.userErrors?.[0]?.message;
+  if (error) console.error(`Shopify giftCardCreate: ${error}`);
+  return null;
+}
+
 export async function issueGiftCode(input: {
   amount: number;
   template: GiftTemplateId;
@@ -143,13 +221,70 @@ export async function issueGiftCode(input: {
   for (let i = 0; i < 8 && ledger[code]; i += 1) code = newCode();
   if (ledger[code]) throw new Error("gift_code_collision");
 
-  const row: IssuedGift = {
+  const shopify = await createShopifyGiftCard({
     code,
+    amount,
+    note: [
+      "ttsuit.is",
+      input.template === "skyrta" ? "Sérsaumuð skyrta" : `${amount} kr.`,
+      input.email,
+    ]
+      .filter(Boolean)
+      .join(" · "),
+  });
+  const finalCode = shopify?.code || code;
+  if (shopify && shopify.code !== code && ledger[finalCode]) {
+    throw new Error("gift_code_collision");
+  }
+
+  const row: IssuedGift = {
+    code: finalCode,
     amount,
     template: input.template,
     status: "unused",
+    source: shopify ? "shopify" : "ledger",
+    shopifyId: shopify?.id,
     email: input.email,
     draftId: input.draftId,
+    orderId: input.orderId,
+    createdAt: new Date().toISOString(),
+  };
+  ledger[finalCode] = row;
+  await writeLedger(ledger);
+  if (!shopify) {
+    console.error(
+      "Shopify gift card was not created. Add write_gift_cards on TjéTjéVefur."
+    );
+  }
+  return row;
+}
+
+export async function findIssuedGift(code: string) {
+  const ledger = await readLedger();
+  return ledger[normalizeGiftCardCode(code)] ?? null;
+}
+
+export async function recordShopifyIssuedCode(input: {
+  code: string;
+  amount: number;
+  template: GiftTemplateId;
+  email?: string;
+  orderId?: string;
+  shopifyId?: string;
+}) {
+  const code = normalizeGiftCardCode(input.code);
+  if (!code) return null;
+  const ledger = await readLedger();
+  const existing = ledger[code];
+  if (existing) return existing;
+  const row: IssuedGift = {
+    code,
+    amount: input.amount,
+    template: input.template,
+    status: "unused",
+    source: "shopify",
+    shopifyId: input.shopifyId,
+    email: input.email,
     orderId: input.orderId,
     createdAt: new Date().toISOString(),
   };
@@ -179,7 +314,7 @@ export async function findRedeemableGifts(raw: string) {
   const found: IssuedGift[] = [];
   for (const token of tokens) {
     const row = ledger[token];
-    if (!row || row.status === "used") return [];
+    if (!row || row.status === "used" || row.source === "shopify") return [];
     if (row.status === "reserved") {
       const age = row.reservedAt ? Date.now() - Date.parse(row.reservedAt) : 0;
       if (Number.isFinite(age) && age < 2 * 60 * 60 * 1000) return [];
