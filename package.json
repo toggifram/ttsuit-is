@@ -8,7 +8,8 @@
     "start": "next start --hostname 0.0.0.0 --port 4318",
     "lint": "eslint",
     "shopify:pack-redirect": "python3 scripts/pack-redirect-theme.py",
-    "shopify:publish-redirect": "node scripts/shopify-publish-redirect.mjs"
+    "shopify:publish-redirect": "node scripts/shopify-publish-redirect.mjs",
+    "gift:stamp": "node scripts/stamp-gift-card.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -16,6 +17,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.34.0",
     "next": "16.3.2",
+    "pdf-lib": "^1.17.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "shadcn": "^4.19.0",

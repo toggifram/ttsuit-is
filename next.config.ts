@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    "/api/webhooks/shopify": ["./gift-cards/templates/**/*"],
+    "/api/gift-cards/preview": ["./gift-cards/templates/**/*"],
+  },
   // Cursor Preview loads the app in a sandboxed iframe (Origin: null).
   allowedDevOrigins: [
     "127.0.0.1",

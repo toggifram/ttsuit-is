@@ -1,3 +1,11 @@
+import {
+  findRedeemableGifts,
+  giftLabel,
+  issuedGiftTotal,
+  reserveGiftCodes,
+  type IssuedGift,
+} from "@/lib/gift-card-ledger";
+import { parseGiftAmount, templateForGift } from "@/lib/gift-card-pdf";
 import { formatMoney, isGiftCardProduct } from "@/lib/product";
 import {
   knownPercentOffer,
@@ -514,12 +522,23 @@ function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function giftCardVariantIds(lines: CheckoutLine[]) {
+type GiftVariantRow = {
+  variantId: string;
+  quantity: number;
+  amount: number;
+  title: string;
+  handle: string;
+  template: ReturnType<typeof templateForGift>;
+};
+
+async function giftVariantRows(lines: CheckoutLine[]): Promise<GiftVariantRow[]> {
   const ids = [...new Set(lines.map((line) => line.variantId))];
-  if (!ids.length) return new Set<string>();
+  if (!ids.length) return [];
   const queried = await adminGraphql<{
     nodes?: {
       id?: string;
+      price?: string | number;
+      title?: string | null;
       product?: {
         handle?: string | null;
         title?: string | null;
@@ -528,21 +547,45 @@ async function giftCardVariantIds(lines: CheckoutLine[]) {
       } | null;
     }[];
   }>(
-    `query GiftVariants($ids: [ID!]!) {
+    `query GiftVariantRows($ids: [ID!]!) {
       nodes(ids: $ids) {
         ... on ProductVariant {
           id
+          price
+          title
           product { handle title productType tags }
         }
       }
     }`,
     { ids }
   );
-  const gifts = new Set<string>();
-  for (const node of queried.data?.nodes ?? []) {
-    if (node?.id && isGiftCardProduct(node.product ?? {})) gifts.add(node.id);
+  const qty = new Map<string, number>();
+  for (const line of lines) {
+    qty.set(line.variantId, (qty.get(line.variantId) ?? 0) + line.quantity);
   }
-  return gifts;
+  const rows: GiftVariantRow[] = [];
+  for (const node of queried.data?.nodes ?? []) {
+    if (!node?.id || !isGiftCardProduct(node.product ?? {})) continue;
+    const amount = parseGiftAmount(node.price);
+    rows.push({
+      variantId: node.id,
+      quantity: qty.get(node.id) ?? 1,
+      amount,
+      title: node.product?.title || "Gjafabréf",
+      handle: node.product?.handle || "",
+      template: templateForGift({
+        amount,
+        handle: node.product?.handle,
+        title: node.product?.title,
+      }),
+    });
+  }
+  return rows;
+}
+
+async function giftCardVariantIds(lines: CheckoutLine[]) {
+  const rows = await giftVariantRows(lines);
+  return new Set(rows.map((row) => row.variantId));
 }
 
 function cartQuantities(cart: StorefrontCart) {
@@ -643,6 +686,34 @@ async function createQuoteCart(
   );
 }
 
+function applyIssuedGiftQuote(quote: CartQuote, issued: IssuedGift[]): CartQuote {
+  const amount = Math.min(
+    issuedGiftTotal(issued),
+    Math.max(0, quote.totalAmount)
+  );
+  if (amount <= 0) return quote;
+  const last = issued[issued.length - 1];
+  return {
+    ...quote,
+    giftCardAmount: amount,
+    giftCardLabel:
+      issued.length > 1 ? `Gjafabréf × ${issued.length}` : giftLabel(last),
+    totalAmount: quote.totalAmount - amount,
+    total: formatMoney(quote.totalAmount - amount),
+  };
+}
+
+function finalizeQuote(
+  quote: CartQuote,
+  discountCode?: string,
+  issued: IssuedGift[] = []
+) {
+  return applyIssuedGiftQuote(
+    applyKnownPercentOffer(quote, discountCode),
+    issued
+  );
+}
+
 export async function quoteShopifyCart(
   lines: CheckoutLine[],
   address: CheckoutAddress,
@@ -650,6 +721,7 @@ export async function quoteShopifyCart(
   giftCardCode?: string
 ): Promise<CartQuote | { error: string }> {
   const giftCard = normalizeGiftCardCode(giftCardCode);
+  const issued = giftCard ? await findRedeemableGifts(giftCard) : [];
   let created = await createQuoteCart(lines, address, discountCode, giftCard);
   let cart = created.data?.cartCreate?.cart;
   if (!cart && giftCard) {
@@ -695,7 +767,7 @@ export async function quoteShopifyCart(
     return { error: await missingLinesError(missing) };
   }
 
-  if (giftCard) {
+  if (giftCard && !issued.length) {
     if (!giftCardQuote(cart).giftCardAmount) {
       const applied = await applyGiftCardToCart(cart.id, giftCard);
       const applyError =
@@ -733,7 +805,7 @@ export async function quoteShopifyCart(
   if (!quoted.shipping.length) {
     const giftIds = await giftCardVariantIds(lines);
     if (lines.length && lines.every((line) => giftIds.has(line.variantId))) {
-      return applyKnownPercentOffer(
+      return finalizeQuote(
         {
           ...quoted,
           shipping: [
@@ -741,13 +813,14 @@ export async function quoteShopifyCart(
               groupId: "digital-gift",
               handle: "digital-gift",
               title: "Rafræn sending",
-              description: "Kóði er sendur á netfang kaupanda.",
+              description: "PDF með kóða er sent á netfang kaupanda.",
               price: formatMoney(0, "ISK"),
               priceAmount: 0,
             },
           ],
         },
-        discountCode
+        discountCode,
+        issued
       );
     }
     return {
@@ -760,9 +833,10 @@ export async function quoteShopifyCart(
     lines,
     mailingAddress(address)
   );
-  return applyKnownPercentOffer(
+  return finalizeQuote(
     mergeAdminShippingPrices(quoted, adminRates),
-    discountCode
+    discountCode,
+    issued
   );
 }
 
@@ -1043,6 +1117,7 @@ async function createTeyaCheckoutInvoice(input: {
   address: CheckoutAddress;
   shipping?: PayShipping;
   discountCode?: string;
+  issuedGifts?: IssuedGift[];
 }): Promise<{ url: string } | { error: string }> {
   const address = mailingAddress(input.address);
   const shippingLine = input.shipping
@@ -1050,27 +1125,56 @@ async function createTeyaCheckoutInvoice(input: {
     : undefined;
   const code = normalizeDiscountCode(input.discountCode);
   const offer = knownPercentOffer(code);
-  const giftIds = offer ? await giftCardVariantIds(input.lines) : new Set<string>();
+  const giftRows = await giftVariantRows(input.lines);
+  const giftIds = new Set(giftRows.map((row) => row.variantId));
   const shippingNote = input.shipping
     ? `Sending valin á ttsuit.is: ${input.shipping.title} (${input.shipping.priceAmount} kr.)`
     : "";
+  const giftDiscount = input.issuedGifts?.length
+    ? {
+        title: "Gjafabréf",
+        description: input.issuedGifts.map((row) => row.code).join(", "),
+        value: issuedGiftTotal(input.issuedGifts),
+        valueType: "FIXED_AMOUNT" as const,
+      }
+    : undefined;
   const draftInput = {
     email: input.address.email,
     phone: address.phone,
     note: ["Pöntun af ttsuit.is", shippingNote].filter(Boolean).join("\n"),
-    tags: ["ttsuit.is", "teya"],
+    tags: ["ttsuit.is", "teya", giftRows.length ? "ttsuit-gjof" : ""].filter(
+      Boolean
+    ),
     sourceName: "ttsuit.is",
     visibleToCustomer: true,
     allowDiscountCodesInCheckout: false,
     discountCodes: offer || !code ? undefined : [code],
-    lineItems: input.lines.map((line) => ({
-      variantId: line.variantId,
-      quantity: line.quantity,
-      appliedDiscount:
-        offer && !giftIds.has(line.variantId)
-          ? percentDraftDiscount(offer.code, offer.percent)
-          : undefined,
-    })),
+    appliedDiscount: giftDiscount,
+    lineItems: input.lines.map((line) => {
+      const gift = giftRows.find((row) => row.variantId === line.variantId);
+      if (gift) {
+        return {
+          title: gift.title,
+          originalUnitPrice: gift.amount.toFixed(2),
+          quantity: line.quantity,
+          requiresShipping: false,
+          sku: `TT-GIFT-${gift.template.toUpperCase()}`,
+          customAttributes: [
+            { key: "_tt_gift", value: gift.template },
+            { key: "_tt_gift_amount", value: String(gift.amount) },
+            { key: "_tt_gift_handle", value: gift.handle },
+          ],
+        };
+      }
+      return {
+        variantId: line.variantId,
+        quantity: line.quantity,
+        appliedDiscount:
+          offer && !giftIds.has(line.variantId)
+            ? percentDraftDiscount(offer.code, offer.percent)
+            : undefined,
+      };
+    }),
     shippingAddress: address,
     billingAddress: address,
     shippingLine,
@@ -1078,13 +1182,13 @@ async function createTeyaCheckoutInvoice(input: {
 
   const created = await adminGraphql<{
     draftOrderCreate?: {
-      draftOrder?: { invoiceUrl?: string | null } | null;
+      draftOrder?: { id?: string; invoiceUrl?: string | null } | null;
       userErrors?: { field?: string[]; message: string }[];
     };
   }>(
     `mutation CreatePayDraft($input: DraftOrderInput!) {
       draftOrderCreate(input: $input) {
-        draftOrder { invoiceUrl }
+        draftOrder { id invoiceUrl }
         userErrors { field message }
       }
     }`,
@@ -1098,13 +1202,13 @@ async function createTeyaCheckoutInvoice(input: {
   if (phoneError) {
     const retry = await adminGraphql<{
       draftOrderCreate?: {
-        draftOrder?: { invoiceUrl?: string | null } | null;
+        draftOrder?: { id?: string; invoiceUrl?: string | null } | null;
         userErrors?: { field?: string[]; message: string }[];
       };
     }>(
       `mutation CreatePayDraft($input: DraftOrderInput!) {
         draftOrderCreate(input: $input) {
-          draftOrder { invoiceUrl }
+          draftOrder { id invoiceUrl }
           userErrors { field message }
         }
       }`,
@@ -1123,12 +1227,19 @@ async function createTeyaCheckoutInvoice(input: {
   const userError = payload?.userErrors?.[0]?.message;
   if (userError) return { error: userError };
   const url = payload?.draftOrder?.invoiceUrl;
+  const draftId = payload?.draftOrder?.id;
   if (!url) {
     return {
       error:
         created.error ||
         "Gat ekki opnað Teya-greiðslu. Reyndu aftur eða sendu línu á ttsuit@ttsuit.is.",
     };
+  }
+  if (input.issuedGifts?.length && draftId) {
+    await reserveGiftCodes(
+      input.issuedGifts.map((row) => row.code),
+      draftId
+    );
   }
   return { url };
 }
@@ -1160,6 +1271,24 @@ export async function payShopifyCart(input: {
   // /checkouts/do/… (works with password) and lets the customer keep/adjust
   // the address without those warnings.
   const giftCard = normalizeGiftCardCode(input.giftCardCode);
+  const issued = giftCard ? await findRedeemableGifts(giftCard) : [];
+  const buyingGift = input.lines?.length
+    ? (await giftVariantRows(input.lines)).length > 0
+    : false;
+
+  if (issued.length) {
+    if (!input.lines?.length || !input.address) {
+      return { error: "Karfan fannst ekki." };
+    }
+    return createTeyaCheckoutInvoice({
+      lines: input.lines,
+      address: input.address,
+      shipping: input.shipping,
+      discountCode: input.discountCode,
+      issuedGifts: issued,
+    });
+  }
+
   if (giftCard) {
     const applied = await applyGiftCardToCart(input.cartId, giftCard);
     const cart = applied.data?.cartGiftCardCodesUpdate?.cart;
@@ -1167,7 +1296,8 @@ export async function payShopifyCart(input: {
       return { error: "Gjafabréfskóði fannst ekki eða er uppurinn." };
     }
   }
-  // Gift cards live on the Storefront cart. A new draft invoice would drop them.
+  // Native Shopify gift cards live on the Storefront cart. A new draft
+  // invoice would drop them. Issued PDF codes use the draft path above.
   if (!giftCard && input.lines?.length && input.address) {
     const invoice = await createTeyaCheckoutInvoice({
       lines: input.lines,
@@ -1176,6 +1306,7 @@ export async function payShopifyCart(input: {
       discountCode: input.discountCode,
     });
     if (!("error" in invoice)) return invoice;
+    if (buyingGift) return invoice;
     console.error(`Teya invoice: ${invoice.error}`);
   }
 

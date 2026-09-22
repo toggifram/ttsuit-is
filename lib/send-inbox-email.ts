@@ -1,3 +1,4 @@
+import { sendHtmlEmail } from "@/lib/send-html-email";
 import { brand } from "@/lib/site";
 
 export type InquiryKind = "contact" | "booking";
@@ -10,14 +11,6 @@ export type InquiryPayload = {
   when?: string;
   message: string;
 };
-
-function mailchimpConfig() {
-  const apiKey = process.env.MAILCHIMP_API_KEY?.trim();
-  if (!apiKey) return null;
-  const dc = apiKey.split("-").pop();
-  if (!dc) return null;
-  return { apiKey, dc, listId: process.env.MAILCHIMP_AUDIENCE_ID?.trim() };
-}
 
 function inquirySubject(payload: InquiryPayload) {
   const prefix =
@@ -56,59 +49,9 @@ function inquiryHtml(payload: InquiryPayload) {
 }
 
 export async function sendInquiryToInbox(payload: InquiryPayload) {
-  const cfg = mailchimpConfig();
-  if (!cfg?.listId) throw new Error("missing_config");
-
-  const headers = {
-    Authorization: `Bearer ${cfg.apiKey}`,
-    "Content-Type": "application/json",
-  };
-  const base = `https://${cfg.dc}.api.mailchimp.com/3.0/campaigns`;
-  const to = brand.email;
-  const subject = inquirySubject(payload);
-
-  const created = await fetch(base, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      type: "regular",
-      recipients: { list_id: cfg.listId },
-      settings: {
-        subject_line: subject,
-        title: `web-inquiry-${Date.now()}`,
-        from_name: "Tjé Tjé vefur",
-        reply_to: to,
-      },
-    }),
+  await sendHtmlEmail({
+    to: [brand.email],
+    subject: inquirySubject(payload),
+    html: inquiryHtml(payload),
   });
-  const campaign = (await created.json()) as { id?: string; detail?: string };
-  if (!created.ok || !campaign.id) {
-    throw new Error(campaign.detail || "mailchimp_error");
-  }
-
-  try {
-    const content = await fetch(`${base}/${campaign.id}/content`, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify({ html: inquiryHtml(payload) }),
-    });
-    if (!content.ok) throw new Error("mailchimp_error");
-
-    const test = await fetch(`${base}/${campaign.id}/actions/test`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        test_emails: [to],
-        send_type: "html",
-      }),
-    });
-    if (!test.ok) {
-      const err = (await test.json().catch(() => null)) as {
-        detail?: string;
-      } | null;
-      throw new Error(err?.detail || "mailchimp_error");
-    }
-  } finally {
-    await fetch(`${base}/${campaign.id}`, { method: "DELETE", headers });
-  }
 }
