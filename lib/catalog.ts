@@ -287,6 +287,21 @@ export const fallbackProducts: Product[] = [
     description:
       "Gjafabréf eru rafræn og verða send á kaupandann. Þau má nota í vefversluninni og í sérsaum. Hægt er að púsla saman fleiri en einu gjafabréfi.",
   },
+  {
+    id: "gift-shirt",
+    handle: "sersaumud-skyrta-gjafabref",
+    title: "Sérsaumuð skyrta",
+    subtitle: "Gjafabréf · Sérsaumur",
+    category: "gjafabref",
+    href: productHref("sersaumud-skyrta-gjafabref"),
+    image: "/images/studio/gift-shirt.jpg",
+    imageAlt: "Sérsaumuð skyrta gjafabréf",
+    price: "22.990 kr.",
+    colors: [],
+    sizes: ["22.990 kr."],
+    description:
+      "Gjafabréf fyrir sérsaumaða skyrtu. Bréfið er rafrænt og verður sent á kaupandann. Viðtakandi bókar mælingu og við saumum skyrtuna.",
+  },
 ];
 
 /** Live Shopify catalog via Admin API (or Storefront), otherwise studio fallback. */
