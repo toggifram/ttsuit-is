@@ -44,6 +44,12 @@ const COLOR_HEX: Record<string, string> = {
   black: "#1a1a1a",
   svart: "#1a1a1a",
   svartur: "#1a1a1a",
+  svört: "#1a1a1a",
+  svort: "#1a1a1a",
+  blá: "#245ea8",
+  bla: "#245ea8",
+  grá: "#7a7a7a",
+  gra: "#7a7a7a",
   brúnn: "#5c3d2e",
   brunn: "#5c3d2e",
   kamel: "#b56d32",
@@ -306,7 +312,7 @@ function categoryFrom(node: ShopifyProduct): ProductCategory {
     return "yfirhafnir";
   }
   if (
-    /accessor|fylgi|belt|scarf|trefil|trefill|pocket|cuff|bracelet|armband|axlabond|klút|klutur|sokk|sock/.test(
+    /accessor|fylgi|belt|scarf|trefil|trefill|húfa|hufa|beanie|hat|pocket|cuff|bracelet|armband|axlabond|klút|klutur|sokk|sock/.test(
       hay
     )
   ) {
