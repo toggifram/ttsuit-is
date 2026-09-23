@@ -12,6 +12,7 @@ const CODE_PILL = { x: 139.66, y: 376.27, w: 562.46, h: 128.14 };
 const BRAND_GREEN = rgb(4 / 255, 48 / 255, 52 / 255);
 
 const AMOUNT_TEMPLATES: Record<number, GiftTemplateId> = {
+  100: "2500",
   2500: "2500",
   5000: "5000",
   7500: "7500",
