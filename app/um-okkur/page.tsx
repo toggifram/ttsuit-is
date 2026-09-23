@@ -32,7 +32,7 @@ export default function AboutPage() {
     <>
       <section className="mx-auto max-w-7xl px-5 py-16 md:px-8 md:py-24">
         <p className="text-sm text-ink/50">Um TT</p>
-        <h1 className="mt-2 max-w-3xl text-4xl font-medium tracking-tight md:text-6xl">
+        <h1 className="mt-2 max-w-3xl font-serif text-4xl text-forest md:text-6xl">
           Sagan á bak við nafnið
         </h1>
       </section>
