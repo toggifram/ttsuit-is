@@ -35,6 +35,13 @@ function allowedShop(header: string | null) {
   return !got || got === expected;
 }
 
+function unwrapPayload<T extends object>(payload: unknown, key: string): T {
+  if (!payload || typeof payload !== "object") return payload as T;
+  const nested = (payload as Record<string, unknown>)[key];
+  if (nested && typeof nested === "object") return nested as T;
+  return payload as T;
+}
+
 export async function POST(request: Request) {
   const raw = await request.text();
   const hmac = request.headers.get("x-shopify-hmac-sha256");
@@ -56,12 +63,14 @@ export async function POST(request: Request) {
   try {
     if (topic === "gift_cards/create") {
       const result = await fulfillShopifyIssuedGiftCard(
-        payload as ShopifyGiftCardWebhook
+        unwrapPayload<ShopifyGiftCardWebhook>(payload, "gift_card")
       );
       return NextResponse.json({ ok: true, ...result });
     }
-    if (topic === "draft_orders/update") {
-      const result = await fulfillPaidGiftDraft(payload as PaidDraft);
+    if (topic === "draft_orders/update" || topic === "draft_orders/create") {
+      const result = await fulfillPaidGiftDraft(
+        unwrapPayload<PaidDraft>(payload, "draft_order")
+      );
       return NextResponse.json({ ok: true, ...result });
     }
     return NextResponse.json({ ok: true, ignored: topic });
