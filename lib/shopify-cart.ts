@@ -805,14 +805,14 @@ export async function quoteShopifyCart(
   if (!quoted.shipping.length) {
     const giftIds = await giftCardVariantIds(lines);
     if (lines.length && lines.every((line) => giftIds.has(line.variantId))) {
-      return labelGiftPickup(finalizeQuote(
+      return finalizeQuote(
         {
           ...quoted,
           shipping: [
             {
               groupId: "digital-gift",
               handle: "digital-gift",
-              title: "Sækja vöru (Rafræn gjafabréf)",
+              title: "Rafræn sending",
               description: "PDF með kóða er sent á netfang kaupanda.",
               price: formatMoney(0, "ISK"),
               priceAmount: 0,
@@ -821,7 +821,7 @@ export async function quoteShopifyCart(
         },
         discountCode,
         issued
-      ), true);
+      );
     }
     return {
       error:
@@ -833,14 +833,10 @@ export async function quoteShopifyCart(
     lines,
     mailingAddress(address)
   );
-  const giftIds = await giftCardVariantIds(lines);
-  return labelGiftPickup(
-    finalizeQuote(
-      mergeAdminShippingPrices(quoted, adminRates),
-      discountCode,
-      issued
-    ),
-    lines.some((line) => giftIds.has(line.variantId))
+  return finalizeQuote(
+    mergeAdminShippingPrices(quoted, adminRates),
+    discountCode,
+    issued
   );
 }
 
@@ -973,28 +969,6 @@ function shippingTitleKey(text: string) {
     .replace(/\s{2,}/g, " ")
     .trim()
     .toLowerCase();
-}
-
-function isPickupOption(option: DeliveryOption) {
-  return (
-    option.handle === "digital-gift" ||
-    /sækja|saekja|pickup|pick\s*up/i.test(option.title)
-  );
-}
-
-function labelGiftPickup(quote: CartQuote, hasGift: boolean): CartQuote {
-  if (!hasGift) return quote;
-  return {
-    ...quote,
-    shipping: quote.shipping.map((option) => {
-      if (!isPickupOption(option)) return option;
-      const base = /rafræn sending/i.test(option.title)
-        ? "Sækja vöru"
-        : option.title.replace(/\s*\(Rafræn gjafabréf\)\s*/gi, "").trim();
-      if (/rafræn gjafabréf/i.test(base)) return option;
-      return { ...option, title: `${base} (Rafræn gjafabréf)` };
-    }),
-  };
 }
 
 function matchShippingRate(

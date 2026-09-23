@@ -8,7 +8,7 @@ import { PaymentMethods } from "@/components/payment-methods";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CHECKOUT_CART_BACKUP_KEY } from "@/lib/cart";
-import { formatMoney } from "@/lib/product";
+import { formatMoney, isGiftCardProduct } from "@/lib/product";
 import { normalizeDiscountCode, normalizeGiftCardCode } from "@/lib/offers";
 import type { CartQuote, DeliveryOption } from "@/lib/shopify-cart";
 import { cn } from "@/lib/utils";
@@ -66,6 +66,13 @@ export function CheckoutForm() {
   const selected = useMemo(
     () => quote?.shipping.find((row) => row.handle === shippingHandle) ?? null,
     [quote, shippingHandle]
+  );
+  const hasGiftProduct = useMemo(
+    () =>
+      items.some((item) =>
+        isGiftCardProduct({ handle: item.handle, title: item.title })
+      ),
+    [items]
   );
 
   useEffect(() => {
@@ -281,6 +288,12 @@ export function CheckoutForm() {
           um Teya á öruggum Shopify-kassa (Visa, Mastercard, Apple Pay og Google
           Pay).
         </p>
+        {hasGiftProduct ? (
+          <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-ink/55">
+            Gjafabréf eru send rafrænt á netfang kaupanda, sama hvaða
+            sendingarmáti er valinn.
+          </p>
+        ) : null}
 
         <div className="mt-10 space-y-5">
           <Field label="Nafn" htmlFor="kassi-name">
@@ -389,6 +402,11 @@ export function CheckoutForm() {
       <aside className="bg-cream p-6 md:col-span-5 md:p-8">
         <div>
           <h2 className="font-serif text-2xl text-forest">Sending</h2>
+          {hasGiftProduct ? (
+            <p className="mt-2 text-[13px] leading-relaxed text-ink/50">
+              Gjafabréf eru send rafrænt, sama hvaða sendingarmáti er valinn.
+            </p>
+          ) : null}
           {!addressReady ? (
             <p className="mt-3 text-[13px] leading-relaxed text-ink/50">
               Settu inn heimilisfang til að sjá sendingarleiðir.
