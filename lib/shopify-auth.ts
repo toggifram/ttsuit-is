@@ -116,12 +116,44 @@ async function createStorefrontToken(adminToken: string) {
   return json.data?.storefrontAccessTokenCreate?.storefrontAccessToken?.accessToken ?? null;
 }
 
+type StorefrontTokenRow = {
+  access_token?: string;
+  title?: string;
+};
+
+async function listStorefrontTokens(adminToken: string) {
+  const res = await fetch(
+    `https://${storeDomain()}/admin/api/2025-01/storefront_access_tokens.json`,
+    {
+      headers: { "X-Shopify-Access-Token": adminToken },
+      cache: "no-store",
+    }
+  );
+  if (!res.ok) return [] as StorefrontTokenRow[];
+  const json = (await res.json()) as {
+    storefront_access_tokens?: StorefrontTokenRow[];
+  };
+  return json.storefront_access_tokens ?? [];
+}
+
+function pickStorefrontToken(rows: StorefrontTokenRow[]) {
+  const named = rows.find((row) =>
+    /tjé\s*tjé\s*vefur|tje\s*tje\s*vefur/i.test(row.title ?? "")
+  );
+  return named?.access_token || rows[0]?.access_token || null;
+}
+
 export async function getStorefrontAccessToken() {
   const fromEnv = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN?.trim();
   if (fromEnv) return fromEnv;
   if (cachedStorefront) return cachedStorefront;
   const admin = await getAdminAccessToken();
   if (!admin) return "";
+  const existing = pickStorefrontToken(await listStorefrontTokens(admin));
+  if (existing) {
+    cachedStorefront = existing;
+    return existing;
+  }
   const created = await createStorefrontToken(admin);
   if (created) cachedStorefront = created;
   return created ?? "";
