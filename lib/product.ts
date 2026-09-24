@@ -74,6 +74,10 @@ export const categoryLooks = [
   },
 ] as const;
 
+export function isPackColor(name: string) {
+  return /\d\s*x\b|,/.test(name);
+}
+
 export function hrefForCategory(id: (typeof shopCategories)[number]["id"]) {
   const row = shopCategories.find((cat) => cat.id === id);
   return row?.slug ? `/verslun/${row.slug}` : "/verslun";
@@ -209,6 +213,12 @@ export function catalogListings(products: Product[]): CatalogListing[] {
     if (!product.colors.length) {
       return [{ key: product.id, product }];
     }
+    const colorImages = new Set(
+      product.colors.map((color) => color.image || product.image)
+    );
+    if (colorImages.size <= 1) {
+      return [{ key: product.id, product }];
+    }
     return product.colors.map((color) => ({
       key: `${product.id}:${color.name}`,
       product,
@@ -266,7 +276,9 @@ export function sizesForColor(product: Product, color?: string) {
       .filter((size): size is string => Boolean(size))
   );
   if (!existing.size) return all;
-  return all.filter((size) => existing.has(size));
+  const sizes = all.filter((size) => existing.has(size));
+  if (sizes.length === 1 && /^ein stærð$/i.test(sizes[0])) return [];
+  return sizes;
 }
 
 export function firstAvailableSize(product: Product, color?: string) {

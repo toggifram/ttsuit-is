@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ProductImageBadges } from "@/components/product-image-badges";
 import {
   isListingInStock,
+  isPackColor,
   listingSellingFast,
   productHref,
   type Product,
@@ -68,7 +69,7 @@ export function ProductCard({
             </p>
           </div>
           <p className="mt-1 text-[12px] text-ink/55">{subtitle}</p>
-          {product.colors.length ? (
+          {product.colors.length && !product.colors.every((swatch) => isPackColor(swatch.name)) ? (
             <div className="mt-3 flex flex-wrap items-center gap-1">
               {product.colors.slice(0, 5).map((swatch) => (
                 <span

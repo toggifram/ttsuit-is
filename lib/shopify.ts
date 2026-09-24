@@ -44,6 +44,9 @@ const COLOR_HEX: Record<string, string> = {
   black: "#1a1a1a",
   svart: "#1a1a1a",
   svartur: "#1a1a1a",
+  "3 x svartir": "#1a1a1a",
+  "1 svartur, 1 dökkblár, 1 brúnn": "#1a2744",
+  "1 svartur 1 dokkblar 1 brunn": "#1a2744",
   svört: "#1a1a1a",
   svort: "#1a1a1a",
   blá: "#245ea8",
@@ -326,7 +329,7 @@ function optionValues(node: ShopifyProduct, pattern: RegExp) {
 }
 
 const SIZE_OPTION = /size|stærð|staerd|sterrd|upphæð|upphaed|amount|denomination/i;
-const COLOR_OPTION = /color|colour|litur/i;
+const COLOR_OPTION = /color|colour|litur|pakkning|pack/i;
 
 function mapVariants(node: ShopifyProduct): ProductVariant[] {
   const currency = node.priceRange.minVariantPrice.currencyCode;
