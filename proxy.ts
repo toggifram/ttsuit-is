@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server";
 import {
   MAINTENANCE_COOKIE,
   isMaintenanceEnabled,
+  isShareCrawler,
   maintenanceBypassSecret,
 } from "@/lib/maintenance";
 
@@ -12,6 +13,12 @@ export function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   if (pathname.startsWith("/opna")) return NextResponse.next();
+  if (pathname === "/robots.txt" || pathname === "/sitemap.xml") {
+    return NextResponse.next();
+  }
+  if (isShareCrawler(request.headers.get("user-agent"))) {
+    return NextResponse.next();
+  }
 
   const secret = maintenanceBypassSecret();
   if (secret && request.cookies.get(MAINTENANCE_COOKIE)?.value === secret) {

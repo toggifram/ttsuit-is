@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { Cormorant_Garamond, Geist_Mono, Great_Vibes, Outfit } from "next/font/google";
 
 import { CartDrawer } from "@/components/cart-drawer";
@@ -11,6 +11,7 @@ import { SiteOverlays } from "@/components/site-overlays";
 import {
   MAINTENANCE_COOKIE,
   isMaintenanceEnabled,
+  isShareCrawler,
   maintenanceBypassSecret,
 } from "@/lib/maintenance";
 import { JsonLd } from "@/components/json-ld";
@@ -76,6 +77,8 @@ export const metadata: Metadata = {
 
 async function isMaintenanceLocked() {
   if (!isMaintenanceEnabled()) return false;
+  const hdrs = await headers();
+  if (isShareCrawler(hdrs.get("user-agent"))) return false;
   const secret = maintenanceBypassSecret();
   if (!secret) return true;
   const jar = await cookies();
