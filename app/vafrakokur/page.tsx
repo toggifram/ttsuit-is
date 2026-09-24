@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { pageMetadata } from "@/lib/seo";
 import { brand } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Vafrakökur",
   description: "Hvernig Tjé Tjé notar vafrakökur.",
-};
+  path: "/vafrakokur",
+});
 
 export default function CookiesPage() {
   return (

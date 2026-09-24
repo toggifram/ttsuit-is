@@ -2,11 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+import { JsonLd } from "@/components/json-ld";
+import { aboutJsonLd, pageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata({
   title: "Um TT",
   description:
     "Sagan á bak við Tjé Tjé — Toggi Tuttugu og sérsaumaður herrafatnaður á Íslandi.",
-};
+  path: "/um-okkur",
+  images: [{ url: "/images/studio/toggi.jpg", alt: "Þorgrímur Smári Ólafsson" }],
+});
 
 const values = [
   {
@@ -30,6 +35,7 @@ const values = [
 export default function AboutPage() {
   return (
     <>
+      <JsonLd data={aboutJsonLd()} />
       <section className="mx-auto max-w-7xl px-5 py-16 md:px-8 md:py-24">
         <p className="text-sm text-ink/50">Um TT</p>
         <h1 className="mt-2 max-w-3xl font-serif text-4xl text-forest md:text-6xl">

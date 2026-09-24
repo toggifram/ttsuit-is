@@ -14,11 +14,28 @@ export function siteUrl() {
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.URL ||
     `https://${brand.domain}`;
-  return raw.replace(/\/$/, "");
+  const cleaned = raw.replace(/\/$/, "");
+  try {
+    const parsed = new URL(cleaned);
+    const host = parsed.hostname.replace(/^www\./i, "").toLowerCase();
+    if (host === brand.domain) {
+      parsed.protocol = "https:";
+      parsed.hostname = `www.${brand.domain}`;
+      return parsed.origin;
+    }
+  } catch {
+    // keep the configured value
+  }
+  return cleaned;
 }
 
 export function isProductionSite() {
-  return siteUrl() === `https://${brand.domain}`;
+  try {
+    const host = new URL(siteUrl()).hostname.replace(/^www\./i, "");
+    return host === brand.domain;
+  } catch {
+    return false;
+  }
 }
 
 export const navLeft = [

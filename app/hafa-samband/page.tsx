@@ -2,16 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { InquiryForm } from "@/components/inquiry-form";
+import { JsonLd } from "@/components/json-ld";
+import { contactJsonLd, pageMetadata } from "@/lib/seo";
 import { brand } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Hafa samband",
-  description:
-    "Sendu okkur línu. Við svörum innan 48 klukkustunda.",
-};
+  description: "Sendu okkur línu. Við svörum innan 48 klukkustunda.",
+  path: "/hafa-samband",
+});
 
 export default function ContactPage() {
   return (
+    <>
+    <JsonLd data={contactJsonLd()} />
     <section className="mx-auto grid max-w-[1440px] gap-12 px-5 py-16 md:grid-cols-12 md:px-8 md:py-24">
       <div className="md:col-span-5">
         <p className="text-[11px] tracking-[0.22em] text-forest/55 uppercase">
@@ -70,5 +74,6 @@ export default function ContactPage() {
         <InquiryForm kind="contact" />
       </div>
     </section>
+    </>
   );
 }

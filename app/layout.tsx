@@ -13,6 +13,13 @@ import {
   isMaintenanceEnabled,
   maintenanceBypassSecret,
 } from "@/lib/maintenance";
+import { JsonLd } from "@/components/json-ld";
+import {
+  HOME_OG_IMAGES,
+  organizationJsonLd,
+  pageMetadata,
+  websiteJsonLd,
+} from "@/lib/seo";
 import { brand, siteUrl } from "@/lib/site";
 
 import "./globals.css";
@@ -40,14 +47,27 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const defaultDescription =
+  "Tjé Tjé er herrafatnaður á Íslandi: sérsaumuð jakkaföt og tilbúin föt. Bókaðu mælingu eða skoðaðu verslunina.";
+
 export const metadata: Metadata = {
+  ...pageMetadata({
+    title: `${brand.name} — Sérsaumur og tilbúin föt`,
+    description: defaultDescription,
+    path: "/",
+    images: [...HOME_OG_IMAGES],
+  }),
   title: {
     default: `${brand.name} — Sérsaumur og tilbúin föt`,
     template: `%s · ${brand.name}`,
   },
-  description:
-    "Tjé Tjé er herrafatnaður á Íslandi: sérsaumuð jakkaföt og tilbúin föt. Bókaðu mælingu eða skoðaðu verslunina.",
   metadataBase: new URL(siteUrl()),
+  applicationName: brand.name,
+  authors: [{ name: brand.name, url: siteUrl() }],
+  creator: brand.name,
+  publisher: brand.name,
+  category: "shopping",
+  formatDetection: { email: false, address: false, telephone: false },
   icons: {
     icon: [{ url: "/icon.png", type: "image/png" }],
     apple: [{ url: "/apple-icon.png", type: "image/png" }],
@@ -81,6 +101,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <div id="top" className="h-0 w-0 overflow-hidden" />
         <CartProvider>
+          <JsonLd data={organizationJsonLd()} />
+          <JsonLd data={websiteJsonLd()} />
           <SiteHeader />
           <main className="flex-1 bg-white">{children}</main>
           <SiteFooter />

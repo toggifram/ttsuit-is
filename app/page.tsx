@@ -1,12 +1,22 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
 import { ProductRail } from "@/components/product-rail";
 import { CategoryLooks } from "@/components/category-looks";
 import { SersaumurFeature } from "@/components/sersaumur-feature";
+import { HOME_OG_IMAGES, pageMetadata } from "@/lib/seo";
 import { getHomeProducts } from "@/lib/shopify";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Sérsaumur og tilbúin föt",
+  description:
+    "Tjé Tjé er herrafatnaður á Íslandi: sérsaumuð jakkaföt og tilbúin föt. Bókaðu mælingu eða skoðaðu verslunina.",
+  path: "/",
+  images: [...HOME_OG_IMAGES],
+});
 
 export default async function HomePage() {
   const products = await getHomeProducts();
