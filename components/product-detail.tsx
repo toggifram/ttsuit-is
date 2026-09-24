@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState, type ToggleEvent } from "react";
 
+import { ColorSwatch } from "@/components/color-swatch";
 import { ProductCard } from "@/components/product-card";
 import { ProductGallery } from "@/components/product-gallery";
 import { useCart } from "@/components/cart-provider";
@@ -22,9 +23,9 @@ import {
   firstAvailableSize,
   hasShopifyVariants,
   hrefForCategory,
+  colorSwatchStripes,
   imagesForSelectedColor,
   isListingInStock,
-  isPackColor,
   isSizeInStock,
   listingSellingFast,
   productHref,
@@ -203,10 +204,8 @@ export function ProductDetail({
           {product.colors.length ? (
             <div className="mt-8">
               <p className="text-[11px] tracking-[0.18em] text-ink/50 uppercase">
-                {product.colors.some((item) => isPackColor(item.name))
-                  ? "Pakkning"
-                  : "Litur"}
-                {color && !isPackColor(color) ? (
+                Litur
+                {color ? (
                   <span className="ml-2 tracking-normal text-ink/70 normal-case">
                     {color}
                   </span>
@@ -216,7 +215,6 @@ export function ProductDetail({
                 {product.colors.map((item) => {
                   const selected = color === item.name;
                   const soldOut = item.available === false;
-                  const pack = isPackColor(item.name);
                   return (
                     <button
                       key={item.name}
@@ -226,18 +224,16 @@ export function ProductDetail({
                       aria-label={soldOut ? `${item.name}, uppselt` : item.name}
                       aria-pressed={selected}
                       className={cn(
-                        "border transition-shadow",
-                        pack
-                          ? "min-h-10 px-3 text-left text-[13px] leading-snug text-ink"
-                          : "size-8",
+                        "size-8 overflow-hidden border",
                         soldOut && "opacity-40",
                         selected
                           ? "border-forest ring-1 ring-forest ring-offset-2"
                           : "border-black/15 hover:border-forest/50"
                       )}
-                      style={pack ? undefined : { backgroundColor: item.hex }}
                     >
-                      {pack ? item.name : null}
+                      <ColorSwatch
+                        colors={colorSwatchStripes(item.name, item.hex)}
+                      />
                     </button>
                   );
                 })}

@@ -74,8 +74,22 @@ export const categoryLooks = [
   },
 ] as const;
 
+const SWATCH_STRIPES: Record<string, string[]> = {
+  "3 x svartir": ["#1a1a1a"],
+  svartir: ["#1a1a1a"],
+  "1 svartur, 1 dökkblár, 1 brúnn": ["#1a1a1a", "#1a2744", "#5c3d2e"],
+  "1 svartur, 1 dokkblar, 1 brunn": ["#1a1a1a", "#1a2744", "#5c3d2e"],
+  marglitað: ["#1a1a1a", "#1a2744", "#5c3d2e"],
+  marglitad: ["#1a1a1a", "#1a2744", "#5c3d2e"],
+};
+
 export function isPackColor(name: string) {
-  return /\d\s*x\b|,/.test(name);
+  return /\d\s*x\b|,|marglit/i.test(name);
+}
+
+export function colorSwatchStripes(name: string, fallbackHex: string) {
+  const key = name.trim().toLowerCase();
+  return SWATCH_STRIPES[key] ?? [fallbackHex];
 }
 
 export function hrefForCategory(id: (typeof shopCategories)[number]["id"]) {

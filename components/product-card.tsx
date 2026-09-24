@@ -1,9 +1,10 @@
 import Link from "next/link";
 
+import { ColorSwatch } from "@/components/color-swatch";
 import { ProductImageBadges } from "@/components/product-image-badges";
 import {
+  colorSwatchStripes,
   isListingInStock,
-  isPackColor,
   listingSellingFast,
   productHref,
   type Product,
@@ -69,7 +70,7 @@ export function ProductCard({
             </p>
           </div>
           <p className="mt-1 text-[12px] text-ink/55">{subtitle}</p>
-          {product.colors.length && !product.colors.every((swatch) => isPackColor(swatch.name)) ? (
+          {product.colors.length ? (
             <div className="mt-3 flex flex-wrap items-center gap-1">
               {product.colors.slice(0, 5).map((swatch) => (
                 <span
@@ -80,12 +81,13 @@ export function ProductCard({
                       : swatch.name
                   }
                   className={cn(
-                    "size-3.5 border border-black/15",
+                    "size-3.5 overflow-hidden border border-black/15",
                     swatch.available === false && "opacity-35",
                     color?.name === swatch.name && "outline outline-1 outline-offset-1 outline-ink"
                   )}
-                  style={{ backgroundColor: swatch.hex }}
-                />
+                >
+                  <ColorSwatch colors={colorSwatchStripes(swatch.name, swatch.hex)} />
+                </span>
               ))}
               {product.colors.length > 5 ? (
                 <span className="pl-1 text-[11px] text-ink/45">

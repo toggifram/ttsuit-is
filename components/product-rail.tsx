@@ -5,7 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { ProductImageBadges } from "@/components/product-image-badges";
-import { isPackColor, listingSellingFast, shuffle, type Product } from "@/lib/product";
+import { ColorSwatch } from "@/components/color-swatch";
+import { colorSwatchStripes, listingSellingFast, shuffle, type Product } from "@/lib/product";
 import { cn } from "@/lib/utils";
 
 export function ProductRail({ products }: { products: Product[] }) {
@@ -96,16 +97,18 @@ export function ProductRail({ products }: { products: Product[] }) {
                     </p>
                   </div>
                   <p className="mt-1 text-[12px] text-ink/55">{product.subtitle}</p>
-                  {product.colors.length &&
-                  !product.colors.every((color) => isPackColor(color.name)) ? (
+                  {product.colors.length ? (
                     <div className="mt-3 flex flex-wrap items-center gap-1">
                       {product.colors.slice(0, 5).map((color) => (
                         <span
                           key={color.name}
                           title={color.name}
-                          className="size-3.5 border border-black/15"
-                          style={{ backgroundColor: color.hex }}
-                        />
+                          className="size-3.5 overflow-hidden border border-black/15"
+                        >
+                          <ColorSwatch
+                            colors={colorSwatchStripes(color.name, color.hex)}
+                          />
+                        </span>
                       ))}
                       {product.colors.length > 5 ? (
                         <span className="pl-1 text-[11px] text-ink/45">
